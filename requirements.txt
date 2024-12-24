@@ -1,4 +1,6 @@
 # project requirements
+pandas
+googlesearch-python
 
 # dev requirements
 pre-commit
