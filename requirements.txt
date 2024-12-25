@@ -1,6 +1,9 @@
 # project requirements
 pandas
 googlesearch-python
+python-dotenv
+loguru
+pydantic
 
 # dev requirements
 pre-commit
