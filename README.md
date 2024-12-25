@@ -6,8 +6,8 @@
 ## Development Best Practices
 
 #### Writing New Code
-*Note:* **Don't** push commits directly to the dev branch
-- Create a branch from dev. Use standard naming conventions, e.g., feature/my-new-feature
+*Note:* **Don't** push commits directly to the main branch
+- Create a branch from main. Use standard naming conventions, e.g., feature/my-new-feature
 - Run the pre-commit hooks before pushing your code to ensure your it's well-formatted.
 - Pull Requests:
     - When creating a pull request to merge back into dev, add a clear description to the pull request. Include details of any new features or changes to existing features.
