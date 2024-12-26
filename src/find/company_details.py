@@ -146,6 +146,7 @@ class CompanyInfo:
                 logger.info(f"ISIN {self.isin} corresponds to Ticker: {ticker}")
                 # Find the row for the ticker in the filtered data
                 if ticker in df_filtered["Ticker"].values:
+                    # TODO - BALAZS - test this works
                     name = df_filtered[df_filtered["Ticker"] == ticker]["Name"].values[
                         0
                     ]
@@ -163,14 +164,14 @@ class CompanyInfo:
                 return None
 
         # If the identifier is a Ticker
-        # TODO - get company name from ticker using yahoo finance?
+        # TODO - BALAZS - get company name from ticker using yahoo finance?
         elif self.ticker is not None:
             name = df_filtered[df_filtered["Ticker"] == self.ticker]["Name"].values[0]
             company_data = Company(ticker=self.ticker, name=name)
             return company_data
 
         # If the identifier is a Company Name
-        # TODO - get ticker from company name using yahoo finance?
+        # TODO - BALAZS - get ticker from company name using yahoo finance?
         elif self.name is not None:
             ticker = df_filtered[df_filtered["Name"] == self.name]["Ticker"].values[0]
             company_data = Company(ticker=ticker, name=self.name)
