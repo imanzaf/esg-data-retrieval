@@ -98,7 +98,8 @@ class CompanyInfo:
             return True
         return False
 
-    def get_ticker_from_isin(self):
+    @staticmethod
+    def get_ticker_from_isin(ISIN):
         """
         Function to fetch the ticker symbol from OpenFIGI API using the ISIN code.
         """
@@ -106,7 +107,7 @@ class CompanyInfo:
             "Content-Type": "application/json",
             "X-OPENFIGI-APIKEY": OPENFIGI_API_KEY,
         }
-        data = [{"idType": "ID_ISIN", "idValue": self.isin}]
+        data = [{"idType": "ID_ISIN", "idValue": ISIN}]
 
         try:
             # Make the POST request to OpenFIGI API
@@ -126,9 +127,7 @@ class CompanyInfo:
                 # Search for ticker in the response
                 return results[0]["data"][0].get("ticker")
         except Exception as e:
-            logger.error(
-                f"Error fetching ticker for ISIN {self.isin}: {e}. Returning None."
-            )
+            logger.error(f"Error fetching ticker for ISIN {ISIN}: {e}. Returning None.")
             return None
 
     def get_company_details(self):
@@ -142,7 +141,7 @@ class CompanyInfo:
 
         # Check if identifier is an ISIN
         if self.isin is not None:
-            ticker = self.get_ticker_from_isin()
+            ticker = self.get_ticker_from_isin(self.isin)
             if ticker is not None:
                 logger.info(f"ISIN {self.isin} corresponds to Ticker: {ticker}")
                 # Find the row for the ticker in the filtered data
