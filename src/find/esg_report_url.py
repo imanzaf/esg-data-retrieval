@@ -10,21 +10,22 @@ load_dotenv()
 
 sys.path.append(os.getenv("ROOT_DIR"))
 
-from src.find.company_details import get_company_details  # noqa: E402
+from src.find.company_details import CompanyInfo  # noqa: E402
 
 
-def get_esg_report_url(ISIN):
+def get_esg_report_url(company_identifier: str):
     """
-    This function takes an ISIN as input and returns a link to the best result from google for the company's latest ESG report.
+    Find a link to the best result from google for the company's latest ESG report.
 
     Parameters:
-        ISIN (str): The ISIN of the company.
+        company_indentifier (str): The ISIN, ticker, or name of a company.
 
     Returns:
         company_details (Company): Company object for respective ISIN with esg_report_link attribute.
     """
     # get the ticker symbol and company name from ISIN
-    company_details = get_company_details(ISIN)
+    company = CompanyInfo(company_identifier)
+    company_details = company.get_company_details()
     # use company name to search for the latest ESG report
     query = f"{company_details.name} latest ESG report filetype:pdf"
     search_results = gs.search(query, num_results=3, advanced=True)
@@ -72,6 +73,7 @@ def get_esg_report_url(ISIN):
 
 
 if __name__ == "__main__":
-    ISIN = "US0378331005"
-    company_details = get_esg_report_url(ISIN)
+    # ISIN = "US0378331005"
+    ticker = "AAPL"
+    company_details = get_esg_report_url(ticker)
     logger.info(company_details.esg_report_url)
