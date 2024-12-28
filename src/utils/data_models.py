@@ -1,3 +1,5 @@
+# NOTE - data model not being used currently, leaving in codebase for future reference if needed
+
 from typing import Union
 
 from pydantic import BaseModel, Field

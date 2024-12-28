@@ -4,6 +4,7 @@ googlesearch-python
 python-dotenv
 loguru
 pydantic
+requests
 
 # dev requirements
 pre-commit
