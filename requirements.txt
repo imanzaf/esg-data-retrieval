@@ -5,6 +5,7 @@ python-dotenv
 loguru
 pydantic
 requests
+flask
 
 # dev requirements
 pre-commit
