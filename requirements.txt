@@ -6,7 +6,6 @@ loguru
 pydantic
 requests
 flask
-urllib
 
 # dev requirements
 pre-commit
