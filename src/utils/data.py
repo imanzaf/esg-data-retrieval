@@ -1,8 +1,9 @@
 import os
 import sys
 import time
-import urllib.request
+import urllib
 from io import BytesIO
+from typing import List
 
 import pandas as pd
 import requests
@@ -82,17 +83,23 @@ def openfigi_post_request(data):
         return None
 
 
-def download_pdf_from_url(url: str, root_path: str):
+def download_pdf_from_urls(urls: List[str], root_path: str):
     """
-    Function to download a PDF file from a URL.
+    Function to download a PDF file from a URL. Breaks on the first successful download.
 
     Args:
-        url (str): The URL of the PDF file to download
+        urls (List[str]): List of URLs to try to download in pdf format.
     """
-    try:
-        # isolate PDF filename from URL
-        pdf_file_name = os.path.basename(url)
-        urllib.request.urlretrieve(url, os.path.join(root_path, pdf_file_name))
-    except Exception as e:
-        logger.error(f"Uh oh! Could not download {pdf_file_name}: {e}")
-        return None
+    for url in urls:
+        try:
+            # isolate PDF filename from URL
+            pdf_file_name = (
+                os.path.basename(url) + ".pdf"
+                if not url.endswith(".pdf")
+                else os.path.basename(url)
+            )
+            urllib.request.urlretrieve(url, os.path.join(root_path, pdf_file_name))
+            break
+        except Exception as e:
+            logger.error(f"Uh oh! Could not download {url}: {e}")
+            continue
