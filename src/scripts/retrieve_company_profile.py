@@ -10,6 +10,7 @@ load_dotenv()
 sys.path.append(os.getenv("ROOT_DIR"))
 
 from src.find.company_profile import CompanyProfile  # noqa: E402
+from src.utils.data import download_pdf_from_url  # noqa: E402
 
 # temporarily hardcoding variables here
 # TODO - switch to retrieve from inputs to flask app
@@ -26,7 +27,13 @@ if __name__ == "__main__":
     # save to df
     # TODO - update implementation for scalability once database is decided on
     logger.info("Saving to database...")
-    with open(f"{ROOT_DATA_DIR}/data/{company.ticker}.json", "w") as f:
+    root_save_dir = f"{ROOT_DATA_DIR}/data/{company.ticker}"
+    # create directory if it doesn't exist
+    os.makedirs(root_save_dir, exist_ok=True)
+    # save company details to json
+    with open(f"{root_save_dir}/{company.ticker}.json", "w") as f:
         json.dump(company.__dict__, f, indent=4)
+    # download esg report
+    download_pdf_from_url(company.esg_report_url, root_save_dir)
 
     logger.info("Done!")
