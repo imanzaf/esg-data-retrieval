@@ -1,6 +1,9 @@
 {
     "isin": "US0378331005",
-    "ticker": "AAPL",
     "name": "APPLE INC",
-    "esg_report_url": "https://www.apple.com/environment/pdf/Apple_Environmental_Progress_Report_2024.pdf"
+    "ticker": "AAPL",
+    "description": "AAPL",
+    "esg_report_urls": {
+        "0": "https://www.apple.com/environment/pdf/Apple_Environmental_Progress_Report_2024.pdf"
+    }
 }
