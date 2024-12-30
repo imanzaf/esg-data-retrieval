@@ -1,3 +1,8 @@
+"""
+KNOWN ISSUE: user could input partially correct company name or name could be mistaken for ticker if only a single word.
+TODO - add exception handling where this occurs and try searching for the report directly with whatever the identifier input was.
+"""
+
 import datetime as dt
 import os
 import sys

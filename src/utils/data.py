@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import urllib.request
 from io import BytesIO
 
 import pandas as pd
@@ -81,28 +82,17 @@ def openfigi_post_request(data):
         return None
 
 
-def download_pdf_from_url(url: str, root_path: str, write=True):
+def download_pdf_from_url(url: str, root_path: str):
     """
     Function to download a PDF file from a URL.
 
     Args:
         url (str): The URL of the PDF file to download
-        write (bool): Whether to write the PDF file to disk (default: True)
-
-    Returns:
-        response.content: The content of the PDF file
     """
-    response = requests.get(url)
-    # isolate PDF filename from URL
-    pdf_file_name = os.path.basename(url)
-    if response.status_code == 200:
-        # Save in current working directory
-        filepath = os.path.join(root_path, pdf_file_name)
-        if write:
-            with open(filepath, "wb") as pdf_object:
-                pdf_object.write(response.content)
-        # return response content
-        return response.content
-    else:
-        logger.debug(f"HTTP response status code: {response.status_code}")
-        logger.error(f"Uh oh! Could not download {pdf_file_name},")
+    try:
+        # isolate PDF filename from URL
+        pdf_file_name = os.path.basename(url)
+        urllib.request.urlretrieve(url, os.path.join(root_path, pdf_file_name))
+    except Exception as e:
+        logger.error(f"Uh oh! Could not download {pdf_file_name}: {e}")
+        return None

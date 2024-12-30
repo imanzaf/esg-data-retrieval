@@ -16,7 +16,7 @@ from src.utils.data import download_pdf_from_url  # noqa: E402
 # TODO - switch to retrieve from inputs to flask app
 
 ROOT_DATA_DIR = os.getenv("ROOT_DIR")
-COMPANY_IDENTIFIER = "US0378331005"
+COMPANY_IDENTIFIER = "US0378331005"  # NVDA
 
 if __name__ == "__main__":
 
