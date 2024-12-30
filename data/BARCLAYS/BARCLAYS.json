@@ -1,0 +1,10 @@
+{
+    "isin": null,
+    "name": "Barclays",
+    "ticker": null,
+    "description": null,
+    "esg_report_urls": {
+        "1": "https://home.barclays/content/dam/home-barclays/documents/citizenship/ESG/2024/TCFD%20BISL%20report%202024.pdf",
+        "2": "https://investorcloud.s3.amazonaws.com/nemak/Presentaciones/2024_Barclays_ESG_Conference_Presentation.pdf"
+    }
+}
