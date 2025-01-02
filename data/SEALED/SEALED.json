@@ -1,0 +1,11 @@
+{
+    "isin": null,
+    "name": "Sealed Air",
+    "ticker": null,
+    "description": null,
+    "esg_report_urls": {
+        "0": "https://www.sealedair.com/content/dam/marketing-/global-brand/sustainability/see-impact-report.pdf",
+        "1": "https://www.sealedair.com/content/dam/marketing-/global-brand/sustainability/2024-sustainability-guide/see-cdp-climate-2023.pdf",
+        "2": "https://api.environdec.com/api/v1/EPDLibrary/Files/6419aba4-a65d-4bb1-0add-08dc685f3598/Data"
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "isin": null,
+    "name": "SPAR",
+    "ticker": null,
+    "description": null,
+    "esg_report_urls": {
+        "2": "https://www.spar.at/content/dam/spardam/at/spar-website/nachhaltigkeit/nachhaltigkeitsbericht/sustainability-report-2022-spar-holding-ag.pdf",
+        "0": "https://thespargroup.com/pdf/Environmental_and_Social_Report_2023.pdf",
+        "1": "https://thespargroup.com/wp-content/uploads/2023/12/SPAR_IAR_2023_Interactive.pdf"
+    }
+}
