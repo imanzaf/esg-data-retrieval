@@ -71,6 +71,7 @@ def count_keywords(url):
     return sum(keyword.lower() in url.lower() for keyword in keywords)
 
 
+
 def update_esg_urls_order(company_profile):
 
     sorted_urls = sorted(

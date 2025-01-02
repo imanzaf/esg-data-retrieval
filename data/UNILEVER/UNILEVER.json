@@ -1,9 +1,11 @@
 {
     "isin": null,
-    "name": "Unilever",
+    "name": "unilever",
     "ticker": null,
     "description": null,
     "esg_report_urls": {
-        "1": "https://www.unilever.com/files/unilever-sustainable-agricultural-principles-2024.pdf"
+        "0": "https://www.unilever.com/files/8b5df5f6-cb90-40fd-9691-38d06905d81d/unilever-climate-transition-action-plan-updated-2024.pdf",
+        "1": "https://www.unilever.com/files/unilever-climate-policy-engagement-review.pdf",
+        "2": "https://www.unilever.com/files/8f9a3825-2101-411f-9a31-7e6f176393a4/the-unilever-compass.pdf"
     }
 }
