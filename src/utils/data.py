@@ -59,6 +59,7 @@ def count_keywords(url):
         "esg",
         "csr",
         "sustainability",
+        "climate"
         "emission",
         "environment"
         "scope1",
