@@ -6,7 +6,6 @@ import sys
 import googlesearch as gs
 from dotenv import load_dotenv
 from loguru import logger
-
 load_dotenv()
 sys.path.append(os.getenv("ROOT_DIR"))
 
