@@ -3,16 +3,15 @@
 import datetime as dt
 import os
 import sys
-
 import googlesearch as gs
 from dotenv import load_dotenv
 from loguru import logger
 
 load_dotenv()
-
 sys.path.append(os.getenv("ROOT_DIR"))
 
-from src.utils.data import openfigi_post_request  # noqa: E402
+from src.utils.data import openfigi_post_request
+from src.utils.data import update_esg_urls_order# noqa: E402
 
 
 class CompanyProfile:
@@ -120,7 +119,7 @@ class CompanyProfile:
 
         if not self.esg_report_urls:
             logger.warning(f"No ESG report found for {self.name}")
-
+        update_esg_urls_order(self) # Invoke function to get proper order of keywords
         logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
 
 

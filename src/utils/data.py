@@ -1,3 +1,4 @@
+import datetime as dt
 import os
 import sys
 import time
@@ -9,7 +10,6 @@ import pandas as pd
 import requests
 from dotenv import load_dotenv
 from loguru import logger
-
 load_dotenv()
 
 sys.path.append(os.getenv("ROOT_DIR"))
@@ -50,6 +50,37 @@ def get_msci_index_df(write=False):
     # Select the first two columns (Ticker and Name)
     df_filtered = df_filtered[["Ticker", "Name"]]
     return df_filtered
+
+
+def count_keywords(url):
+    keywords = [
+        str(dt.datetime.now().year),
+        str(dt.datetime.now().year - 1),
+        "esg",
+        "csr",
+        "sustainability",
+        "emission",
+        "environment"
+        "scope1",
+        "scope2",
+        "scope",
+        "net zero",
+        "report",
+        "statement"
+    ]
+    return sum(keyword.lower() in url.lower() for keyword in keywords)
+
+
+def update_esg_urls_order(company_profile):
+
+    sorted_urls = sorted(
+        company_profile.esg_report_urls.items(),
+        key=lambda item: count_keywords(item[1]),
+        reverse=True
+    )
+
+    # Update the esg_report_urls with the sorted result
+    company_profile.esg_report_urls = dict(sorted_urls)
 
 
 def openfigi_post_request(data):
