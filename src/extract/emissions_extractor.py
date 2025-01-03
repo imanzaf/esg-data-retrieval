@@ -9,33 +9,31 @@ Simple Emissions Data Extraction
 Requires environment variable:
   - LLAMA_API_KEY
 Usage:
-  python src/scripts/retrieve_emissions_llama_parse.py <company_name> <sustainability_report_url>
+  python src/extract/emissions_extractor.py <company_name> <sustainability_report_url>
 
   Example:
-  python src/scripts/retrieve_emissions_llama_parse.py "NVIDIA CORP" "https://images.nvidia.com/aem-dam/Solutions/documents/FY2024-NVIDIA-Corporate-Sustainability-Report.pdf"
-  python src/scripts/retrieve_emissions_llama_parse.py "MICROSOFT CORP" "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lmju"
-  python src/scripts/retrieve_emissions_llama_parse.py "AMAZON COM INC" "https://sustainability.aboutamazon.com/2023-amazon-sustainability-report.pdf"
-  python src/scripts/retrieve_emissions_llama_parse.py "META PLATFORMS INC CLASS A" "https://sustainability.atmeta.com/wp-content/uploads/2024/08/Meta-2024-Sustainability-Report.pdf"
-  python src/scripts/retrieve_emissions_llama_parse.py "ALPHABET INC CLASS A" "https://www.smartenergydecisions.com/upload/research_+_reports/google-2024-environmental-report.pdf"
-  python src/scripts/retrieve_emissions_llama_parse.py "APPLE INC" "https://www.apple.com/environment/pdf/Apple_Environmental_Progress_Report_2024.pdf"
+  python src/extract/emissions_extractor.py "NVIDIA CORP" "https://images.nvidia.com/aem-dam/Solutions/documents/FY2024-NVIDIA-Corporate-Sustainability-Report.pdf"
+  python src/extract/emissions_extractor.py "MICROSOFT CORP" "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lmju"
+  python src/extract/emissions_extractor.py "AMAZON COM INC" "https://sustainability.aboutamazon.com/2023-amazon-sustainability-report.pdf"
+  python src/extract/emissions_extractor.py "META PLATFORMS INC CLASS A" "https://sustainability.atmeta.com/wp-content/uploads/2024/08/Meta-2024-Sustainability-Report.pdf"
+  python src/extract/emissions_extractor.py "ALPHABET INC CLASS A" "https://www.smartenergydecisions.com/upload/research_+_reports/google-2024-environmental-report.pdf"
+  python src/extract/emissions_extractor.py "APPLE INC" "https://www.apple.com/environment/pdf/Apple_Environmental_Progress_Report_2024.pdf"
 """
 
-
-
-import sys
+import json
 import os
 import re
-import json
+import sys
 import tempfile
 from datetime import datetime
 from io import BytesIO
 
-import requests
-import PyPDF2
 import pandas as pd
+import PyPDF2
+import requests
 from dotenv import load_dotenv
-from loguru import logger
 from llama_parse import LlamaParse
+from loguru import logger
 
 # Load environment variables
 load_dotenv()
@@ -53,11 +51,15 @@ class EmissionsDataExtractor:
         self.api_key = llama_api_key
 
         # Regex patterns for identifying relevant pages
-        self.pattern_scope1 = re.compile(r"\b(scope\s*1|scope\s*i|scope\s*one)\b", re.IGNORECASE)
-        self.pattern_scope2 = re.compile(r"\b(scope\s*2|scope\s*ii|scope\s*two)\b", re.IGNORECASE)
+        self.pattern_scope1 = re.compile(
+            r"\b(scope\s*1|scope\s*i|scope\s*one)\b", re.IGNORECASE
+        )
+        self.pattern_scope2 = re.compile(
+            r"\b(scope\s*2|scope\s*ii|scope\s*two)\b", re.IGNORECASE
+        )
         self.patterns_year = re.compile(
             r"\b(?:FY|FISCAL\s*YEAR)?\s*(\d{2}|20\d{2})(?:[-–]\d{2}|\s)?\b",
-            re.IGNORECASE
+            re.IGNORECASE,
         )
         self.units_pattern = re.compile(
             r"(?:\b(?:\d+(?:,\d{3})*(?:\.\d+)?|million|billion|thousand)?\s*)?"
@@ -65,7 +67,7 @@ class EmissionsDataExtractor:
             r"|mtco2e|mtco₂e|ktco2e|ktco₂e"
             r"|mt|kt"
             r"|tons?|tonnes?|metric\s*tons?)",
-            re.IGNORECASE
+            re.IGNORECASE,
         )
 
     def process_company(self, company_name: str, sustainability_url: str):
@@ -87,7 +89,9 @@ class EmissionsDataExtractor:
         # 3) Parse the relevant pages with LlamaParse
         page_indices_str = ",".join(map(str, relevant_pages))
         pdf_file.seek(0)  # Reset pointer
-        emissions_data, documents = self.extract_emissions_data(pdf_file, page_indices_str, company_name)
+        emissions_data, documents = self.extract_emissions_data(
+            pdf_file, page_indices_str, company_name
+        )
 
         if not emissions_data:
             logger.warning(f"Parsing returned no data for {company_name}")
@@ -123,14 +127,18 @@ class EmissionsDataExtractor:
             session.mount("https://", adapter)
 
             headers = {
-                "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-                               " AppleWebKit/537.36 (KHTML, like Gecko) "
-                               "Chrome/111.0.0.0 Safari/537.36"),
+                "User-Agent": (
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                    " AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/111.0.0.0 Safari/537.36"
+                ),
                 "Accept": "application/pdf,*/*",
                 "Accept-Encoding": "gzip, deflate, br",
                 "Accept-Language": "en-US,en;q=0.9",
             }
-            response = session.get(url, timeout=30, headers=headers, allow_redirects=True)
+            response = session.get(
+                url, timeout=30, headers=headers, allow_redirects=True
+            )
             response.raise_for_status()
 
             return BytesIO(response.content)
@@ -148,10 +156,12 @@ class EmissionsDataExtractor:
                 page_text = reader.pages[page_index].extract_text() or ""
                 text_lower = page_text.lower()
 
-                if (self.pattern_scope1.search(text_lower)
+                if (
+                    self.pattern_scope1.search(text_lower)
                     and self.pattern_scope2.search(text_lower)
                     and self.patterns_year.search(text_lower)
-                    and self.units_pattern.search(text_lower)):
+                    and self.units_pattern.search(text_lower)
+                ):
                     relevant_pages.append(page_index)
                     logger.debug(f"Page {page_index} relevant.")
             return sorted(set(relevant_pages))
@@ -192,15 +202,15 @@ class EmissionsDataExtractor:
                   "scope2_location": {"year": [value, unit]}
                 }
                 """,
-                is_formatting_instruction=True
+                is_formatting_instruction=True,
             )
 
             documents = parser.load_data(
                 temp_path,
                 extra_info={
                     "file_name": f"{company_name}.pdf",
-                    "processed_date": datetime.now().isoformat()
-                }
+                    "processed_date": datetime.now().isoformat(),
+                },
             )
             os.unlink(temp_path)  # clean up
 
@@ -214,7 +224,12 @@ class EmissionsDataExtractor:
     def _combine_document_data(self, documents: list) -> dict:
         best_data = None
         max_points = 0
-        code_fence_pattern = re.compile(r"```json\s*(.*?)```", re.DOTALL | re.IGNORECASE)
+        code_fence_pattern = re.compile(
+            r"```json\s*(.*?)```", re.DOTALL | re.IGNORECASE
+        )
+        year_pattern = re.compile(
+            r"^(?:FY)?\d{2,4}$"
+        )  # Matches FY20, 20, 2020, 1980, etc.
 
         for doc in documents:
             content = doc.get_content()
@@ -229,17 +244,33 @@ class EmissionsDataExtractor:
                     logger.error(f"Failed to parse JSON block: {exc}")
                     continue
 
-                # Improved scoring system
+                # Skip if any keys contain non-year data
+                is_year_based = True
+                for scope_key in ["scope1", "scope2_market", "scope2_location"]:
+                    scope_dict = data.get(scope_key, {})
+                    if isinstance(scope_dict, dict):
+                        for year in scope_dict.keys():
+                            if not year_pattern.match(str(year)):
+                                is_year_based = False
+                                break
+                    if not is_year_based:
+                        break
+
+                if not is_year_based:
+                    continue
+
+                # Score the data
                 current_points = 0
                 for scope_key in ["scope1", "scope2_market", "scope2_location"]:
                     scope_dict = data.get(scope_key, {})
                     if isinstance(scope_dict, dict):
                         for year_data in scope_dict.values():
-                            # Properly check if it's a valid [value, unit] pair
-                            if (isinstance(year_data, list) and 
-                                len(year_data) == 2 and 
-                                year_data[0] is not None and 
-                                year_data[1] is not None):
+                            if (
+                                isinstance(year_data, list)
+                                and len(year_data) == 2
+                                and year_data[0] is not None
+                                and year_data[1] is not None
+                            ):
                                 current_points += 1
 
                 if current_points > max_points:
@@ -248,11 +279,7 @@ class EmissionsDataExtractor:
                     logger.debug(f"New best data found with {current_points} points")
 
         if not best_data:
-            return {
-                "scope1": {},
-                "scope2_market": {},
-                "scope2_location": {}
-            }
+            return {"scope1": {}, "scope2_market": {}, "scope2_location": {}}
         return best_data
 
     def update_csv(self, company_name: str, emissions_data: dict, csv_path: str):
@@ -265,7 +292,9 @@ class EmissionsDataExtractor:
 
         s1_dict = emissions_data.get("scope1", {})
         s2m_dict = emissions_data.get("scope2_market", {})
-        s2l_dict = emissions_data.get("scope2_location", {})
+        s2l_dict = (
+            emissions_data.get("scope2_location", {}) or {}
+        )  # Convert None to empty dict
 
         # Gather all years
         all_years = set(s1_dict.keys()) | set(s2m_dict.keys()) | set(s2l_dict.keys())
@@ -283,16 +312,18 @@ class EmissionsDataExtractor:
             if not isinstance(s2l, list) or len(s2l) != 2:
                 s2l = [None, None]
 
-            rows.append({
-                "company": company_name,
-                "year": year,
-                "scope1_value": s1[0],
-                "scope1_unit": s1[1],
-                "scope2_location_value": s2l[0],
-                "scope2_location_unit": s2l[1],
-                "scope2_market_value": s2m[0],
-                "scope2_market_unit": s2m[1],
-            })
+            rows.append(
+                {
+                    "company": company_name,
+                    "year": year,
+                    "scope1_value": s1[0],
+                    "scope1_unit": s1[1],
+                    "scope2_location_value": s2l[0],
+                    "scope2_location_unit": s2l[1],
+                    "scope2_market_value": s2m[0],
+                    "scope2_market_unit": s2m[1],
+                }
+            )
 
         new_df = pd.DataFrame(rows)
         if os.path.exists(csv_path):
@@ -310,7 +341,9 @@ if __name__ == "__main__":
         raise ValueError("Missing LLAMA_API_KEY in environment variables.")
 
     if len(sys.argv) < 3:
-        print("Usage: python src/scripts/retrieve_emissions_llama_parse.py <company_name> <sustainability_report_url>")
+        print(
+            "Usage: python src/scripts/retrieve_emissions_llama_parse.py <company_name> <sustainability_report_url>"
+        )
         sys.exit(1)
 
     company_arg = sys.argv[1]

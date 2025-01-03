@@ -8,6 +8,7 @@ requests
 flask
 PyPDF2
 llama-parse
+pycryptodome
 
 # dev requirements
 pre-commit
