@@ -1,4 +1,26 @@
-"""Emissions data extraction from sustainability reports."""
+"""
+Simple Emissions Data Extraction
+-------------------------------------
+1) Download the PDF from the URL.
+2) Parse only relevant pages using LlamaParse.
+3) Write raw parse text to `data/parsed_outputs/{company}_raw_parsed.md`.
+4) Choose the best JSON block and update the CSV (`company_emissions.csv`).
+
+Requires environment variable:
+  - LLAMA_API_KEY
+Usage:
+  python src/scripts/retrieve_emissions_llama_parse.py <company_name> <sustainability_report_url>
+
+  Example:
+  python src/scripts/retrieve_emissions_llama_parse.py "NVIDIA CORP" "https://images.nvidia.com/aem-dam/Solutions/documents/FY2024-NVIDIA-Corporate-Sustainability-Report.pdf"
+  python src/scripts/retrieve_emissions_llama_parse.py "MICROSOFT CORP" "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lmju"
+  python src/scripts/retrieve_emissions_llama_parse.py "AMAZON COM INC" "https://sustainability.aboutamazon.com/2023-amazon-sustainability-report.pdf"
+  python src/scripts/retrieve_emissions_llama_parse.py "META PLATFORMS INC CLASS A" "https://sustainability.atmeta.com/wp-content/uploads/2024/08/Meta-2024-Sustainability-Report.pdf"
+  python src/scripts/retrieve_emissions_llama_parse.py "ALPHABET INC CLASS A" "https://www.smartenergydecisions.com/upload/research_+_reports/google-2024-environmental-report.pdf"
+  python src/scripts/retrieve_emissions_llama_parse.py "APPLE INC" "https://www.apple.com/environment/pdf/Apple_Environmental_Progress_Report_2024.pdf"
+"""
+
+
 
 import sys
 import os
@@ -281,3 +303,18 @@ class EmissionsDataExtractor:
             new_df.to_csv(csv_path, index=False)
 
         logger.info(f"Appended new results to {csv_path}")
+
+
+if __name__ == "__main__":
+    if not LLAMA_API_KEY:
+        raise ValueError("Missing LLAMA_API_KEY in environment variables.")
+
+    if len(sys.argv) < 3:
+        print("Usage: python src/scripts/retrieve_emissions_llama_parse.py <company_name> <sustainability_report_url>")
+        sys.exit(1)
+
+    company_arg = sys.argv[1]
+    pdf_url_arg = sys.argv[2]
+
+    extractor = EmissionsDataExtractor(LLAMA_API_KEY)
+    extractor.process_company(company_arg, pdf_url_arg)
