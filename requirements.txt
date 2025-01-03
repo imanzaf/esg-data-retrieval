@@ -6,6 +6,8 @@ loguru
 pydantic
 requests
 flask
+PyPDF2
+llama-parse
 
 # dev requirements
 pre-commit
