@@ -13,7 +13,7 @@ from src.utils.data import download_pdf_from_urls  # noqa: E402
 # temporarily hardcoding variables here
 # TODO - switch to retrieve from inputs to flask app
 ROOT_DATA_DIR = os.getenv("ROOT_DIR")
-COMPANY_IDENTIFIER = "US67066G1040"  # NVDA
+COMPANY_IDENTIFIER = "Microsoft"  # NVDA
 
 if __name__ == "__main__":
     # get the ticker symbol and company name from ISIN

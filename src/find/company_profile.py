@@ -105,9 +105,9 @@ class CompanyProfile:
 
             # append result to respective dictionary if it is from current year
             if current_year in result.title:
-                primary_results[idx] = result.url
+                primary_results[idx] = result #Here I append the whole search result instead of the url only, this allows to sort by metadata
             else:
-                secondary_results[idx] = result.url
+                secondary_results[idx] = result  #Here I append the whole search result instead of the url only, this allows to sort by metadata
 
         # get all results from current year
         if primary_results:
@@ -129,3 +129,4 @@ if __name__ == "__main__":
     user_input = input("Enter ISIN, Ticker, or Company Name: ").strip()
     company = CompanyProfile(user_input)
     logger.info(f"Company Name: {company.name}, Ticker: {company.ticker}")
+    print(company.esg_report_urls[0])

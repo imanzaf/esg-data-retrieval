@@ -4,6 +4,8 @@
     "ticker": null,
     "description": null,
     "esg_report_urls": {
-        "0": "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lmju"
+        "0": "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lmju",
+        "1": "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lVuo",
+        "2": "https://news.microsoft.com/wp-content/uploads/prod/sites/44/2023/06/Microsoft-China-ESG-Summary-ENG_with-footnotes_CELA-20230612-1.pdf"
     }
 }

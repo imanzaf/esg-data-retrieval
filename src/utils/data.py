@@ -52,35 +52,83 @@ def get_msci_index_df(write=False):
     return df_filtered
 
 
-def count_keywords(url):
+def count_keywords(url, isTitle):
+    current_year = str(dt.datetime.now().year)
+    previous_year = str(dt.datetime.now().year - 1)
+
+    # Keywords with regular weight
     keywords = [
-        str(dt.datetime.now().year),
-        str(dt.datetime.now().year - 1),
         "esg",
         "csr",
         "sustainability",
         "emission",
-        "environment"
-        "scope1",
-        "scope2",
+        "environment",
+        "scope 1",
+        "scope 2",
         "scope",
-        "net zero",
         "report",
-        "statement"
+        "statement",
+        "policy",
+        "progress"
+        "fact"
+        "sheet"
     ]
-    return sum(keyword.lower() in url.lower() for keyword in keywords)
+    if isTitle:
+        """
+        Count the number of predefined keywords in the given URL, with double weight
+        for the current year and the previous year keywords.
+        """
+        # Double weight for current year and previous year
+        count = 2 * (current_year in url.lower()) + 2 * (previous_year in url.lower())
+        # Add counts for the other keywords
+        count += sum(keyword.lower() in url.lower() for keyword in keywords)
+    else:
+        count = current_year in url.lower() + previous_year in url.lower()
+        # Add counts for the other keywords
+        count += sum(keyword.lower() in url.lower() for keyword in keywords)
+
+    return count
 
 
 def update_esg_urls_order(company_profile):
 
+    #If any title has current year or previous year, sort by title, otherwise by description.
+
+
     sorted_urls = sorted(
         company_profile.esg_report_urls.items(),
-        key=lambda item: count_keywords(item[1]),
+        key=lambda item: count_keywords(item[1].title, True),
         reverse=True
-    )
+        )
+    current_year = str(dt.datetime.now().year)
+    previous_year = str(dt.datetime.now().year - 1)
 
-    # Update the esg_report_urls with the sorted result
-    company_profile.esg_report_urls = dict(sorted_urls)
+    first_item_title = sorted_urls[0][1].title.lower()
+    # Check if the first item's title contains the current or previous year
+    has_year = current_year in first_item_title or previous_year in first_item_title
+
+    if not has_year:
+        sorted_urls = sorted(
+            company_profile.esg_report_urls.items(),
+            key=lambda item: count_keywords(item[1].description, False),
+            reverse=True
+        )
+        current_year = str(dt.datetime.now().year)
+        previous_year = str(dt.datetime.now().year - 1)
+        first_item_description = sorted_urls[0][1].description.lower()
+        # Check if the first item's title contains the current or previous year
+        has_year = current_year in first_item_description or previous_year in first_item_description
+
+    if not has_year:
+        sorted_urls = sorted(
+            company_profile.esg_report_urls.items(),
+            key=lambda item: count_keywords(item[1].url, False),
+            reverse=True
+        )
+    # Create a new dictionary where the values are just the URL attribute, and are re-indexed according to their new order
+    updated_urls = {index: value.url for index, (_, value) in enumerate(sorted_urls)}
+    # Update the esg_report_urls in the company_profile
+    company_profile.esg_report_urls = updated_urls
 
 
 def openfigi_post_request(data):
