@@ -122,6 +122,41 @@ class CompanyProfile:
             logger.warning(f"No ESG report found for {self.name}")
 
         logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
+        '''   def _get_esg_report_urls(self):
+        current_year = str(dt.datetime.now().year)
+        keywords = ["ESG report", "CSR report", "sustainability report", "carbon emissions","environmental report","sustainability","corporate social responsibility","non financial report"]
+
+        query = f"{self.name} {current_year} ({' OR '.join(keywords)}) filetype:pdf"
+        try:
+            search_results = gs.search(query, num_results=5, advanced=True)
+        except Exception as e:
+            logger.error(f"Error during Google search: {e}")
+            return
+
+        primary_results = {}
+        secondary_results = {}
+
+        for idx, result in enumerate(search_results):
+            logger.debug(f"Result {idx}: {result.title} - {result.url}")
+            if current_year in result.title or current_year in result.snippet:
+                primary_results[idx] = result
+            else:
+                secondary_results[idx] = result
+
+        if primary_results:
+            primary_results = rank_primary_sources(primary_results, keywords)
+
+        self.esg_report_urls.update({k: v.url for k, v in primary_results.items()} or {k: v.url for k, v in secondary_results.items()})
+
+        if not self.esg_report_urls:
+            logger.warning(f"No ESG report found for {self.name}")
+        else:
+            self.download_pdf_urls()
+
+        logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
+        def download_pdf_urls(self):
+        for idx, url in self.esg_report_urls.items():
+            logger.info(f"Downloading PDF for {self.name} from {url}")'''
 
 
 # Main script to fetch company information
