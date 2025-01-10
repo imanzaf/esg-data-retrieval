@@ -9,6 +9,10 @@ import pandas as pd
 import requests
 from dotenv import load_dotenv
 from loguru import logger
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+# from selenium.webdriver.common.keys import Keys
 
 load_dotenv()
 
@@ -19,6 +23,8 @@ MSCI_FUND_URL = os.getenv("MSCI_FUND_URL")
 # OPENFIGI variables
 OPENFIGI_API_KEY = os.getenv("OPENFIGI_API_KEY")
 OPENFIGI_URL = os.getenv("OPENFIGI_URL")
+# Base URL for sustainabilityreports.com
+SUST_REPORTS_URL = os.getenv("SUSTAINABILITY_REPORTS_BASE_URL")
 
 
 def get_msci_index_df(write=False):
@@ -103,3 +109,31 @@ def download_pdf_from_urls(urls: List[str], root_path: str):
         except Exception as e:
             logger.error(f"Uh oh! Could not download {url}: {e}")
             continue
+
+
+# %%
+# from selenium import webdriver
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.common.keys import Keys
+
+
+def sustainability_reports_api_request(company_name: str):
+    request_url = (
+        f"https://sustainabilityreports.com/company/{company_name.replace(" ", "-")}/"
+    )
+    driver = webdriver.Chrome()
+    driver.get(request_url)
+    download_button = driver.find_element(By.LINK_TEXT, "DOWNLOAD PDF")
+    download_button.click()
+    checkbox_button = driver.find_element(
+        By.CLASS_NAME, "wpdm-checkbox terms_checkbox terms_checkbox_247360"
+    )
+    checkbox_button.click()
+    print(driver.current_url())
+
+    # form_link = driver.get(checkbox_link).find_element(By.TAG_NAME, 'form')
+
+
+sustainability_reports_api_request("nvidia-corp")
+
+# %%
