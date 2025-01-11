@@ -10,6 +10,7 @@ import pandas as pd
 import requests
 from dotenv import load_dotenv
 from loguru import logger
+
 load_dotenv()
 
 sys.path.append(os.getenv("ROOT_DIR"))
@@ -69,9 +70,7 @@ def count_keywords(url, isTitle):
         "report",
         "statement",
         "policy",
-        "progress"
-        "fact"
-        "sheet"
+        "progress" "fact" "sheet",
     ]
     if isTitle:
         """
@@ -92,14 +91,13 @@ def count_keywords(url, isTitle):
 
 def update_esg_urls_order(company_profile):
 
-    #If any title has current year or previous year, sort by title, otherwise by description.
-
+    # If any title has current year or previous year, sort by title, otherwise by description.
 
     sorted_urls = sorted(
         company_profile.esg_report_urls.items(),
         key=lambda item: count_keywords(item[1].title, True),
-        reverse=True
-        )
+        reverse=True,
+    )
     current_year = str(dt.datetime.now().year)
     previous_year = str(dt.datetime.now().year - 1)
 
@@ -111,19 +109,22 @@ def update_esg_urls_order(company_profile):
         sorted_urls = sorted(
             company_profile.esg_report_urls.items(),
             key=lambda item: count_keywords(item[1].description, False),
-            reverse=True
+            reverse=True,
         )
         current_year = str(dt.datetime.now().year)
         previous_year = str(dt.datetime.now().year - 1)
         first_item_description = sorted_urls[0][1].description.lower()
         # Check if the first item's title contains the current or previous year
-        has_year = current_year in first_item_description or previous_year in first_item_description
+        has_year = (
+            current_year in first_item_description
+            or previous_year in first_item_description
+        )
 
     if not has_year:
         sorted_urls = sorted(
             company_profile.esg_report_urls.items(),
             key=lambda item: count_keywords(item[1].url, False),
-            reverse=True
+            reverse=True,
         )
     # Create a new dictionary where the values are just the URL attribute, and are re-indexed according to their new order
     updated_urls = {index: value.url for index, (_, value) in enumerate(sorted_urls)}
