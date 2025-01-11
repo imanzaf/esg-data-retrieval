@@ -126,7 +126,6 @@ class CompanyProfile:
             logger.warning(f"No ESG report found for {self.name}")
         update_esg_urls_order(self)  # Invoke function to get proper order of keywords
         logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
-        
 
 
 # Main script to fetch company information
