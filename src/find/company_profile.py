@@ -122,7 +122,6 @@ class CompanyProfile:
             logger.warning(f"No ESG report found for {self.name}")
 
         logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
-        
 
 
 # Main script to fetch company information
