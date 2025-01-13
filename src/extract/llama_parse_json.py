@@ -1,23 +1,23 @@
 """
-Simple Emissions Data Extraction
+Scope 1 and 2 (location and market based) Emissions Data Extraction
 -------------------------------------
 1) Download the PDF from the URL.
-2) Parse only relevant pages using LlamaParse.
-3) Write raw parse text to `data/parsed_outputs/{company}_raw_parsed.md`.
-4) Choose the best JSON block and update the CSV (`company_emissions.csv`).
+2) Parse relevant pages using LlamaParse, determined by mentions of scope 1, scope 2, years/FY, and units.
+3) LlamaParse outputs a JSON block for each page processed. Write these raw JSON outputs containing scope 1, scope 2 (location and market) with units to `data/parsed_outputs/{company}_raw_parsed.md`.
+4) Implement scoring mechanism to identify the highest quality JSON block to put into csv
 
 Requires environment variable:
   - LLAMA_API_KEY
-Usage:
-  python src/extract/emissions_extractor.py <company_name> <sustainability_report_url>
 
+Usage:
+  python src/extract/llama_parse_json.py <company_name> <sustainability_report_url>
   Example:
-  python src/extract/emissions_extractor.py "NVIDIA CORP" "https://images.nvidia.com/aem-dam/Solutions/documents/FY2024-NVIDIA-Corporate-Sustainability-Report.pdf"
-  python src/extract/emissions_extractor.py "MICROSOFT CORP" "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lmju"
-  python src/extract/emissions_extractor.py "AMAZON COM INC" "https://sustainability.aboutamazon.com/2023-amazon-sustainability-report.pdf"
-  python src/extract/emissions_extractor.py "META PLATFORMS INC CLASS A" "https://sustainability.atmeta.com/wp-content/uploads/2024/08/Meta-2024-Sustainability-Report.pdf"
-  python src/extract/emissions_extractor.py "ALPHABET INC CLASS A" "https://www.smartenergydecisions.com/upload/research_+_reports/google-2024-environmental-report.pdf"
-  python src/extract/emissions_extractor.py "APPLE INC" "https://www.apple.com/environment/pdf/Apple_Environmental_Progress_Report_2024.pdf"
+  python src/extract/llama_parse_json.py "NVIDIA CORP" "https://images.nvidia.com/aem-dam/Solutions/documents/FY2024-NVIDIA-Corporate-Sustainability-Report.pdf"
+  python src/extract/llama_parse_json.py "MICROSOFT CORP" "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lmju"
+  python src/extract/llama_parse_json.py "AMAZON COM INC" "https://sustainability.aboutamazon.com/2023-amazon-sustainability-report.pdf"
+  python src/extract/llama_parse_json.py "META PLATFORMS INC CLASS A" "https://sustainability.atmeta.com/wp-content/uploads/2024/08/Meta-2024-Sustainability-Report.pdf"
+  python src/extract/llama_parse_json.py "ALPHABET INC CLASS A" "https://www.smartenergydecisions.com/upload/research_+_reports/google-2024-environmental-report.pdf"
+  python src/extract/llama_parse_json.py "APPLE INC" "https://www.apple.com/environment/pdf/Apple_Environmental_Progress_Report_2024.pdf"
 """
 
 import json
@@ -35,13 +35,12 @@ from dotenv import load_dotenv
 from llama_parse import LlamaParse
 from loguru import logger
 
-# Load environment variables
 load_dotenv()
 LLAMA_API_KEY = os.getenv("LLAMA_API_KEY")
 
 # Default output paths
 OUTPUT_CSV = "data/company_emissions.csv"
-PARSED_OUTPUTS_DIR = "data/parsed_outputs"
+LLAMA_JSON_BLOCKS = "data/llama_json_blocks"
 
 
 class EmissionsDataExtractor:
@@ -71,7 +70,7 @@ class EmissionsDataExtractor:
         )
 
     def process_company(self, company_name: str, sustainability_url: str):
-        """Main entry point: downloads PDF, identifies relevant pages, parses them, saves raw output, updates CSV."""
+        # Main entry point: downloads PDF, identifies relevant pages, parses them, saves raw output, updates CSV.
         logger.info(f"Processing company: {company_name}")
 
         # 1) Download PDF
@@ -80,7 +79,8 @@ class EmissionsDataExtractor:
             logger.error(f"Skipping {company_name} due to download failure.")
             return
 
-        # 2) Identify relevant pages
+        # 2) Identify relevant pages using the patterns we compiled
+        relevant_pages = self.find_relevant_pages(pdf_file)
         relevant_pages = self.find_relevant_pages(pdf_file)
         if not relevant_pages:
             logger.warning(f"No relevant pages found for {company_name}")
@@ -98,9 +98,9 @@ class EmissionsDataExtractor:
             return
 
         # 4) Write raw LlamaParse output for debugging
-        os.makedirs(PARSED_OUTPUTS_DIR, exist_ok=True)
+        os.makedirs(LLAMA_JSON_BLOCKS, exist_ok=True)
         raw_output_file = os.path.join(
-            PARSED_OUTPUTS_DIR, f"{company_name.replace(' ', '_')}_raw_parsed.md"
+            LLAMA_JSON_BLOCKS, f"{company_name.replace(' ', '_')}_raw_parsed.md"
         )
 
         with open(raw_output_file, "w", encoding="utf-8") as f:
@@ -115,9 +115,10 @@ class EmissionsDataExtractor:
 
         logger.info(f"Raw parse saved: {raw_output_file}")
 
-        # 5) Update CSV with new data
+        # 5) Update CSV with extracted data
         self.update_csv(company_name, emissions_data, OUTPUT_CSV)
 
+    # Attempts to download the PDF file from the URL
     def download_pdf(self, url: str, company_name: str) -> BytesIO | None:
         """Download PDF via a browser-like session (3 retries). Returns BytesIO or None on failure."""
         try:
@@ -147,8 +148,8 @@ class EmissionsDataExtractor:
             logger.error(f"Download error for {company_name}: {exc}")
             return None
 
-    def find_relevant_pages(self, pdf_file: BytesIO) -> list[int]:
-        """Return a sorted list of pages referencing Scope 1/2, year, and units."""
+    # Goes through each page in the PDF to see if it references Scope 1/2, year, and units to narrow down the pages we want to send to LlamaParse
+    def find_relevant_pages(self, pdf_file: BytesIO):
         relevant_pages = []
         try:
             reader = PyPDF2.PdfReader(pdf_file, strict=False)
@@ -169,14 +170,12 @@ class EmissionsDataExtractor:
             logger.error(f"Error in find_relevant_pages: {exc}")
             return []
 
+    # Actually runs the LlamaParse logic on the relevant pages, 
+    # and merges JSON blocks to find the best data
     def extract_emissions_data(
         self, pdf_file: BytesIO, page_indices_str: str, company_name: str
     ) -> tuple[dict | None, list]:
-        """
-        1) Write PDF to temp file
-        2) Parse relevant pages with LlamaParse
-        3) Combine their JSON blocks to pick the best
-        """
+    
         try:
             with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
                 temp_file.write(pdf_file.getvalue())
@@ -212,7 +211,8 @@ class EmissionsDataExtractor:
                     "processed_date": datetime.now().isoformat(),
                 },
             )
-            os.unlink(temp_path)  # clean up
+            # Clean up the temp file from the system
+            os.unlink(temp_path)  
 
             final_data = self._combine_document_data(documents)
             return final_data, documents
@@ -221,6 +221,8 @@ class EmissionsDataExtractor:
             logger.error(f"extract_emissions_data error for {company_name}: {exc}")
             return None, []
 
+    # Walks through each LlamaParse "document" output, 
+    # looking for JSON code blocks and scoring them
     def _combine_document_data(self, documents: list) -> dict:
         best_data = None
         max_points = 0
@@ -259,7 +261,7 @@ class EmissionsDataExtractor:
                 if not is_year_based:
                     continue
 
-                # Score the data
+                # Score the data by counting entries with valid numeric value + unit pairs
                 current_points = 0
                 for scope_key in ["scope1", "scope2_market", "scope2_location"]:
                     scope_dict = data.get(scope_key, {})
@@ -282,11 +284,8 @@ class EmissionsDataExtractor:
             return {"scope1": {}, "scope2_market": {}, "scope2_location": {}}
         return best_data
 
+    # Appends emissions data (company, year, scope1_value, scope1_unit, scope2_location_value, scope2_location_unit, scope2_market_value, scope2_market_unit) to CSV
     def update_csv(self, company_name: str, emissions_data: dict, csv_path: str):
-        """
-        Flatten the chosen emissions_data to rows and append to CSV:
-          company, year, scope1_value, scope1_unit, scope2_location_value, scope2_location_unit, scope2_market_value, scope2_market_unit
-        """
         logger.info(f"Updating CSV {csv_path} with data for {company_name}")
         rows = []
 
@@ -294,7 +293,7 @@ class EmissionsDataExtractor:
         s2m_dict = emissions_data.get("scope2_market", {})
         s2l_dict = (
             emissions_data.get("scope2_location", {}) or {}
-        )  # Convert None to empty dict
+        )  
 
         # Gather all years
         all_years = set(s1_dict.keys()) | set(s2m_dict.keys()) | set(s2l_dict.keys())
@@ -335,14 +334,14 @@ class EmissionsDataExtractor:
 
         logger.info(f"Appended new results to {csv_path}")
 
-
+# Main script entry point
 if __name__ == "__main__":
     if not LLAMA_API_KEY:
         raise ValueError("Missing LLAMA_API_KEY in environment variables.")
 
     if len(sys.argv) < 3:
         print(
-            "Usage: python src/scripts/retrieve_emissions_llama_parse.py <company_name> <sustainability_report_url>"
+            "Usage: python src/extract/llama_parse_json.py <company_name> <sustainability_report_url>"
         )
         sys.exit(1)
 

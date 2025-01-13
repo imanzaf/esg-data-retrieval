@@ -9,6 +9,7 @@ flask
 PyPDF2
 llama-parse
 pycryptodome
+openai
 
 # dev requirements
 pre-commit
