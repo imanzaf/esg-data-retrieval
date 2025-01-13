@@ -170,12 +170,12 @@ class EmissionsDataExtractor:
             logger.error(f"Error in find_relevant_pages: {exc}")
             return []
 
-    # Actually runs the LlamaParse logic on the relevant pages, 
+    # Actually runs the LlamaParse logic on the relevant pages,
     # and merges JSON blocks to find the best data
     def extract_emissions_data(
         self, pdf_file: BytesIO, page_indices_str: str, company_name: str
     ) -> tuple[dict | None, list]:
-    
+
         try:
             with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
                 temp_file.write(pdf_file.getvalue())
@@ -212,7 +212,7 @@ class EmissionsDataExtractor:
                 },
             )
             # Clean up the temp file from the system
-            os.unlink(temp_path)  
+            os.unlink(temp_path)
 
             final_data = self._combine_document_data(documents)
             return final_data, documents
@@ -221,7 +221,7 @@ class EmissionsDataExtractor:
             logger.error(f"extract_emissions_data error for {company_name}: {exc}")
             return None, []
 
-    # Walks through each LlamaParse "document" output, 
+    # Walks through each LlamaParse "document" output,
     # looking for JSON code blocks and scoring them
     def _combine_document_data(self, documents: list) -> dict:
         best_data = None
@@ -291,9 +291,7 @@ class EmissionsDataExtractor:
 
         s1_dict = emissions_data.get("scope1", {})
         s2m_dict = emissions_data.get("scope2_market", {})
-        s2l_dict = (
-            emissions_data.get("scope2_location", {}) or {}
-        )  
+        s2l_dict = emissions_data.get("scope2_location", {}) or {}
 
         # Gather all years
         all_years = set(s1_dict.keys()) | set(s2m_dict.keys()) | set(s2l_dict.keys())
@@ -333,6 +331,7 @@ class EmissionsDataExtractor:
             new_df.to_csv(csv_path, index=False)
 
         logger.info(f"Appended new results to {csv_path}")
+
 
 # Main script entry point
 if __name__ == "__main__":
