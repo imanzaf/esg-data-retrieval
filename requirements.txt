@@ -10,6 +10,7 @@ PyPDF2
 llama-parse
 pycryptodome
 openai
+tabula-py
 
 # dev requirements
 pre-commit
