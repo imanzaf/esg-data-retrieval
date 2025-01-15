@@ -154,7 +154,11 @@ class EmissionsDataExtractor:
 
         self.api_key = llama_api_key
         # Simple check: is it a valid DeepSeek key?
-        self.deepseek_api_key = deepseek_api_key if deepseek_api_key and deepseek_api_key.startswith("sk-") else None
+        self.deepseek_api_key = (
+            deepseek_api_key
+            if deepseek_api_key and deepseek_api_key.startswith("sk-")
+            else None
+        )
         self.deepseek_base_url = "https://api.deepseek.com"
         self.parser_choice = parser_choice
 
@@ -225,7 +229,9 @@ class EmissionsDataExtractor:
 
         # 5) Only proceed with DeepSeek if API key is provided and not empty
         if self.deepseek_api_key:
-            logger.info("DeepSeek API key found, proceeding with final table generation")
+            logger.info(
+                "DeepSeek API key found, proceeding with final table generation"
+            )
             final_tables = self.send_to_deepseek(emissions_data)
             if final_tables:
                 tables_file = os.path.join(
@@ -543,10 +549,12 @@ def main():
     # Validate LLAMA_API_KEY (required)
     if not LLAMA_API_KEY:
         raise ValueError("Missing LLAMA_API_KEY in environment variables.")
-    
+
     # DEEPSEEK_API_KEY is optional
     if not DEEPSEEK_API_KEY:
-        logger.warning("No DEEPSEEK_API_KEY found. Will only generate raw parsed tables.")
+        logger.warning(
+            "No DEEPSEEK_API_KEY found. Will only generate raw parsed tables."
+        )
 
     extractor = EmissionsDataExtractor(LLAMA_API_KEY, DEEPSEEK_API_KEY, args.parser)
     extractor.process_company(args.company_name, args.sustainability_url)
