@@ -111,27 +111,27 @@ Usage examples:
     --parser docling
 """
 
+import argparse
 import os
 import re
 import sys
 import tempfile
 from io import BytesIO
-import argparse
 
 import PyPDF2
 import requests
-from dotenv import load_dotenv
-from loguru import logger
-from openai import OpenAI
-
-# LlamaParse import
-from llama_parse import LlamaParse
+from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
+from docling.datamodel.base_models import InputFormat
+from docling.datamodel.pipeline_options import PdfPipelineOptions
 
 # Docling imports (no comments, real usage):
 from docling.document_converter import DocumentConverter, PdfFormatOption
-from docling.datamodel.pipeline_options import PdfPipelineOptions
-from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
-from docling.datamodel.base_models import InputFormat
+from dotenv import load_dotenv
+
+# LlamaParse import
+from llama_parse import LlamaParse
+from loguru import logger
+from openai import OpenAI
 
 load_dotenv()
 LLAMA_API_KEY = os.getenv("LLAMA_API_KEY")
@@ -182,7 +182,9 @@ class EmissionsDataExtractor:
         Main entry point: downloads PDF, identifies relevant pages, parses them,
         and sends to LLM for markdown table generation.
         """
-        logger.info(f"Processing company: {company_name} via parser={self.parser_choice}")
+        logger.info(
+            f"Processing company: {company_name} via parser={self.parser_choice}"
+        )
 
         # 1) Download PDF
         pdf_file = self.download_pdf(sustainability_url, company_name)
@@ -212,7 +214,9 @@ class EmissionsDataExtractor:
             PARSED_OUTPUTS_DIR, f"{company_name.replace(' ', '_')}_raw_parsed.md"
         )
         with open(raw_output_file, "w", encoding="utf-8") as f:
-            f.write(f"# {company_name} - Raw {self.parser_choice.capitalize()} Output\n\n")
+            f.write(
+                f"# {company_name} - Raw {self.parser_choice.capitalize()} Output\n\n"
+            )
             f.write(f"Pages processed: {page_indices_str}\n\n")
             f.write("---\n\n")
             f.write(emissions_data)
@@ -223,7 +227,8 @@ class EmissionsDataExtractor:
             final_tables = self.send_to_deepseek(emissions_data)
             if final_tables:
                 tables_file = os.path.join(
-                    PARSED_OUTPUTS_DIR, f"{company_name.replace(' ', '_')}_final_tables.md"
+                    PARSED_OUTPUTS_DIR,
+                    f"{company_name.replace(' ', '_')}_final_tables.md",
                 )
                 with open(tables_file, "w", encoding="utf-8") as f:
                     f.write(final_tables)
@@ -249,7 +254,9 @@ class EmissionsDataExtractor:
                 "Accept-Encoding": "gzip, deflate, br",
                 "Accept-Language": "en-US,en;q=0.9",
             }
-            response = session.get(url, timeout=30, headers=headers, allow_redirects=True)
+            response = session.get(
+                url, timeout=30, headers=headers, allow_redirects=True
+            )
             response.raise_for_status()
 
             return BytesIO(response.content)
@@ -283,11 +290,11 @@ class EmissionsDataExtractor:
             return []
 
     def extract_emissions_data(
-        self, 
-        pdf_file: BytesIO, 
-        page_indices_str: str, 
+        self,
+        pdf_file: BytesIO,
+        page_indices_str: str,
         company_name: str,
-        relevant_pages: list[int]
+        relevant_pages: list[int],
     ) -> str | None:
         """
         Depending on parser_choice, either LlamaParse or Docling is used,
@@ -299,7 +306,9 @@ class EmissionsDataExtractor:
         else:
             return self.extract_with_docling(pdf_file, company_name, relevant_pages)
 
-    def extract_with_llama(self, pdf_file: BytesIO, page_indices_str: str, company_name: str) -> str | None:
+    def extract_with_llama(
+        self, pdf_file: BytesIO, page_indices_str: str, company_name: str
+    ) -> str | None:
         """
         LlamaParse approach: pass page_indices_str directly to the parser.
         """
@@ -329,7 +338,9 @@ class EmissionsDataExtractor:
                 is_formatting_instruction=False,
             )
 
-            documents = parser.load_data(temp_path, extra_info={"file_name": f"{company_name}.pdf"})
+            documents = parser.load_data(
+                temp_path, extra_info={"file_name": f"{company_name}.pdf"}
+            )
             os.unlink(temp_path)
 
             parsed_content = "\n\n---\n\n".join(
@@ -341,7 +352,9 @@ class EmissionsDataExtractor:
             logger.error(f"extract_with_llama error for {company_name}: {exc}")
             return None
 
-    def extract_with_docling(self, pdf_file: BytesIO, company_name: str, relevant_pages: list[int]) -> str | None:
+    def extract_with_docling(
+        self, pdf_file: BytesIO, company_name: str, relevant_pages: list[int]
+    ) -> str | None:
         """
         Docling approach: create a new subset PDF with only the relevant pages,
         then parse with docling, then return Markdown for the found tables.
@@ -352,7 +365,9 @@ class EmissionsDataExtractor:
                 temp_in.write(pdf_file.getvalue())
                 orig_pdf_path = temp_in.name
 
-            subset_pdf_path = self.make_subset_pdf(orig_pdf_path, relevant_pages, company_name)
+            subset_pdf_path = self.make_subset_pdf(
+                orig_pdf_path, relevant_pages, company_name
+            )
 
             # 2) Use Docling to parse that subset PDF - matching your working code
             pipeline_options = PdfPipelineOptions()
@@ -364,24 +379,24 @@ class EmissionsDataExtractor:
                 format_options={
                     InputFormat.PDF: PdfFormatOption(
                         pipeline_options=pipeline_options,
-                        backend=PyPdfiumDocumentBackend
+                        backend=PyPdfiumDocumentBackend,
                     )
                 }
             )
 
             logger.debug(f"Converting document: {subset_pdf_path}")
             conv_result = doc_converter.convert(subset_pdf_path)
-            
+
             # 3) Export tables - matching your working code's approach
             markdown_chunks = []
             table_count = 0
-            
-            if hasattr(conv_result.document, 'tables'):
+
+            if hasattr(conv_result.document, "tables"):
                 for table in conv_result.document.tables:
                     table_count += 1
                     markdown_chunks.append(table.export_to_markdown())
                     logger.debug(f"Found table {table_count}")
-            
+
             # Clean up temp files
             os.unlink(orig_pdf_path)
             os.unlink(subset_pdf_path)
@@ -397,7 +412,9 @@ class EmissionsDataExtractor:
             logger.exception("Full traceback:")
             return None
 
-    def make_subset_pdf(self, original_pdf_path: str, relevant_pages: list[int], company_name: str) -> str:
+    def make_subset_pdf(
+        self, original_pdf_path: str, relevant_pages: list[int], company_name: str
+    ) -> str:
         """
         Create a new PDF that contains only the pages in relevant_pages (0-based).
         Return the path to the new PDF.
@@ -409,11 +426,15 @@ class EmissionsDataExtractor:
             for page_idx in relevant_pages:
                 writer.add_page(reader.pages[page_idx])
 
-            with tempfile.NamedTemporaryFile(suffix="_subset.pdf", delete=False) as temp_out:
+            with tempfile.NamedTemporaryFile(
+                suffix="_subset.pdf", delete=False
+            ) as temp_out:
                 writer.write(temp_out)
                 subset_path = temp_out.name
 
-            logger.debug(f"Subset PDF created for {company_name} with pages: {relevant_pages}")
+            logger.debug(
+                f"Subset PDF created for {company_name} with pages: {relevant_pages}"
+            )
             return subset_path
 
         except Exception as exc:
@@ -507,8 +528,12 @@ def main():
     )
     parser.add_argument("company_name", help="Company name, e.g. 'NVIDIA CORP'")
     parser.add_argument("sustainability_url", help="URL to the sustainability PDF")
-    parser.add_argument("--parser", choices=["llama", "docling"], default="llama",
-                        help="Choose 'llama' (default) or 'docling'")
+    parser.add_argument(
+        "--parser",
+        choices=["llama", "docling"],
+        default="llama",
+        help="Choose 'llama' (default) or 'docling'",
+    )
     args = parser.parse_args()
 
     # Validate environment variables
