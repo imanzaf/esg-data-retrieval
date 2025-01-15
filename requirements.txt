@@ -11,6 +11,7 @@ llama-parse
 pycryptodome
 openai
 tabula-py
+docling
 
 # dev requirements
 pre-commit
