@@ -30,8 +30,10 @@ from company sustainability PDFs. It works in five major steps:
 4) **Save the Extracted Tables** to a Markdown file:
    `data/emissions_tables/{company}_raw_parsed.md`.
 
-5) **Send the Raw Markdown to DeepSeek** (an LLM) for final table structuring.
-   Two options are available:
+5) **[Optional] Send the Raw Markdown to DeepSeek** for final table structuring.
+   This step requires a valid DeepSeek API key (must start with "sk-"). If not
+   provided or invalid, the script will finish after step 4. If provided, two
+   options are available:
    - **DeepSeek V3 Open Source**: Free to download and run locally if you have
      sufficient compute resources (recommended: 32GB+ RAM, modern GPU)
    - **DeepSeek API**: If local compute is insufficient, use the API which costs
@@ -42,9 +44,14 @@ from company sustainability PDFs. It works in five major steps:
    and Scope 3 (with total). The resulting final tables are then saved to:
    `data/emissions_tables/{company}_final_tables.md`.
 
-Environment variables required:
-  - LLAMA_API_KEY
-  - DEEPSEEK_API_KEY
+Environment variables:
+  Required:
+  - LLAMA_API_KEY: Required for parsing PDFs with LlamaParse
+
+  Optional:
+  - DEEPSEEK_API_KEY: Must start with "sk-" if provided. If missing or invalid,
+    script will only generate raw parsed tables
+  - DEEPSEEK_BASE_URL: Defaults to https://api.deepseek.com
 
 Usage examples:
   # NVIDIA
@@ -144,13 +151,12 @@ class EmissionsDataExtractor:
         """
         if not llama_api_key:
             raise ValueError("LLAMA_API_KEY is missing or invalid.")
-        if not deepseek_api_key:
-            raise ValueError("DEEPSEEK_API_KEY is missing or invalid.")
 
         self.api_key = llama_api_key
-        self.deepseek_api_key = deepseek_api_key
+        # Simple check: is it a valid DeepSeek key?
+        self.deepseek_api_key = deepseek_api_key if deepseek_api_key and deepseek_api_key.startswith("sk-") else None
         self.deepseek_base_url = "https://api.deepseek.com"
-        self.parser_choice = parser_choice  # 'llama' or 'docling'
+        self.parser_choice = parser_choice
 
         # Regex patterns to identify relevant pages
         self.pattern_scope1 = re.compile(
@@ -217,8 +223,9 @@ class EmissionsDataExtractor:
             f.write(emissions_data)
         logger.info(f"Raw parse saved: {raw_output_file}")
 
-        # 5) Optionally send to DeepSeek
+        # 5) Only proceed with DeepSeek if API key is provided and not empty
         if self.deepseek_api_key:
+            logger.info("DeepSeek API key found, proceeding with final table generation")
             final_tables = self.send_to_deepseek(emissions_data)
             if final_tables:
                 tables_file = os.path.join(
@@ -228,6 +235,8 @@ class EmissionsDataExtractor:
                 with open(tables_file, "w", encoding="utf-8") as f:
                     f.write(final_tables)
                 logger.info(f"Final tables saved: {tables_file}")
+        else:
+            logger.info("No DeepSeek API key provided, skipping final table generation")
 
     def download_pdf(self, url: str, company_name: str) -> BytesIO | None:
         """
@@ -531,11 +540,13 @@ def main():
     )
     args = parser.parse_args()
 
-    # Validate environment variables
+    # Validate LLAMA_API_KEY (required)
     if not LLAMA_API_KEY:
         raise ValueError("Missing LLAMA_API_KEY in environment variables.")
+    
+    # DEEPSEEK_API_KEY is optional
     if not DEEPSEEK_API_KEY:
-        raise ValueError("Missing DEEPSEEK_API_KEY in environment variables.")
+        logger.warning("No DEEPSEEK_API_KEY found. Will only generate raw parsed tables.")
 
     extractor = EmissionsDataExtractor(LLAMA_API_KEY, DEEPSEEK_API_KEY, args.parser)
     extractor.process_company(args.company_name, args.sustainability_url)
