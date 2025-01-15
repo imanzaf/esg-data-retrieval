@@ -9,10 +9,10 @@ from dotenv import load_dotenv
 from loguru import logger
 
 load_dotenv()
-
 sys.path.append(os.getenv("ROOT_DIR"))
 
 from src.utils.data import openfigi_post_request  # noqa: E402
+from src.utils.data import update_esg_urls_order  # noqa: E402
 
 
 class CompanyProfile:
@@ -106,9 +106,13 @@ class CompanyProfile:
 
             # append result to respective dictionary if it is from current year
             if current_year in result.title:
-                primary_results[idx] = result.url
+                primary_results[idx] = (
+                    result  # Here I append the whole search result instead of the url only, this allows to sort by metadata
+                )
             else:
-                secondary_results[idx] = result.url
+                secondary_results[idx] = (
+                    result  # Here I append the whole search result instead of the url only, this allows to sort by metadata
+                )
 
         # get all results from current year
         if primary_results:
@@ -120,7 +124,7 @@ class CompanyProfile:
 
         if not self.esg_report_urls:
             logger.warning(f"No ESG report found for {self.name}")
-
+        update_esg_urls_order(self)  # Invoke function to get proper order of keywords
         logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
 
 
@@ -130,3 +134,4 @@ if __name__ == "__main__":
     user_input = input("Enter ISIN, Ticker, or Company Name: ").strip()
     company = CompanyProfile(user_input)
     logger.info(f"Company Name: {company.name}, Ticker: {company.ticker}")
+    print(company.esg_report_urls[0])

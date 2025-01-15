@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from loguru import logger
 
 load_dotenv()
-
 sys.path.append(os.getenv("ROOT_DIR"))
 
 from src.find.company_profile import CompanyProfile  # noqa: E402
@@ -14,12 +13,10 @@ from src.utils.data import download_pdf_from_urls  # noqa: E402
 
 # temporarily hardcoding variables here
 # TODO - switch to retrieve from inputs to flask app
-
 ROOT_DATA_DIR = os.getenv("ROOT_DIR")
-COMPANY_IDENTIFIER = "US0378331005"  # NVDA
+COMPANY_IDENTIFIER = "Microsoft"  # NVDA
 
 if __name__ == "__main__":
-
     # get the ticker symbol and company name from ISIN
     company = CompanyProfile(COMPANY_IDENTIFIER)
     logger.info(f"Retrieved details for {company.name}")

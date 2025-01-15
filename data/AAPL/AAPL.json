@@ -4,6 +4,8 @@
     "ticker": "AAPL",
     "description": "AAPL",
     "esg_report_urls": {
-        "0": "https://www.apple.com/environment/pdf/Apple_Environmental_Progress_Report_2024.pdf"
+        "0": "https://www.apple.com/environment/pdf/Apple_Environmental_Progress_Report_2024.pdf",
+        "1": "https://www.apple.com/uk/environment/pdf/GBEN_Apple_Environmental_Progress_Report_2023.pdf",
+        "2": "https://www.apple.com/environment/pdf/products/iphone/iPhone_15_Pro_and_iPhone_15_Pro_Max_Sept2023.pdf"
     }
 }
