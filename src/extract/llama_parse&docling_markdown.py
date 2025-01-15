@@ -21,10 +21,10 @@ from company sustainability PDFs. It works in five major steps:
    - Employs regular expressions on each page's text to find matches.
 
 3) **Parse Only Those Pages** using either:
-   - **LlamaParse** (if `--parser llama`): Automatically extracts tables with 
+   - **LlamaParse** (if `--parser llama`): Automatically extracts tables with
      their units and contextual information.
-   - **Docling** (if `--parser docling`): Extracts table structure but may miss 
-     units since it doesn't capture surrounding text context. Future improvement 
+   - **Docling** (if `--parser docling`): Extracts table structure but may miss
+     units since it doesn't capture surrounding text context. Future improvement
      needed to extract text around tables for unit information.
 
 4) **Save the Extracted Tables** to a Markdown file:
@@ -32,12 +32,12 @@ from company sustainability PDFs. It works in five major steps:
 
 5) **Send the Raw Markdown to DeepSeek** (an LLM) for final table structuring.
    Two options are available:
-   - **DeepSeek V3 Open Source**: Free to download and run locally if you have 
+   - **DeepSeek V3 Open Source**: Free to download and run locally if you have
      sufficient compute resources (recommended: 32GB+ RAM, modern GPU)
    - **DeepSeek API**: If local compute is insufficient, use the API which costs
      ~99% less than OpenAI's API. Set `DEEPSEEK_API_KEY` to use.
-   
-   The DeepSeek prompt instructs it to create a "Key Table" (Scope 1 & Scope 2) 
+
+   The DeepSeek prompt instructs it to create a "Key Table" (Scope 1 & Scope 2)
    plus breakdown tables for Scope 1, Scope 2 market-based, Scope 2 location-based,
    and Scope 3 (with total). The resulting final tables are then saved to:
    `data/emissions_tables/{company}_final_tables.md`.
@@ -114,7 +114,6 @@ Usage examples:
 import argparse
 import os
 import re
-import sys
 import tempfile
 from io import BytesIO
 
@@ -123,12 +122,8 @@ import requests
 from docling.backend.pypdfium2_backend import PyPdfiumDocumentBackend
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.pipeline_options import PdfPipelineOptions
-
-# Docling imports (no comments, real usage):
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from dotenv import load_dotenv
-
-# LlamaParse import
 from llama_parse import LlamaParse
 from loguru import logger
 from openai import OpenAI
@@ -457,14 +452,14 @@ You are given sustainability report tables as markdown below:
 
 Please perform the following steps:
 
-1. Identify the table(s) with the most complete year-by-year data for 
-   Scope 1, Scope 2 (market-based), and Scope 2 (location-based) 
+1. Identify the table(s) with the most complete year-by-year data for
+   Scope 1, Scope 2 (market-based), and Scope 2 (location-based)
    from the provided markdown.
-   - Use judgment to select tables with the most complete and likely 
-     accurate data across all years. 
-   - Prioritize completeness and consistency. 
-   - For Scope 2, include both market-based and location-based data if 
-     available, and explicitly note which is which. 
+   - Use judgment to select tables with the most complete and likely
+     accurate data across all years.
+   - Prioritize completeness and consistency.
+   - For Scope 2, include both market-based and location-based data if
+     available, and explicitly note which is which.
    - Convert all values to tCO2e and keep units consistent across years.
    - Use null for years where data is missing or unavailable.
 
@@ -477,7 +472,7 @@ Please perform the following steps:
    Include data for as many years as can be found (e.g., 2020, 2021, 2022, 2023).
    Convert all values to tCO2e. Use null for years where data is missing.
 
-3. Create up to four additional Markdown tables (breakdown tables) if 
+3. Create up to four additional Markdown tables (breakdown tables) if
    information is available; otherwise, return them with "No Data" or "N/A":
    - **Scope 1 Breakdown**:
      | Scope 1 Source / Subcategory | Year | Emissions (tCO2e) | Notes |
