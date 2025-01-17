@@ -2,20 +2,27 @@
 Methods for extracting tables from PDFs.
 """
 
-# import os
+# %%
 
+# %%
+import os
 from pathlib import Path
 
 import pandas as pd
+
+# import torch
+# import transformers
 from docling.document_converter import DocumentConverter
 
 # %%
 from dotenv import load_dotenv
 
-# from transformers import pipeline
-# import transformers
-# import torch
 # from huggingface_hub import InferenceClient
+from transformers import pipeline
+
+# %%
+# from docling.document_converter import DocumentConverter
+
 
 load_dotenv()
 
@@ -64,60 +71,68 @@ class TableExtractor:
                 tables.append(table_df)
         self.tables = tables
 
+    def get_docling_groups(self):
+        # convert document using docling
+        doc_converter = DocumentConverter()
+        conv_res = doc_converter.convert(self.input_path)
 
-# %%
-# class Emissions:
-#     def __init__(self, csv_path):
-#         self.df_path = csv_path
-#         self.markdown = self.df_to_markdown()
-
-#     def df_to_markdown(self):
-#         df = pd.read_csv(self.df_path)
-#         df_md = df.to_markdown()
-#         return df_md
-
-#     def extract(self):
-#         client = InferenceClient(api_key="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")
-#         # model_id = "meta-llama/Llama-3.3-70B-Instruct"
-#         # pipeline = transformers.pipeline(
-#         #     "text-generation",
-#         #     model=model_id,
-#         #     model_kwargs={"torch_dtype": torch.bfloat16},
-#         #     device_map="auto",
-#         # )
-
-#         messages = [
-#             {"role": "system", "content": "You are an expert at reviewing tables and extracting Scope 1 and Scope 2 emissions data from them. You always return the data in json format."},
-#             {"role": "user", "content": self.markdown},
-#         ]
-
-#         completion = client.chat.completions.create(
-#                         model="meta-llama/Llama-3.3-70B-Instruct",
-# 	                    messages=messages,
-# 	                    max_tokens=500
-#                     )
-#         # outputs = pipeline(
-#         #     messages,
-#         #     max_new_tokens=256,
-#         # )
-#         # return outputs[0]["generated_text"][-1]
-#         return completion.choices[0].message
+        # return groups
+        return conv_res.groups
 
 
 # %%
-# hsbc_path = f"{os.getenv('ROOT_DIR')}/data/HSBC/240221-esg-review-2023.pdf"
-# apple_path = (
-#     f"{os.getenv('ROOT_DIR')}/data/AAPL/Apple_Environmental_Progress_Report_2024.pdf"
-# )
+os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+import torch  # noqa: E402
+
+
+class Emissions:
+    def __init__(self, csv_path):
+        self.df_path = csv_path
+        self.markdown = self.df_to_markdown()
+
+    def df_to_markdown(self):
+        df = pd.read_csv(self.df_path)
+        df_md = df.to_markdown()
+        return df_md
+
+    def extract(self):
+        # need cuda & gpu to run this - mps doesnt work
+        pipe = pipeline(
+            "text-generation",
+            model="google/gemma-2-2b-it",
+            model_kwargs={"torch_dtype": torch.float16},
+            device="cuda",  # replace with "mps" to run on a Mac device
+        )
+
+        messages = [
+            {
+                "role": "user",
+                "content": f"Extract the scope 1 and scope 2 emissions from the following table: \n{self.markdown}",
+            },
+        ]
+
+        outputs = pipe(messages, max_new_tokens=256)
+        assistant_response = outputs[0]["generated_text"][-1]["content"].strip()
+        print(assistant_response)
+        return assistant_response
+
+
+# %%
+hsbc_path = f"{os.getenv('ROOT_DIR')}/data/HSBC/240221-esg-review-2023.pdf"
+apple_path = (
+    f"{os.getenv('ROOT_DIR')}/data/AAPL/Apple_Environmental_Progress_Report_2024.pdf"
+)
 # msft_path = f"{os.getenv('ROOT_DIR')}/data/MICROSOFT/RW1lmju.pdf"
 
-# #%%
-# output_dir = f"{os.getenv('ROOT_DIR')}/data/AAPL/docling"
-# extractor = TableExtractor(apple_path, output_dir)
-# tables = extractor.docling(save=True)
+# %%
+output_dir = f"{os.getenv('ROOT_DIR')}/data/AAPL/docling"
+extractor = TableExtractor(apple_path, output_dir)
+tables = extractor.docling(save=True)
+# groups = extractor.get_docling_groups()
 
 # %%
-
+df_path = f"{os.getenv('ROOT_DIR')}/data/AAPL/docling/Apple_Environmental_Progress_Report_2024-table-18.csv"
+emissions = Emissions(df_path).extract()
 
 # %%
 # if __name__ == "__main__":
