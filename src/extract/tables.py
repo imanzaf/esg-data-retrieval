@@ -18,8 +18,9 @@ from loguru import logger
 from PyPDF2 import PdfReader, PdfWriter
 
 load_dotenv()
-logger.info(os.getenv("ROOT_DIR"))
+
 sys.path.append(f"{os.getenv('ROOT_DIR')}")
+
 from src.utils.data_models import Company, RegexPatterns, TableParsers  # noqa: E402
 
 
