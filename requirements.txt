@@ -8,11 +8,12 @@ requests
 flask
 transformers
 docling
-tf-keras==2.16.0
-tensorflow-cpu==2.16.1
+torch
+# tf-keras==2.16.0
+# tensorflow-cpu==2.16.1
 PyPDF2
-llama-parse
-pycryptodome
+# llama-parse
+# pycryptodome
 openai
 tabula-py
 docling

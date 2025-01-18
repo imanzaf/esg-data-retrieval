@@ -33,7 +33,7 @@ def tables_extraction(pdf_path, keywords, output_dir="output_tables"):
 
 
    # Read all tables from PDF
-   tables = tabula.read_pdf(pdf_path, pages="all", multiple_tables=True)
+   
 
 
    # Checks if a table contains any of the keywords
