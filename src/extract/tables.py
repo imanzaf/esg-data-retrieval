@@ -6,6 +6,7 @@ from src.utils.data_models import RegexPatterns, Company, TableParsers
 from loguru import logger
 import dateutil.relativedelta
 import PyPDF2
+from PyPDF2 import PdfReader, PdfWriter
 from docling.document_converter import DocumentConverter
 import pandas as pd
 from pathlib import Path
@@ -41,35 +42,50 @@ class TableExtractor:
         Extract emissions tables
         """
         # Identify relevant pages
-        relevant_pages = self._find_relevant_pages()
-        if relevant_pages is None:
+        pdf = self._read_pdf()
+        filtered_pdf = self._filter_pdf_pages(pdf)
+        if not filtered_pdf:
             logger.error(f"No relevant pages found for {self.company.name}. Returning None.")
             return None
         # parse document
         if self.parser == TableParsers.DOCLING:
-            emissions_tables = self._extract_with_docling()
+            # write filtered pdf to cache
+            filtered_file_path = f"{self.output_dir}/{self.file_name}-filtered.pdf"
+            self._write_pages_to_pdf(filtered_pdf, filtered_file_path)
+            # extract from filtered pdf
+            emissions_tables = self._extract_with_docling(filtered_file_path)
             return emissions_tables
         elif self.parser == TableParsers.TABULA:
-            emissions_tables = self._extract_with_tabula(relevant_pages)
+            emissions_tables = self._extract_with_tabula(filtered_pdf.keys())
             return emissions_tables
         else:
             logger.error(f"Valid parser not specified. Returning None.")
             return None
 
-    def _extract_with_docling(self):
+    def _extract_with_docling(self, file_path):
         """
         Extract tables using docling
         """
         # parse document using docling
         doc_converter = DocumentConverter()
-        # TODO - add functionality for only converting relevant pages
-        conv_res = doc_converter.convert(self.file_path)
+        conv_res = doc_converter.convert(file_path)
         tables = [table.export_to_dataframe() for table in conv_res.document.tables]
         return tables
     
     def _extract_with_tabula(self, page_indeces):
         tables = tabula.read_pdf(self.file_path, pages=page_indeces, multiple_tables=True)
         return tables
+
+    def _read_pdf(self):
+        reader = PdfReader(self.file_path, strict=False)
+        return reader.pages
+    
+    def _write_pages_to_pdf(self, pages, path):
+        writer = PdfWriter()
+        for page in pages:
+            writer.add_page(page)
+        with open(path, "wb") as file:
+            writer.write(file)
 
     def _save_tables(self, tables: List[pd.DataFrame]):
         # create output dir (if it doesn't exist)
@@ -102,26 +118,22 @@ class TableExtractor:
                 logger.warning("No cached data found.")
                 return None
 
-    def _find_relevant_pages(self):
+    def _filter_pdf_pages(self, pdf_pages):
         """
         Locate pages that mention Scope 1, Scope 2, years, and units.
         """
         relevant_pages = []
-        try:
-            reader = PyPDF2.PdfReader(self.file_path, strict=False)
-            for page_index in range(len(reader.pages)):
-                page_text = reader.pages[page_index].extract_text() or ""
-                text_lower = page_text.lower()
+        for idx, page in enumerate(pdf_pages):
+            try:
+                page_text = page.extract_text().lower()
                 if (
-                    RegexPatterns.scope1.search(text_lower)
-                    and RegexPatterns.scope2.search(text_lower)
-                    and RegexPatterns.year.search(text_lower)  # TODO - make this optional??
-                    and RegexPatterns.units.search(text_lower)
+                    RegexPatterns.scope1.search(page_text)
+                    and RegexPatterns.scope2.search(page_text)
+                    and RegexPatterns.year.search(page_text)  # TODO - make this optional??
+                    and RegexPatterns.units.search(page_text)
                 ):
-                    relevant_pages.append(page_index)
-                    logger.debug(f"Page {page_index} is relevant.")
-            return sorted(set(relevant_pages))
-
-        except Exception as e:
-            logger.error(f"Unable to find relevant pages: {e}")
-            return None
+                    relevant_pages.append({idx: page})
+                    logger.debug(f"Page {idx} is relevant.")
+            except Exception as e:
+                logger.warning(f"Unable to process page {idx}: {e}")
+        return relevant_pages
