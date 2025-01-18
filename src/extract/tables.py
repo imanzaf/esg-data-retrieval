@@ -25,6 +25,10 @@ from src.utils.data_models import Company, RegexPatterns, TableParsers  # noqa: 
 
 
 class TableExtractor:
+    """
+    Methods for extracting tables from PDF using docling or tabula
+    """
+
     def __init__(self, company: Company, file_path: str, parser: TableParsers):
         self.company = company
         self.file_path = file_path
@@ -36,21 +40,30 @@ class TableExtractor:
         os.makedirs(self.output_dir, exist_ok=True)
 
     def extract(self):
+        """
+        1. Returns list of extracted tables as pandas dataframes
+        2. Saves tables to cache
+        """
         # check for cached data
         cached_tables = self._get_tables_from_cache()
         if cached_tables is not None:
             return cached_tables
 
+        # extract tables
         tables = self._extract()
         if tables is None:
             logger.error(f"Unable to extract tables for {self.company.isin}")
             return None
+        # save tables
         self._save_tables(tables)
         return tables
 
     def _extract(self):
         """
-        Extract emissions tables
+        Method for extracting tables for specified parser.
+
+        Returns
+            emissions_tables (list[pd.DataFrame]): list of extracted tables
         """
         # Identify relevant pages
         pdf = self._read_pdf()
@@ -60,6 +73,7 @@ class TableExtractor:
                 f"No relevant pages found for {self.company.name}. Returning None."
             )
             return None
+
         # parse document
         if self.parser == TableParsers.DOCLING.value:
             # write filtered pdf to cache
@@ -77,7 +91,7 @@ class TableExtractor:
 
     def _extract_with_docling(self, file_path):
         """
-        Extract tables using docling
+        Extract tables using docling.
         """
         # parse document using docling
         doc_converter = DocumentConverter()
@@ -86,16 +100,32 @@ class TableExtractor:
         return tables
 
     def _extract_with_tabula(self, page_indeces):
+        """
+        Extract tables using tabula.
+        """
         tables = tabula.read_pdf(
             self.file_path, pages=page_indeces, multiple_tables=True
         )
         return tables
 
     def _read_pdf(self):
+        """
+        Read PDF using PyPDF2.
+
+        Returns
+            pages (list[PageObject]): list of page objects returned by PyPDF2
+        """
         reader = PdfReader(self.file_path, strict=False)
         return reader.pages
 
     def _write_pages_to_pdf(self, pages, path):
+        """
+        Write pages to pdf file.
+
+        Args
+            pages (list[PageObject]): list of page objects to write to file
+            path (str): output file path to write pages to
+        """
         writer = PdfWriter()
         for page in pages:
             writer.add_page(page)
@@ -103,6 +133,12 @@ class TableExtractor:
             writer.write(file)
 
     def _save_tables(self, tables: List[pd.DataFrame]):
+        """
+        Save tables to output dir
+
+        Args
+            tables (list[pd.DataFrame]): list of tables to write to folder
+        """
         # create output dir (if it doesn't exist)
         output_dir = Path(f"{self.output_dir}/{self.parser}")
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -113,7 +149,11 @@ class TableExtractor:
             table.to_csv(element_csv_filepath)
 
     def _get_tables_from_cache(self):
+        """
+        Load tables from cache if recently saved
+        """
         parser_dir = f"{self.output_dir}/{self.parser}"
+        # check if cache path exists
         if os.path.isdir(parser_dir):
             last_modified_times = [
                 {
@@ -132,15 +172,29 @@ class TableExtractor:
                     valid_files.append(item.keys()[0])
             # load tables if any present
             if valid_files:
-                tables = [pd.read_csv(file) for file in valid_files]
+                tables = [
+                    pd.read_csv(file)
+                    for file in valid_files
+                    if str(file).endswith(".csv")
+                ]
                 return tables
             else:
-                logger.warning("No cached data found.")
+                logger.debug("No recent cached data found.")
                 return None
+        else:
+            logger.debug("No cached data found.")
+            return None
 
     def _filter_pdf_pages(self, pdf_pages):
         """
-        Locate pages that mention Scope 1, Scope 2, years, and units.
+        Locate pages that include relevant information.
+
+        Args
+            pdf_pages (List[PageObject]): list of pages to filter
+
+        Return
+            pages (List[PageObject]): list of pages that could include relevant information
+            indexed (List[int]): index of each page returned in pages list
         """
         pages = []
         indeces = []

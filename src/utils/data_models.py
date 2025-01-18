@@ -1,6 +1,5 @@
-# NOTE - data model not being used currently, leaving in codebase for future reference if needed
 """
-Stores constants / data models
+Stores enums and data models
 """
 
 from enum import Enum
