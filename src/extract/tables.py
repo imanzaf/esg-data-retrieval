@@ -141,8 +141,8 @@ class TableExtractor:
                 if (
                     re.search(RegexPatterns.SCOPE1.value, page_text, re.IGNORECASE)
                     and re.search(RegexPatterns.SCOPE2.value, page_text, re.IGNORECASE)
-                    and any([re.search(RegexPatterns.YEAR_1.value, page_text, re.IGNORECASE), re.search(RegexPatterns.YEAR_2.value, page_text, re.IGNORECASE)])  # TODO - make this optional??
-                    and any([re.search(RegexPatterns.UNITS_1.value, page_text, re.IGNORECASE), re.search(RegexPatterns.UNITS_2.value, page_text, re.IGNORECASE)])
+                    and any([re.search(RegexPatterns.YEAR_1.value, page_text, re.IGNORECASE), re.search(RegexPatterns.YEAR_2.value, page_text, re.IGNORECASE)])
+                    and all([re.search(RegexPatterns.UNITS_1.value, page_text, re.IGNORECASE), re.search(RegexPatterns.UNITS_2.value, page_text, re.IGNORECASE)])
                 ):
                     pages.append(page)
                     indeces.append(idx)
@@ -152,10 +152,9 @@ class TableExtractor:
         return pages, indeces
 
 if __name__ == "__main__":
-    company = Company(isin="US0378331005", name="APPLE")
+    company = Company(isin="US0378331005")
     file_path = "data/archive/AAPL/Apple_Environmental_Progress_Report_2024.pdf"
 
     extractor = TableExtractor(company, file_path, TableParsers.DOCLING)
     tables = extractor.extract()
-    logger.info(f"Emissions tables for {company.name}:")
-    logger.info(tables)
+    logger.info(f"Emissions tables for {company.isin} extracted!")
