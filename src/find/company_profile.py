@@ -4,6 +4,7 @@ import datetime as dt
 import os
 import sys
 
+from serpapi import GoogleSearch
 import googlesearch as gs
 from dotenv import load_dotenv
 from loguru import logger
@@ -86,6 +87,7 @@ class CompanyProfile:
                 logger.warning(
                     f"ISIN {self.isin} not found. Unable to fetch the corresponding details."
                 )
+                sys.exit()
 
     def _get_esg_report_urls(self) -> None:
         """
@@ -95,24 +97,25 @@ class CompanyProfile:
         current_year = str(dt.datetime.now().year)
         # use company name to search for the latest ESG report
         query = f"{self.name} {current_year} ESG report filetype:pdf"
-        search_results = gs.search(query, num_results=3, advanced=True)
+        search = GoogleSearch({"q": query, "serp_api_key": os.getenv("SERP_API_KEY")}).get_dictionary()
+        results = search.get("organic_results")[:3]  # get top 3 results
 
         # filter results based on year
         # TODO - check if search results include year of publication for cleaner filtering
         primary_results = {}
         secondary_results = {}
-        for idx, result in enumerate(search_results):
-            logger.debug(f"Result {idx}: {result.title} - {result.url}")
+        for res in results:
+            logger.info(f"Result {res.get("position")}: {res.get("title")} - {res.get("link")}")
 
-            # append result to respective dictionary if it is from current year
-            if current_year in result.title:
-                primary_results[idx] = (
-                    result  # Here I append the whole search result instead of the url only, this allows to sort by metadata
-                )
-            else:
-                secondary_results[idx] = (
-                    result  # Here I append the whole search result instead of the url only, this allows to sort by metadata
-                )
+            try:
+                # append result to respective dictionary if it is from current year
+                if current_year in res.get("date"):
+                    primary_results[res.get("position")] = res  # Here I append the whole search result instead of the url only, this allows to sort by metadata
+                else:
+                    secondary_results[res.get("position")] = res  # Here I append the whole search result instead of the url only, this allows to sort by metadata
+            except Exception as e:
+                logger.warning(f"Unable to process result: {e}")
+                continue
 
         # get all results from current year
         if primary_results:
@@ -124,6 +127,7 @@ class CompanyProfile:
 
         if not self.esg_report_urls:
             logger.warning(f"No ESG report found for {self.name}")
+            sys.exit()
         update_esg_urls_order(self)  # Invoke function to get proper order of keywords
         logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
 

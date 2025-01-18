@@ -1,0 +1,20 @@
+,,FY20,FY21,FY22,FY23
+0,Scope 1,"118,100","123,704","139,413","144,960"
+1,Scope 2,,,,
+2,Location-based,"4,328,916","5,010,667","6,381,250","8,077,403"
+3,Market-based,"456,119","429,405","288,029","393,134"
+4,Subtotal emissions (Scope 1 + 2 market-based),"574,219","553,109","427,442","538,094"
+5,Scope 3 1,,,,
+6,Category 1 - Purchased Goods & Services 2,"4,415,000","4,930,000","5,780,000","5,564,000"
+7,Category 2 - Capital Goods,"2,962,000","4,179,000","4,026,000","5,872,000"
+8,Category 3 - Fuel- and Energy-Related Activities,"300,000","350,000","450,000","521,000"
+9,Category 4 - Upstream Transportation 3,"243,000","225,000","371,000","318,000"
+10,Category 5 - Waste,"9,500","5,700","8,000","8,000"
+11,Category 6 - Business Travel,"329,356","21,901","139,000","133,000"
+12,Category 7 - Employee Commuting,"317,000","80,000","141,000","187,000"
+13,Category 9 - Downstream Transportation,"65,000","69,000","69,000","69,000"
+14,Category 11 - Use of Sold Products,"2,983,000","3,950,000","5,101,000","3,941,000"
+15,Category 12 - End-of-Life of Sold Products,"17,000","19,000","18,000","4,000"
+16,Category 13 - Downstream Leased Assets,"11,800","9,600","8,000","7,000"
+17,Subtotal emissions 4,"11,653,000","13,839,000","16,111,000","16,624,000"
+18,Total emissions (Scope 1 + 2 + 3) 4,"12,227,000","14,392,000","16,538,000","17,162,000"

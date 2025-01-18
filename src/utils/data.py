@@ -92,28 +92,27 @@ def count_keywords(url, isTitle):
 def update_esg_urls_order(company_profile):
 
     # If any title has current year or previous year, sort by title, otherwise by description.
-
     sorted_urls = sorted(
-        company_profile.esg_report_urls.items(),
-        key=lambda item: count_keywords(item[1].title, True),
+        company_profile.esg_report_urls.values(),
+        key=lambda item: count_keywords(item.get("title"), True),
         reverse=True,
     )
     current_year = str(dt.datetime.now().year)
     previous_year = str(dt.datetime.now().year - 1)
-
-    first_item_title = sorted_urls[0][1].title.lower()
+    
+    first_item_title = sorted_urls[0].get("title").lower()
     # Check if the first item's title contains the current or previous year
     has_year = current_year in first_item_title or previous_year in first_item_title
 
     if not has_year:
         sorted_urls = sorted(
-            company_profile.esg_report_urls.items(),
-            key=lambda item: count_keywords(item[1].description, False),
+            company_profile.esg_report_urls.values(),
+            key=lambda item: count_keywords(item.get("snippet"), False),
             reverse=True,
         )
         current_year = str(dt.datetime.now().year)
         previous_year = str(dt.datetime.now().year - 1)
-        first_item_description = sorted_urls[0][1].description.lower()
+        first_item_description = sorted_urls[0].get("snippet").lower()
         # Check if the first item's title contains the current or previous year
         has_year = (
             current_year in first_item_description
@@ -122,12 +121,12 @@ def update_esg_urls_order(company_profile):
 
     if not has_year:
         sorted_urls = sorted(
-            company_profile.esg_report_urls.items(),
-            key=lambda item: count_keywords(item[1].url, False),
+            company_profile.esg_report_urls.values(),
+            key=lambda item: count_keywords(item.get("link"), False),
             reverse=True,
         )
     # Create a new dictionary where the values are just the URL attribute, and are re-indexed according to their new order
-    updated_urls = {index: value.url for index, (_, value) in enumerate(sorted_urls)}
+    updated_urls = {index: value.get("link") for index, value in enumerate(sorted_urls)}
     # Update the esg_report_urls in the company_profile
     company_profile.esg_report_urls = updated_urls
 

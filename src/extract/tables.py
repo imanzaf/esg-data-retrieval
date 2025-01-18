@@ -152,8 +152,8 @@ class TableExtractor:
         return pages, indeces
 
 if __name__ == "__main__":
-    company = Company(isin="US0378331005")
-    file_path = "data/archive/AAPL/Apple_Environmental_Progress_Report_2024.pdf"
+    company = Company(isin="US5949181045")
+    file_path = "data/cache/US5949181045/RW1lmju.pdf"
 
     extractor = TableExtractor(company, file_path, TableParsers.DOCLING)
     tables = extractor.extract()
