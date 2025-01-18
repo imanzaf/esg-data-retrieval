@@ -2,21 +2,26 @@
 Methods for extracting emissions tables from ESG report using PyPDF and Docling
 """
 from typing import List
-from src.utils.data_models import RegexPatterns, Company, TableParsers
 from loguru import logger
 import dateutil.relativedelta
-import PyPDF2
 from PyPDF2 import PdfReader, PdfWriter
+from PyPDF2._page import PageObject
 from docling.document_converter import DocumentConverter
 import pandas as pd
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import datetime
 import os
+import sys
 import tabula
-
+import re
 
 load_dotenv()
+logger.info(os.getenv('ROOT_DIR'))
+sys.path.append(f"{os.getenv('ROOT_DIR')}")
+from src.utils.data_models import RegexPatterns, Company, TableParsers
+
+
 
 
 class TableExtractor:
@@ -25,7 +30,10 @@ class TableExtractor:
         self.file_path = file_path
         self.file_name = file_path.split("/")[-1].replace(".pdf", "")
         self.output_dir = f"{os.getenv('ROOT_DIR')}/data/cache/{self.company.isin}"
-        self.parser = parser
+        self.parser = parser.value
+
+        # create output dir
+        os.makedirs(self.output_dir, exist_ok=True)
     
     def extract(self):
         # check for cached data
@@ -34,7 +42,10 @@ class TableExtractor:
             return cached_tables
 
         tables = self._extract()
-        self._save_tables()
+        if tables is None:
+            logger.error(f"Unable to extract tables for {self.company.isin}")
+            return None
+        self._save_tables(tables)
         return tables
 
     def _extract(self):
@@ -43,20 +54,20 @@ class TableExtractor:
         """
         # Identify relevant pages
         pdf = self._read_pdf()
-        filtered_pdf = self._filter_pdf_pages(pdf)
-        if not filtered_pdf:
+        pages, indeces = self._filter_pdf_pages(pdf)
+        if not pages:
             logger.error(f"No relevant pages found for {self.company.name}. Returning None.")
             return None
         # parse document
-        if self.parser == TableParsers.DOCLING:
+        if self.parser == TableParsers.DOCLING.value:
             # write filtered pdf to cache
             filtered_file_path = f"{self.output_dir}/{self.file_name}-filtered.pdf"
-            self._write_pages_to_pdf(filtered_pdf, filtered_file_path)
+            self._write_pages_to_pdf(pages, filtered_file_path)
             # extract from filtered pdf
             emissions_tables = self._extract_with_docling(filtered_file_path)
             return emissions_tables
-        elif self.parser == TableParsers.TABULA:
-            emissions_tables = self._extract_with_tabula(filtered_pdf.keys())
+        elif self.parser == TableParsers.TABULA.value:
+            emissions_tables = self._extract_with_tabula(indeces)
             return emissions_tables
         else:
             logger.error(f"Valid parser not specified. Returning None.")
@@ -122,18 +133,29 @@ class TableExtractor:
         """
         Locate pages that mention Scope 1, Scope 2, years, and units.
         """
-        relevant_pages = []
+        pages = []
+        indeces = []
         for idx, page in enumerate(pdf_pages):
             try:
                 page_text = page.extract_text().lower()
                 if (
-                    RegexPatterns.scope1.search(page_text)
-                    and RegexPatterns.scope2.search(page_text)
-                    and RegexPatterns.year.search(page_text)  # TODO - make this optional??
-                    and RegexPatterns.units.search(page_text)
+                    re.search(RegexPatterns.SCOPE1.value, page_text, re.IGNORECASE)
+                    and re.search(RegexPatterns.SCOPE2.value, page_text, re.IGNORECASE)
+                    and any([re.search(RegexPatterns.YEAR_1.value, page_text, re.IGNORECASE), re.search(RegexPatterns.YEAR_2.value, page_text, re.IGNORECASE)])  # TODO - make this optional??
+                    and any([re.search(RegexPatterns.UNITS_1.value, page_text, re.IGNORECASE), re.search(RegexPatterns.UNITS_2.value, page_text, re.IGNORECASE)])
                 ):
-                    relevant_pages.append({idx: page})
+                    pages.append(page)
+                    indeces.append(idx)
                     logger.debug(f"Page {idx} is relevant.")
             except Exception as e:
                 logger.warning(f"Unable to process page {idx}: {e}")
-        return relevant_pages
+        return pages, indeces
+
+if __name__ == "__main__":
+    company = Company(isin="US0378331005", name="APPLE")
+    file_path = "data/archive/AAPL/Apple_Environmental_Progress_Report_2024.pdf"
+
+    extractor = TableExtractor(company, file_path, TableParsers.DOCLING)
+    tables = extractor.extract()
+    logger.info(f"Emissions tables for {company.name}:")
+    logger.info(tables)
