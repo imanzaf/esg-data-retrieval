@@ -1,0 +1,13 @@
+,Metric,Unit,2019,2020,2021,2022,2023
+0,Energy - Operational control  l m,,,,,,
+1,Energy consumption  aa,GWh,-,-,"128,805","121,697","124,770"
+2,"Exploration, production and LNG",GWh,-,-,"46,033","43,748","46,215"
+3,Refining and chemicals,GWh,-,-,"79,177","74,589","70,974"
+4,Other,GWh,-,-,-,"3,361","7,582"
+5,Energy intensity,,,,,,
+6,"Exploration, production   and LNG  bb",GJ per thousand boe  of production,-,-,169.8,162.1,171.0
+7,Refineries  cc,Energy intensity  performance index  (indexed to 2010),104.5,106.5,102.8,103.4,104.0
+8,Petrochemicals  dd,GJ per tonnes of  production,-,-,11.5,11.8,12.7
+9,Energy consumption  -  Streamlined  Energy and Carbon Reporting (SECR) ee,,,,,,
+10,UK and offshore  ff,GWh/base units kWh,-,"7,005","4,386","4,376","4,688"
+11,Global (excluding UK   and offshore)  gg,GWh/base units kWh,-,"172,999","124,419","117,321","120,082"

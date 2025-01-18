@@ -14,7 +14,7 @@ from src.utils.data import download_pdf_from_urls  # noqa: E402
 # temporarily hardcoding variables here
 # TODO - switch to retrieve from inputs to flask app
 ROOT_DATA_DIR = os.getenv("ROOT_DIR")
-COMPANY_IDENTIFIER = "Microsoft"  # NVDA
+COMPANY_IDENTIFIER = "GB0007980591"  # note: src/extract/tables.py requires ISIN currently
 
 if __name__ == "__main__":
     # get the ticker symbol and company name from ISIN
@@ -24,14 +24,11 @@ if __name__ == "__main__":
     # save to df
     # TODO - update implementation for scalability once database is decided on
     logger.info("Saving to database...")
-    clean_company_label = (
-        company.name.split(" ")[0].upper() if company.ticker is None else company.ticker
-    )
-    root_save_dir = f"{ROOT_DATA_DIR}/data/{clean_company_label}"
+    root_save_dir = f"{ROOT_DATA_DIR}/data/cache/{company.isin}"
     # create directory if it doesn't exist
     os.makedirs(root_save_dir, exist_ok=True)
     # save company details to json
-    with open(f"{root_save_dir}/{clean_company_label}.json", "w") as f:
+    with open(f"{root_save_dir}/{company.isin}.json", "w") as f:
         json.dump(company.__dict__, f, indent=4)
     # download esg report
     download_pdf_from_urls(company.esg_report_urls.values(), root_save_dir)

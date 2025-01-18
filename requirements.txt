@@ -1,6 +1,5 @@
 # project requirements
 pandas
-googlesearch-python
 python-dotenv
 loguru
 pydantic
@@ -17,6 +16,7 @@ PyPDF2
 openai
 tabula-py
 docling
+google-search-results  # serpapi
 
 # dev requirements
 pre-commit

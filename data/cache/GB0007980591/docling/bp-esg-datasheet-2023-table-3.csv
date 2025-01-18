@@ -1,0 +1,25 @@
+,Metric,Unit,2019,2020,2021,2022,2023
+0,GHG - Operational control  l m,,,,,,
+1,Scope 1 (direct) greenhouse  gas emissions  n,MtCO2e,49.2,41.7,33.2,30.4,31.1
+2,"Exploration, production and LNG",MtCO2e,-,-,15.5,13.8,15.2
+3,Refining and chemicals,MtCO2e,-,-,16.9,15.9,15.1
+4,Other,MtCO2e,-,-,-,0.7,0.8
+5,Scope 1 (direct) carbon dioxide emissions,MtCO2e,46.8,39.8,32.0,29.7,30.2
+6,"Exploration, production and LNG",MtCO2e,-,-,14.4,13.1,14.3
+7,Refining and chemicals,MtCO2e,-,-,16.9,15.9,15.1
+8,Other,MtCO2e,-,-,-,0.7,0.7
+9,Scope 1 (direct) methane emissions,Mt,0.1,0.07,0.05,0.03,0.03
+10,"Exploration, production and LNG",Mt,-,-,0.04,0.03,0.03
+11,Refining and chemicals,Mt,-,-,0.00,0.00,0.00
+12,Other,Mt,-,-,-,0.00,0.00
+13,Sustainable GHG emissions reductions  (Scope 1 and 2)  o,MtCO2e,1.4,1.0,1.6,1.5,0.9
+14,Scope 2 (indirect) emissions  p q,MtCO2e,5.2,3.8,2.4,1.4,1.0
+15,"Exploration, production and LNG  q",MtCO2e,-,-,0.0,0.1,0.1
+16,Refining and chemicals,MtCO2e,-,-,2.2,1.2,0.6
+17,Other,MtCO2e,-,-,-,0.2,0.4
+18,Greenhouse gas intensity (Scope 1 and 2),,,,,,
+19,"Exploration, production   and LNG  r",tCO2e per thousand  boe of production,-,-,15.9,14.2,15.7
+20,Refineries  s,tCO2e per utilized  equivalent  distillation capacity,-,-,"1,060","1,028","1,003"
+21,Petrochemicals  t,tCO2e per thousand  tonnes of production,-,-,688,653,741
+22,Methane intensity  u,%,0.14,0.12,0.07,0.05,0.05
+23,Flaring  v,kt,"1,395",831,967,654,861
