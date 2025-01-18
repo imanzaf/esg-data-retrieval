@@ -4,10 +4,9 @@ import datetime as dt
 import os
 import sys
 
-from serpapi import GoogleSearch
-import googlesearch as gs
 from dotenv import load_dotenv
 from loguru import logger
+from serpapi import GoogleSearch
 
 load_dotenv()
 sys.path.append(os.getenv("ROOT_DIR"))
@@ -97,7 +96,9 @@ class CompanyProfile:
         current_year = str(dt.datetime.now().year)
         # use company name to search for the latest ESG report
         query = f"{self.name} {current_year} ESG report filetype:pdf"
-        search = GoogleSearch({"q": query, "serp_api_key": os.getenv("SERP_API_KEY")}).get_dictionary()
+        search = GoogleSearch(
+            {"q": query, "serp_api_key": os.getenv("SERP_API_KEY")}
+        ).get_dictionary()
         results = search.get("organic_results")[:3]  # get top 3 results
 
         # filter results based on year
@@ -105,14 +106,20 @@ class CompanyProfile:
         primary_results = {}
         secondary_results = {}
         for res in results:
-            logger.info(f"Result {res.get("position")}: {res.get("title")} - {res.get("link")}")
+            logger.info(
+                f"Result {res.get('position')}: {res.get('title')} - {res.get('link')}"
+            )
 
             try:
                 # append result to respective dictionary if it is from current year
                 if current_year in res.get("date"):
-                    primary_results[res.get("position")] = res  # Here I append the whole search result instead of the url only, this allows to sort by metadata
+                    primary_results[res.get("position")] = (
+                        res  # Here I append the whole search result instead of the url only, this allows to sort by metadata
+                    )
                 else:
-                    secondary_results[res.get("position")] = res  # Here I append the whole search result instead of the url only, this allows to sort by metadata
+                    secondary_results[res.get("position")] = (
+                        res  # Here I append the whole search result instead of the url only, this allows to sort by metadata
+                    )
             except Exception as e:
                 logger.warning(f"Unable to process result: {e}")
                 continue

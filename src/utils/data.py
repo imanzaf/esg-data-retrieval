@@ -99,7 +99,7 @@ def update_esg_urls_order(company_profile):
     )
     current_year = str(dt.datetime.now().year)
     previous_year = str(dt.datetime.now().year - 1)
-    
+
     first_item_title = sorted_urls[0].get("title").lower()
     # Check if the first item's title contains the current or previous year
     has_year = current_year in first_item_title or previous_year in first_item_title

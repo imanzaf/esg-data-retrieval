@@ -1,27 +1,26 @@
 """
 Methods for extracting emissions tables from ESG report using PyPDF and Docling
 """
-from typing import List
-from loguru import logger
-import dateutil.relativedelta
-from PyPDF2 import PdfReader, PdfWriter
-from PyPDF2._page import PageObject
-from docling.document_converter import DocumentConverter
-import pandas as pd
-from pathlib import Path
-from dotenv import load_dotenv
-from datetime import datetime
+
 import os
-import sys
-import tabula
 import re
+import sys
+from datetime import datetime
+from pathlib import Path
+from typing import List
+
+import dateutil.relativedelta
+import pandas as pd
+import tabula
+from docling.document_converter import DocumentConverter
+from dotenv import load_dotenv
+from loguru import logger
+from PyPDF2 import PdfReader, PdfWriter
 
 load_dotenv()
-logger.info(os.getenv('ROOT_DIR'))
+logger.info(os.getenv("ROOT_DIR"))
 sys.path.append(f"{os.getenv('ROOT_DIR')}")
-from src.utils.data_models import RegexPatterns, Company, TableParsers
-
-
+from src.utils.data_models import Company, RegexPatterns, TableParsers  # noqa: E402
 
 
 class TableExtractor:
@@ -34,7 +33,7 @@ class TableExtractor:
 
         # create output dir
         os.makedirs(self.output_dir, exist_ok=True)
-    
+
     def extract(self):
         # check for cached data
         cached_tables = self._get_tables_from_cache()
@@ -56,7 +55,9 @@ class TableExtractor:
         pdf = self._read_pdf()
         pages, indeces = self._filter_pdf_pages(pdf)
         if not pages:
-            logger.error(f"No relevant pages found for {self.company.name}. Returning None.")
+            logger.error(
+                f"No relevant pages found for {self.company.name}. Returning None."
+            )
             return None
         # parse document
         if self.parser == TableParsers.DOCLING.value:
@@ -70,7 +71,7 @@ class TableExtractor:
             emissions_tables = self._extract_with_tabula(indeces)
             return emissions_tables
         else:
-            logger.error(f"Valid parser not specified. Returning None.")
+            logger.error(f"Parser {self.parser} is not of valid type. Returning None.")
             return None
 
     def _extract_with_docling(self, file_path):
@@ -82,15 +83,17 @@ class TableExtractor:
         conv_res = doc_converter.convert(file_path)
         tables = [table.export_to_dataframe() for table in conv_res.document.tables]
         return tables
-    
+
     def _extract_with_tabula(self, page_indeces):
-        tables = tabula.read_pdf(self.file_path, pages=page_indeces, multiple_tables=True)
+        tables = tabula.read_pdf(
+            self.file_path, pages=page_indeces, multiple_tables=True
+        )
         return tables
 
     def _read_pdf(self):
         reader = PdfReader(self.file_path, strict=False)
         return reader.pages
-    
+
     def _write_pages_to_pdf(self, pages, path):
         writer = PdfWriter()
         for page in pages:
@@ -102,18 +105,23 @@ class TableExtractor:
         # create output dir (if it doesn't exist)
         output_dir = Path(f"{self.output_dir}/{self.parser}")
         output_dir.mkdir(parents=True, exist_ok=True)
-        
+
         for idx, table in enumerate(tables):
             # Save the table as csv
-            element_csv_filepath = (
-                output_dir / f"{self.file_name}-table-{idx+1}.csv"
-            )
+            element_csv_filepath = output_dir / f"{self.file_name}-table-{idx+1}.csv"
             table.to_csv(element_csv_filepath)
 
     def _get_tables_from_cache(self):
         parser_dir = f"{self.output_dir}/{self.parser}"
         if os.path.isdir(parser_dir):
-            last_modified_times = [{f"{parser_dir}/{file}": datetime.fromtimestamp(os.path.getmtime(f"{parser_dir}/{file}"))} for file in os.listdir(parser_dir)]
+            last_modified_times = [
+                {
+                    f"{parser_dir}/{file}": datetime.fromtimestamp(
+                        os.path.getmtime(f"{parser_dir}/{file}")
+                    )
+                }
+                for file in os.listdir(parser_dir)
+            ]
             # filter for files modified within past month
             current_date = datetime.today()
             cutoff_date = current_date - dateutil.relativedelta.relativedelta(months=1)
@@ -141,8 +149,26 @@ class TableExtractor:
                 if (
                     re.search(RegexPatterns.SCOPE1.value, page_text, re.IGNORECASE)
                     and re.search(RegexPatterns.SCOPE2.value, page_text, re.IGNORECASE)
-                    and any([re.search(RegexPatterns.YEAR_1.value, page_text, re.IGNORECASE), re.search(RegexPatterns.YEAR_2.value, page_text, re.IGNORECASE)])
-                    and all([re.search(RegexPatterns.UNITS_1.value, page_text, re.IGNORECASE), re.search(RegexPatterns.UNITS_2.value, page_text, re.IGNORECASE)])
+                    and any(
+                        [
+                            re.search(
+                                RegexPatterns.YEAR_1.value, page_text, re.IGNORECASE
+                            ),
+                            re.search(
+                                RegexPatterns.YEAR_2.value, page_text, re.IGNORECASE
+                            ),
+                        ]
+                    )
+                    and all(
+                        [
+                            re.search(
+                                RegexPatterns.UNITS_1.value, page_text, re.IGNORECASE
+                            ),
+                            re.search(
+                                RegexPatterns.UNITS_2.value, page_text, re.IGNORECASE
+                            ),
+                        ]
+                    )
                 ):
                     pages.append(page)
                     indeces.append(idx)
@@ -150,6 +176,7 @@ class TableExtractor:
             except Exception as e:
                 logger.warning(f"Unable to process page {idx}: {e}")
         return pages, indeces
+
 
 if __name__ == "__main__":
     company = Company(isin="US5949181045")
