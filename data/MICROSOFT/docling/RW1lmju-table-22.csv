@@ -1,0 +1,8 @@
+,Area,Specified  Information,Criteria,Tables
+0,Carbon,The statement of  GHG emissions,Greenhouse Gas Protocol: A Corporate Accounting and  Reporting Standard (Revised Edition) and The Greenhouse  Gas Protocol: Corporate Value Chain (Scope 3) Accounting  and Reporting Standard published by the World  Resources Institute/World Business Council for Sustainable  Development (collectively the 'GHG Protocol').,"1A, 1B,  2, 3,  4, 5"
+1,,Scope 3 Category  11 - Use of  Sold Products   (management's  criteria),Management's criteria:,1B
+2,,,Use of sold products' emissions in the reporting year in metric tons of CO2e reported as:,
+3,,,a.  Gross emissions.,
+4,,,"b.  Gross emissions, net of renewable electricity.  Gross emissions is calculated by multiplying a) the direct  use-phase energy, which is derived from emissions  gathered by the Company using telemetry data and  calculations used to measure energy usage from Xbox  consoles and Surface devices sold by Microsoft at any  point in time since product launch and which are still in",
+5,,,use by end users during the fiscal year being reported on  and b) location-based emissions factors.,
+6,,,"For purposes of this metric, renewable electricity is  defined as the purchase of contractual instruments that  meet the 'quality criteria' according to table 7.1 in the GHG  Protocol Scope 2 Guidance.  Microsoft shall disclose:",

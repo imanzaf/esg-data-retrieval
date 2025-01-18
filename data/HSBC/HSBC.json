@@ -1,0 +1,11 @@
+{
+    "isin": null,
+    "name": "HSBC",
+    "ticker": null,
+    "description": null,
+    "esg_report_urls": {
+        "0": "https://www.hsbc.com/-/files/hsbc/investors/hsbc-results/2023/annual/pdfs/hsbc-holdings-plc/240221-esg-review-2023.pdf",
+        "1": "https://futurefocus.staff.hsbc.co.uk/-/media/project/futurefocus/esg-bulletin/db/hsbcesg-bulletin202419122023finalweb.pdf",
+        "2": "https://www.hsbc.com/-/files/hsbc/investors/hsbc-results/2022/annual/pdfs/hsbc-holdings-plc/230221-esg-review-2022.pdf"
+    }
+}
