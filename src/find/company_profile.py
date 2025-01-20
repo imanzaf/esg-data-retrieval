@@ -1,12 +1,15 @@
 # TODO - if name provided instead of ISIN, use yahoo finance to get ticker symbol to use as label for saving data
 
 import datetime as dt
+import json
 import os
 import sys
 
+import requests
 from dotenv import load_dotenv
 from loguru import logger
 from serpapi import GoogleSearch
+
 
 load_dotenv()
 sys.path.append(os.getenv("ROOT_DIR"))
@@ -17,11 +20,13 @@ from src.utils.data import update_esg_urls_order  # noqa: E402
 
 class CompanyProfile:
 
-    def __init__(self, identifier):
+    def __init__(self, identifier, idType): #idType is TICKER, NAME or ISIN
         # initialise default attributes
-        self.isin = identifier if self.is_valid_isin(identifier) else None
-        self.name = identifier if self.isin is None else None
-        self.ticker = None
+        self.identifier = identifier
+        self.idType = idType.lower()
+        self.isin = identifier if self.idType.lower() == "isin" and self.is_valid_isin(identifier) else None
+        self.name = identifier if self.idType.lower() == "name" else None
+        self.ticker = identifier if self.idType.lower() == "ticker" else None
         self.description = None
 
         # invoke company details function to retrieve missing attributes
@@ -29,6 +34,22 @@ class CompanyProfile:
         # invoke function to retrieve esg report url
         self.esg_report_urls = {}
         self._get_esg_report_urls()
+        self.dump_as_json()
+
+    def dump_as_json(self):
+        load_dotenv()
+        ROOT_DIR = os.getenv("ROOT_DIR")
+        if not ROOT_DIR:
+            raise ValueError("ROOT_DIR is not set in the .env file.")
+        """Dumps the company profile as a JSON file into the specified folder."""
+        file_path = os.path.join(ROOT_DIR, "data", "current_data", "company_profile.json")
+        try:
+            with open(file_path, 'w') as json_file:
+                json.dump(self.__dict__, json_file, indent=4)
+            print(f"Company profile JSON saved to {file_path}")
+        except Exception as e:
+            print(f"Failed to save company profile JSON: {e}")
+
 
     @staticmethod
     def is_valid_isin(ISIN):
@@ -52,14 +73,21 @@ class CompanyProfile:
         return False
 
     @staticmethod
-    def get_profile_from_isin(ISIN):
+    def get_profile_from_identifier(identifier, idType):
         """
         Function to fetch the ticker symbol from OpenFIGI API using the ISIN code.
         """
         # Send a POST request to the OpenFIGI API
-        openfigi_response = openfigi_post_request(
-            [{"idType": "ID_ISIN", "idValue": ISIN}]
-        )
+        openfigi_response = None
+
+        if idType == "isin":
+            openfigi_response = openfigi_post_request(
+                [{"idType": "ID_ISIN", "idValue": identifier}]
+            )
+        elif idType == "ticker":
+            openfigi_response = openfigi_post_request(
+                [{"idType": "TICKER", "idValue": identifier}]
+            )
 
         if openfigi_response is not None:
             try:
@@ -67,7 +95,7 @@ class CompanyProfile:
                 return comp_dict
             except Exception as e:
                 logger.error(
-                    f"Error fetching details for ISIN {ISIN}: {e}. Returning None."
+                    f"Error fetching details for identifier{identifier}: {e}. Returning None."
                 )
                 return None
 
@@ -75,9 +103,12 @@ class CompanyProfile:
         """
         Function to get corresponding details if ISIN provided.
         """
-        # Check if identifier is an ISIN
-        if self.isin is not None:
-            profile = self.get_profile_from_isin(self.isin)
+        if self.name is not None: #for names keep user input
+            return
+            # Check if identifier is an ISIN
+        if self.identifier is not None:
+
+            profile = self.get_profile_from_identifier(self.identifier, self.idType)
             if profile is not None:
                 self.name = profile.get("name")
                 self.ticker = profile.get("ticker")
@@ -90,51 +121,65 @@ class CompanyProfile:
 
     def _get_esg_report_urls(self) -> None:
         """
-        Find a link to the best result from google for the company's latest ESG report.
-        """
-        # get current year as string
-        current_year = str(dt.datetime.now().year)
-        # use company name to search for the latest ESG report
-        query = f"{self.name} {current_year} ESG report filetype:pdf"
-        search = GoogleSearch(
-            {"q": query, "serp_api_key": os.getenv("SERP_API_KEY")}
-        ).get_dictionary()
-        results = search.get("organic_results")[:3]  # get top 3 results
+            Retrieve the top 3 URLs of the company's ESG reports using Google Custom Search.
+            """
+        # Load environment variables
+        API_KEY = os.getenv("GOOGLE_API_KEY")
+        SEARCH_ENGINE_ID = os.getenv("GOOGLE_SEARCH_ENGINE_ID")
 
-        # filter results based on year
-        # TODO - check if search results include year of publication for cleaner filtering
+        if not API_KEY or not SEARCH_ENGINE_ID:
+            raise ValueError("Environment variables GOOGLE_API_KEY or GOOGLE_SEARCH_ENGINE_ID are not set.")
+
+        # Search parameters
+        current_year = str(dt.datetime.now().year)
+        search_query = f"{self.name} {current_year} ESG report filetype:pdf"
+        url = "https://www.googleapis.com/customsearch/v1"
+        params = {
+            "q": search_query,
+            "key": API_KEY,
+            "cx": SEARCH_ENGINE_ID,
+        }
+
+
+            # Make the search request
+        response = requests.get(url, params=params)
+        response.raise_for_status()
+        search_results = response.json().get("items", [])[:3]  # Get top 3 results
+
+        if not search_results:
+            logger.warning(f"No ESG reports found for {self.identifier}.")
+            return
+            # Filter results based on year
         primary_results = {}
         secondary_results = {}
-        for res in results:
+
+        for index, res in enumerate(search_results):
             logger.info(
-                f"Result {res.get('position')}: {res.get('title')} - {res.get('link')}"
+                f"Result {index + 1}: {res.get('title')} - {res.get('link')}"
             )
 
             try:
-                # append result to respective dictionary if it is from current year
-                if current_year in res.get("date"):
-                    primary_results[res.get("position")] = (
-                        res  # Here I append the whole search result instead of the url only, this allows to sort by metadata
-                    )
+                # Append result to respective dictionary if it is from the current year
+                if str(current_year) in res.get("title"):
+                    primary_results[index] = res
                 else:
-                    secondary_results[res.get("position")] = (
-                        res  # Here I append the whole search result instead of the url only, this allows to sort by metadata
-                    )
+                    secondary_results[index] = res
             except Exception as e:
                 logger.warning(f"Unable to process result: {e}")
                 continue
 
-        # get all results from current year
+            # Get all results from the current year
         if primary_results:
-            self.esg_report_urls.update(primary_results)
+                self.esg_report_urls.update(primary_results)
 
-        # if no results from current year, append all results from previous years
+        # If no results from the current year, append all results from previous years
         if not primary_results:
             self.esg_report_urls.update(secondary_results)
 
         if not self.esg_report_urls:
             logger.warning(f"No ESG report found for {self.name}")
             sys.exit()
+
         update_esg_urls_order(self)  # Invoke function to get proper order of keywords
         logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
 
@@ -142,7 +187,8 @@ class CompanyProfile:
 # Main script to fetch company information
 if __name__ == "__main__":
     # Ask the user for input
-    user_input = input("Enter ISIN, Ticker, or Company Name: ").strip()
-    company = CompanyProfile(user_input)
+    id_type = input("Enter idType (TICKER, NAME, ISIN): ").strip()
+    identifier = input("Enter ISIN, Ticker, or Company Name: ").strip()
+    company = CompanyProfile(identifier, id_type)
     logger.info(f"Company Name: {company.name}, Ticker: {company.ticker}")
     print(company.esg_report_urls[0])

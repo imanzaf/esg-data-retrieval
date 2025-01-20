@@ -8,6 +8,7 @@ flask
 transformers
 docling
 torch
+jpype1
 # tf-keras==2.16.0
 # tensorflow-cpu==2.16.1
 PyPDF2
