@@ -17,6 +17,8 @@ from dotenv import load_dotenv
 from loguru import logger
 from PyPDF2 import PdfReader, PdfWriter
 
+from src.find.company_profile import CompanyProfile
+
 load_dotenv()
 
 sys.path.append(f"{os.getenv('ROOT_DIR')}")
@@ -29,11 +31,11 @@ class TableExtractor:
     Methods for extracting tables from PDF using docling or tabula
     """
 
-    def __init__(self, company: Company, file_path: str, parser: TableParsers):
+    def __init__(self, company: CompanyProfile, file_path: str, parser: TableParsers):
         self.company = company
         self.file_path = file_path
-        self.file_name = file_path.split("/")[-1].replace(".pdf", "")
-        self.output_dir = f"{os.getenv('ROOT_DIR')}/data/cache/{self.company.isin}"
+        self.file_name = os.path.basename(file_path).replace(".pdf", "")
+        self.output_dir = f"{os.getenv('ROOT_DIR')}/data/current_data/"
         self.parser = parser.value
 
         # create output dir
@@ -44,10 +46,15 @@ class TableExtractor:
         1. Returns list of extracted tables as pandas dataframes
         2. Saves tables to cache
         """
+
+        #I would say this is not necessary
         # check for cached data
+        '''
         cached_tables = self._get_tables_from_cache()
         if cached_tables is not None:
             return cached_tables
+
+        '''
 
         # extract tables
         tables = self._extract()
@@ -148,6 +155,9 @@ class TableExtractor:
             element_csv_filepath = output_dir / f"{self.file_name}-table-{idx+1}.csv"
             table.to_csv(element_csv_filepath)
 
+
+
+    # I would say this is not necessary
     def _get_tables_from_cache(self):
         """
         Load tables from cache if recently saved
@@ -239,4 +249,4 @@ if __name__ == "__main__":
 
     extractor = TableExtractor(company, file_path, TableParsers.DOCLING)
     tables = extractor.extract()
-    logger.info(f"Emissions tables for {company.isin} extracted!")
+    logger.info(f"Emissions tables for {company.identifier} extracted!")
