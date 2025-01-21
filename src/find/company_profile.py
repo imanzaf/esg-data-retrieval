@@ -8,11 +8,19 @@ import sys
 import requests
 from dotenv import load_dotenv
 from loguru import logger
-from serpapi import GoogleSearch
-
 
 load_dotenv()
 sys.path.append(os.getenv("ROOT_DIR"))
+
+ROOT_DIR = os.getenv("ROOT_DIR")
+ROOT_OUTPUT_PATH = os.getenv("ROOT_OUTPUT_PATH")
+API_KEY = os.getenv("GOOGLE_API_KEY")
+SEARCH_ENGINE_ID = os.getenv("GOOGLE_SEARCH_ENGINE_ID")
+
+if not any([API_KEY, SEARCH_ENGINE_ID]):
+    raise ValueError(
+        "Environment variables GOOGLE_API_KEY or GOOGLE_SEARCH_ENGINE_ID are not set."
+    )
 
 from src.utils.data import openfigi_post_request  # noqa: E402
 from src.utils.data import update_esg_urls_order  # noqa: E402
@@ -20,36 +28,43 @@ from src.utils.data import update_esg_urls_order  # noqa: E402
 
 class CompanyProfile:
 
-    def __init__(self, identifier, idType): #idType is TICKER, NAME or ISIN
+    def __init__(self, identifier, idType):  # idType is TICKER, NAME or ISIN
         # initialise default attributes
         self.identifier = identifier
         self.idType = idType.lower()
-        self.isin = identifier if self.idType.lower() == "isin" and self.is_valid_isin(identifier) else None
+        self.isin = (
+            identifier
+            if self.idType.lower() == "isin" and self.is_valid_isin(identifier)
+            else None
+        )
         self.name = identifier if self.idType.lower() == "name" else None
         self.ticker = identifier if self.idType.lower() == "ticker" else None
         self.description = None
 
         # invoke company details function to retrieve missing attributes
         self._complete_company_profile()
+        # set output path
+        self.output_path = os.path.join(
+            ROOT_OUTPUT_PATH, str(self.name).upper().replace(" ", "_").replace("/", "_")
+        )
+        os.makedirs(self.output_path, exist_ok=True)
         # invoke function to retrieve esg report url
         self.esg_report_urls = {}
         self._get_esg_report_urls()
+        # dump company profile to json
         self.dump_as_json()
 
     def dump_as_json(self):
-        load_dotenv()
-        ROOT_DIR = os.getenv("ROOT_DIR")
+        """Dumps the company profile as a JSON file into the specified folder."""
         if not ROOT_DIR:
             raise ValueError("ROOT_DIR is not set in the .env file.")
-        """Dumps the company profile as a JSON file into the specified folder."""
-        file_path = os.path.join(ROOT_DIR, "data", "current_data", "company_profile.json")
         try:
-            with open(file_path, 'w') as json_file:
+            file_path = f"{self.output_path}/profile.json"
+            with open(file_path, "w") as json_file:
                 json.dump(self.__dict__, json_file, indent=4)
-            print(f"Company profile JSON saved to {file_path}")
+            logger.info(f"Company profile JSON saved to {file_path}")
         except Exception as e:
             print(f"Failed to save company profile JSON: {e}")
-
 
     @staticmethod
     def is_valid_isin(ISIN):
@@ -103,7 +118,7 @@ class CompanyProfile:
         """
         Function to get corresponding details if ISIN provided.
         """
-        if self.name is not None: #for names keep user input
+        if self.name is not None:  # for names keep user input
             return
             # Check if identifier is an ISIN
         if self.identifier is not None:
@@ -121,15 +136,8 @@ class CompanyProfile:
 
     def _get_esg_report_urls(self) -> None:
         """
-            Retrieve the top 3 URLs of the company's ESG reports using Google Custom Search.
-            """
-        # Load environment variables
-        API_KEY = os.getenv("GOOGLE_API_KEY")
-        SEARCH_ENGINE_ID = os.getenv("GOOGLE_SEARCH_ENGINE_ID")
-
-        if not API_KEY or not SEARCH_ENGINE_ID:
-            raise ValueError("Environment variables GOOGLE_API_KEY or GOOGLE_SEARCH_ENGINE_ID are not set.")
-
+        Retrieve the top 3 URLs of the company's ESG reports using Google Custom Search.
+        """
         # Search parameters
         current_year = str(dt.datetime.now().year)
         search_query = f"{self.name} {current_year} ESG report filetype:pdf"
@@ -140,8 +148,7 @@ class CompanyProfile:
             "cx": SEARCH_ENGINE_ID,
         }
 
-
-            # Make the search request
+        # Make the search request
         response = requests.get(url, params=params)
         response.raise_for_status()
         search_results = response.json().get("items", [])[:3]  # Get top 3 results
@@ -149,15 +156,12 @@ class CompanyProfile:
         if not search_results:
             logger.warning(f"No ESG reports found for {self.identifier}.")
             return
-            # Filter results based on year
+        # Filter results based on year
         primary_results = {}
         secondary_results = {}
 
         for index, res in enumerate(search_results):
-            logger.info(
-                f"Result {index + 1}: {res.get('title')} - {res.get('link')}"
-            )
-
+            logger.info(f"Result {index + 1}: {res.get('title')} - {res.get('link')}")
             try:
                 # Append result to respective dictionary if it is from the current year
                 if str(current_year) in res.get("title"):
@@ -168,9 +172,9 @@ class CompanyProfile:
                 logger.warning(f"Unable to process result: {e}")
                 continue
 
-            # Get all results from the current year
+        # Get all results from the current year
         if primary_results:
-                self.esg_report_urls.update(primary_results)
+            self.esg_report_urls.update(primary_results)
 
         # If no results from the current year, append all results from previous years
         if not primary_results:
@@ -178,9 +182,12 @@ class CompanyProfile:
 
         if not self.esg_report_urls:
             logger.warning(f"No ESG report found for {self.name}")
+            # TODO - return response to display in UI
             sys.exit()
 
-        update_esg_urls_order(self)  # Invoke function to get proper order of keywords
+        self.esg_report_urls = update_esg_urls_order(
+            self.esg_report_urls.values()
+        )  # Invoke function to get proper order of keywords
         logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
 
 

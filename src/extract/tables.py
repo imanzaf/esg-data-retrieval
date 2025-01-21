@@ -7,7 +7,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 import dateutil.relativedelta
 import pandas as pd
@@ -31,11 +31,16 @@ class TableExtractor:
     Methods for extracting tables from PDF using docling or tabula
     """
 
-    def __init__(self, company: CompanyProfile, file_path: str, parser: TableParsers):
+    def __init__(
+        self,
+        company: CompanyProfile,
+        file_path: str,
+        parser: Union[TableParsers, List[TableParsers]],
+    ):
         self.company = company
         self.file_path = file_path
         self.file_name = os.path.basename(file_path).replace(".pdf", "")
-        self.output_dir = f"{os.getenv('ROOT_DIR')}/data/current_data/"
+        self.output_dir = company.output_path
         self.parser = parser.value
 
         # create output dir
@@ -46,26 +51,32 @@ class TableExtractor:
         1. Returns list of extracted tables as pandas dataframes
         2. Saves tables to cache
         """
-
-        #I would say this is not necessary
         # check for cached data
-        '''
         cached_tables = self._get_tables_from_cache()
         if cached_tables is not None:
             return cached_tables
 
-        '''
+        if isinstance(self.parser, List):
+            all_tables = []
+            for parser in self.parser:
+                logger.info(f"Extracting data for {parser.value}")
+                logger.info(datetime.now())
+                # create output dir (if it doesn't exist)
+                output_dir = Path(f"{self.output_dir}/{parser}")
+                output_dir.mkdir(parents=True, exist_ok=True)
+                # extract and save tables
+                tables = self._extract(parser)
+                self._save_tables(tables, output_dir)
+                all_tables.append(tables)
+        else:
+            # extract tables
+            all_tables = self._extract(self.parser)
+            # save tables
+            self._save_tables(all_tables)
 
-        # extract tables
-        tables = self._extract()
-        if tables is None:
-            logger.error(f"Unable to extract tables for {self.company.isin}")
-            return None
-        # save tables
-        self._save_tables(tables)
-        return tables
+        return all_tables
 
-    def _extract(self):
+    def _extract(self, parser):
         """
         Method for extracting tables for specified parser.
 
@@ -82,18 +93,18 @@ class TableExtractor:
             return None
 
         # parse document
-        if self.parser == TableParsers.DOCLING.value:
+        if parser == TableParsers.DOCLING.value:
             # write filtered pdf to cache
             filtered_file_path = f"{self.output_dir}/{self.file_name}-filtered.pdf"
             self._write_pages_to_pdf(pages, filtered_file_path)
             # extract from filtered pdf
             emissions_tables = self._extract_with_docling(filtered_file_path)
             return emissions_tables
-        elif self.parser == TableParsers.TABULA.value:
+        elif parser == TableParsers.TABULA.value:
             emissions_tables = self._extract_with_tabula(indeces)
             return emissions_tables
         else:
-            logger.error(f"Parser {self.parser} is not of valid type. Returning None.")
+            logger.error(f"Invalid parsesr {self.parser} specified.")
             return None
 
     def _extract_with_docling(self, file_path):
@@ -139,25 +150,22 @@ class TableExtractor:
         with open(path, "wb") as file:
             writer.write(file)
 
-    def _save_tables(self, tables: List[pd.DataFrame]):
+    def _save_tables(self, tables: Union[List[pd.DataFrame], None], output_dir):
         """
         Save tables to output dir
 
         Args
             tables (list[pd.DataFrame]): list of tables to write to folder
         """
-        # create output dir (if it doesn't exist)
-        output_dir = Path(f"{self.output_dir}/{self.parser}")
-        output_dir.mkdir(parents=True, exist_ok=True)
+        if tables is None:
+            logger.error(f"No tables found for {self.company.isin}")
+            return None
 
         for idx, table in enumerate(tables):
             # Save the table as csv
             element_csv_filepath = output_dir / f"{self.file_name}-table-{idx+1}.csv"
             table.to_csv(element_csv_filepath)
 
-
-
-    # I would say this is not necessary
     def _get_tables_from_cache(self):
         """
         Load tables from cache if recently saved

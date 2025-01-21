@@ -1,4 +1,3 @@
-import json
 import os
 import sys
 
@@ -15,24 +14,15 @@ from src.utils.data import download_pdf_from_urls  # noqa: E402
 # TODO - switch to retrieve from inputs to flask app
 ROOT_DATA_DIR = os.getenv("ROOT_DIR")
 COMPANY_IDENTIFIER = (
-    "GB0007980591"  # note: src/extract/tables.py requires ISIN currently
+    "US2546871060"  # note: src/extract/tables.py requires ISIN currently
 )
 
 if __name__ == "__main__":
     # get the ticker symbol and company name from ISIN
-    company = CompanyProfile(COMPANY_IDENTIFIER)
+    company = CompanyProfile(COMPANY_IDENTIFIER, "ISIN")
     logger.info(f"Retrieved details for {company.name}")
 
-    # save to df
-    # TODO - update implementation for scalability once database is decided on
-    logger.info("Saving to database...")
-    root_save_dir = f"{ROOT_DATA_DIR}/data/cache/{company.isin}"
-    # create directory if it doesn't exist
-    os.makedirs(root_save_dir, exist_ok=True)
-    # save company details to json
-    with open(f"{root_save_dir}/{company.isin}.json", "w") as f:
-        json.dump(company.__dict__, f, indent=4)
     # download esg report
-    download_pdf_from_urls(company.esg_report_urls.values(), root_save_dir)
+    download_pdf_from_urls(company.esg_report_urls.values(), company.output_path)
 
     logger.info("Done!")
