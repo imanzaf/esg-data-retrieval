@@ -255,6 +255,8 @@ if __name__ == "__main__":
     company = Company(isin="US5949181045")
     file_path = "data/cache/US5949181045/RW1lmju.pdf"
 
-    extractor = TableExtractor(company, file_path, TableParsers.DOCLING)
+    extractor = TableExtractor(
+        company, file_path, [TableParsers.DOCLING, TableParsers.TABULA]
+    )
     tables = extractor.extract()
     logger.info(f"Emissions tables for {company.identifier} extracted!")
