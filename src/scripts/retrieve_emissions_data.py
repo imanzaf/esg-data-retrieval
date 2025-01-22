@@ -22,10 +22,10 @@ def get_emissions_data(identifier, idType):
     # Loop over urls until emissions data retrieved
     for url in company.esg_report_urls.values():
         # Download pdf file
-        path = data.download_pdf_from_urls([url], os.path.join(OUTPUT_DIR))
+        path = data.download_pdf_from_urls([url], company.output_path)
         # get emissions data
         output = TableExtractor(
-            company, path, [TableParsers.DOCLING, TableParsers.TABULA]
+            company, path, TableParsers.TABULA
         ).extract()
         if output is not None:
             break
@@ -33,6 +33,6 @@ def get_emissions_data(identifier, idType):
 
 # Example Usage
 if __name__ == "__main__":
-    identifier = "US2546871060"
-    idType = "ISIN"
+    identifier = "BP"
+    idType = "Name"
     get_emissions_data(identifier, idType)

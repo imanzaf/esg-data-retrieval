@@ -62,17 +62,19 @@ class TableExtractor:
                 logger.info(f"Extracting data for {parser.value}")
                 logger.info(datetime.now())
                 # create output dir (if it doesn't exist)
-                output_dir = Path(f"{self.output_dir}/{parser}")
-                output_dir.mkdir(parents=True, exist_ok=True)
+                output_dir_parser = Path(f"{self.output_dir}/{parser}")
+                output_dir_parser.mkdir(parents=True, exist_ok=True)
                 # extract and save tables
                 tables = self._extract(parser)
-                self._save_tables(tables, output_dir)
+                self._save_tables(tables, output_dir_parser)
                 all_tables.append(tables)
         else:
             # extract tables
             all_tables = self._extract(self.parser)
+            output_dir_parser = Path(f"{self.output_dir}/{self.parser}")
+            output_dir_parser.mkdir(parents=True, exist_ok=True)
             # save tables
-            self._save_tables(all_tables)
+            self._save_tables(all_tables, output_dir_parser)
 
         return all_tables
 
@@ -163,15 +165,38 @@ class TableExtractor:
 
         for idx, table in enumerate(tables):
             # Save the table as csv
-            element_csv_filepath = output_dir / f"{self.file_name}-table-{idx+1}.csv"
+            element_csv_filepath = os.path.join(output_dir, f"{self.file_name}-table-{idx+1}.csv")
             table.to_csv(element_csv_filepath)
 
     def _get_tables_from_cache(self):
+
         """
-        Load tables from cache if recently saved
-        """
-        parser_dir = f"{self.output_dir}/{self.parser}"
+            Load tables from cache if recently saved
+            """
+        # Define the root output path and process the company name
+        ROOT_OUTPUT_PATH = os.getenv("ROOT_OUTPUT_PATH")
+        company_name = str(self.company.name).upper().replace(" ", "_").replace("/", "_")
+        parser_dir = None
+        # Check if the company name exists in the folder name
+        for folder in os.listdir(ROOT_OUTPUT_PATH):
+            if (company_name in folder) or (folder in company_name):
+                folder_path = os.path.join(ROOT_OUTPUT_PATH, folder)
+                # Check if the folder_path contains a subfolder named self.parser
+                if os.path.isdir(folder_path):
+                    for subfolder in os.listdir(folder_path):
+                        if subfolder == self.parser and os.path.isdir(os.path.join(folder_path, subfolder)):
+                            parser_dir = os.path.join(folder_path, subfolder)
+                            break
+
+                if parser_dir:  # If the parser directory is found, break the outer loop
+                    break
+
+        if parser_dir is None:
+            logger.debug("No cached data found.")
+            return None
         # check if cache path exists
+
+
         if os.path.isdir(parser_dir):
             last_modified_times = [
                 {
@@ -186,9 +211,12 @@ class TableExtractor:
             cutoff_date = current_date - dateutil.relativedelta.relativedelta(months=1)
             valid_files = []
             for item in last_modified_times:
-                if item.values()[0] >= cutoff_date:
-                    valid_files.append(item.keys()[0])
-            # load tables if any present
+                # Iterate over key-value pairs in the dictionary
+                for file_path, modified_time in item.items():
+                    if modified_time >= cutoff_date:
+                        valid_files.append(file_path)
+
+                # Load tables if any valid files are found
             if valid_files:
                 tables = [
                     pd.read_csv(file)
@@ -256,7 +284,7 @@ if __name__ == "__main__":
     file_path = "data/cache/US5949181045/RW1lmju.pdf"
 
     extractor = TableExtractor(
-        company, file_path, [TableParsers.DOCLING, TableParsers.TABULA]
+        company, file_path, TableParsers.TABULA
     )
     tables = extractor.extract()
     logger.info(f"Emissions tables for {company.identifier} extracted!")

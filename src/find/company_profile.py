@@ -186,7 +186,7 @@ class CompanyProfile:
             sys.exit()
 
         self.esg_report_urls = update_esg_urls_order(
-            self.esg_report_urls.values()
+            list(self.esg_report_urls.values())
         )  # Invoke function to get proper order of keywords
         logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
 

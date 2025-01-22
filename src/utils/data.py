@@ -90,6 +90,7 @@ def update_esg_urls_order(search_results: List[dict]):
     current_year = str(dt.datetime.now().year)
     previous_year = str(dt.datetime.now().year - 1)
 
+    sorted_urls = search_results
     # Check if the any title contains the current or previous year
     if any([current_year in url.get("title") for url in search_results]) or any(
         [previous_year in url.get("title") for url in search_results]
@@ -114,10 +115,21 @@ def update_esg_urls_order(search_results: List[dict]):
             key=count_keywords,
             reverse=True,
         )
+
+    elif any([current_year in url.get("link") for url in search_results]) or any(
+        [previous_year in url.get("link") for url in search_results]
+    ):
+        sorted_urls = sorted(
+            [
+                {"text": result.get("snippet"), "link": result.get("link")}
+                for result in search_results
+            ],
+            key=count_keywords,
+            reverse=True,
+        )
     # Create a new dictionary where the values are just the URL attribute, and are re-indexed according to their new order
     updated_urls = {index: value.get("link") for index, value in enumerate(sorted_urls)}
     return updated_urls
-
 
 def openfigi_post_request(data):
     """
