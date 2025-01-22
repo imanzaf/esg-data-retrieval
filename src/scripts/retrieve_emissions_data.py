@@ -1,6 +1,6 @@
 import os
 import sys
-
+from src.utils import table_data_filtering
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -17,7 +17,7 @@ from src.utils import data  # noqa: E402
 from src.utils.data_models import TableParsers  # noqa: E402
 
 
-def get_emissions_data(identifier, idType):
+def get_emissions_data(identifier, idType, parser):
     company = CompanyProfile(identifier, idType)
     # Loop over urls until emissions data retrieved
     for url in company.esg_report_urls.values():
@@ -25,14 +25,18 @@ def get_emissions_data(identifier, idType):
         path = data.download_pdf_from_urls([url], company.output_path)
         # get emissions data
         output = TableExtractor(
-            company, path, TableParsers.TABULA
+            company, path, parser
         ).extract()
         if output is not None:
             break
 
+    path = os.path.join(company.output_path, parser.value)
+    table_data_filtering.filter_tables(path)
+
 
 # Example Usage
 if __name__ == "__main__":
-    identifier = "BP"
+    identifier = "Apple"
     idType = "Name"
-    get_emissions_data(identifier, idType)
+    parser = TableParsers.DOCLING
+    get_emissions_data(identifier, idType, parser)
