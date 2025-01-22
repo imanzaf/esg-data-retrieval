@@ -53,7 +53,12 @@ def get_msci_index_df(write=False):
     return df_filtered
 
 
-def count_keywords(url, isTitle):
+def count_keywords(url: dict):
+    """
+    Count the number of predefined keywords in the given URL, with double weight
+    for the current year and the previous year keywords.
+    """
+    text = url.get("text")
     current_year = str(dt.datetime.now().year)
     previous_year = str(dt.datetime.now().year - 1)
 
@@ -72,64 +77,59 @@ def count_keywords(url, isTitle):
         "policy",
         "progress" "fact" "sheet",
     ]
-    if isTitle:
-        """
-        Count the number of predefined keywords in the given URL, with double weight
-        for the current year and the previous year keywords.
-        """
-        # Double weight for current year and previous year
-        count = 2 * (current_year in url.lower()) + 2 * (previous_year in url.lower())
-        # Add counts for the other keywords
-        count += sum(keyword.lower() in url.lower() for keyword in keywords)
-    else:
-        count = current_year in url.lower() + previous_year in url.lower()
-        # Add counts for the other keywords
-        count += sum(keyword.lower() in url.lower() for keyword in keywords)
+    # Double weight for current year and previous year
+    count = 2 * (current_year in text) + 2 * (previous_year in text)
+    # Add counts for the other keywords
+    count += sum(keyword.lower() in text for keyword in keywords)
 
     return count
 
 
-def update_esg_urls_order(company_profile):
-
-    # If any title has current year or previous year, sort by title, otherwise by description.
-    sorted_urls = sorted(
-        company_profile.esg_report_urls.values(),
-        key=lambda item: count_keywords(item.get("title"), True),
-        reverse=True,
-    )
+def update_esg_urls_order(search_results: List[dict]):
+    # get current and previous year
     current_year = str(dt.datetime.now().year)
     previous_year = str(dt.datetime.now().year - 1)
 
-    first_item_title = sorted_urls[0].get("title").lower()
-    # Check if the first item's title contains the current or previous year
-    has_year = current_year in first_item_title or previous_year in first_item_title
-
-    if not has_year:
+    sorted_urls = search_results
+    # Check if the any title contains the current or previous year
+    if any([current_year in url.get("title") for url in search_results]) or any(
+        [previous_year in url.get("title") for url in search_results]
+    ):
         sorted_urls = sorted(
-            company_profile.esg_report_urls.values(),
-            key=lambda item: count_keywords(item.get("snippet"), False),
+            [
+                {"text": result.get("title"), "link": result.get("link")}
+                for result in search_results
+            ],
+            key=count_keywords,
             reverse=True,
         )
-        current_year = str(dt.datetime.now().year)
-        previous_year = str(dt.datetime.now().year - 1)
-        first_item_description = sorted_urls[0].get("snippet").lower()
-        # Check if the first item's title contains the current or previous year
-        has_year = (
-            current_year in first_item_description
-            or previous_year in first_item_description
+    # Check if any description contains the current or previous year
+    elif any([current_year in url.get("snippet") for url in search_results]) or any(
+        [previous_year in url.get("snippet") for url in search_results]
+    ):
+        sorted_urls = sorted(
+            [
+                {"text": result.get("snippet"), "link": result.get("link")}
+                for result in search_results
+            ],
+            key=count_keywords,
+            reverse=True,
         )
 
-    if not has_year:
+    elif any([current_year in url.get("link") for url in search_results]) or any(
+        [previous_year in url.get("link") for url in search_results]
+    ):
         sorted_urls = sorted(
-            company_profile.esg_report_urls.values(),
-            key=lambda item: count_keywords(item.get("link"), False),
+            [
+                {"text": result.get("snippet"), "link": result.get("link")}
+                for result in search_results
+            ],
+            key=count_keywords,
             reverse=True,
         )
     # Create a new dictionary where the values are just the URL attribute, and are re-indexed according to their new order
     updated_urls = {index: value.get("link") for index, value in enumerate(sorted_urls)}
-    # Update the esg_report_urls in the company_profile
-    company_profile.esg_report_urls = updated_urls
-
+    return updated_urls
 
 def openfigi_post_request(data):
     """
@@ -178,7 +178,7 @@ def download_pdf_from_urls(urls: List[str], root_path: str):
                 else os.path.basename(url)
             )
             urllib.request.urlretrieve(url, os.path.join(root_path, pdf_file_name))
-            break
+            return os.path.join(root_path, pdf_file_name)
         except Exception as e:
             logger.error(f"Uh oh! Could not download {url}: {e}")
             continue

@@ -7,7 +7,7 @@ import re
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 import dateutil.relativedelta
 import pandas as pd
@@ -31,11 +31,16 @@ class TableExtractor:
     Methods for extracting tables from PDF using docling or tabula
     """
 
-    def __init__(self, company: CompanyProfile, file_path: str, parser: TableParsers):
+    def __init__(
+        self,
+        company: CompanyProfile,
+        file_path: str,
+        parser: Union[TableParsers, List[TableParsers]],
+    ):
         self.company = company
         self.file_path = file_path
         self.file_name = os.path.basename(file_path).replace(".pdf", "")
-        self.output_dir = f"{os.getenv('ROOT_DIR')}/data/current_data/"
+        self.output_dir = company.output_path
         self.parser = parser.value
 
         # create output dir
@@ -46,26 +51,34 @@ class TableExtractor:
         1. Returns list of extracted tables as pandas dataframes
         2. Saves tables to cache
         """
-
-        #I would say this is not necessary
         # check for cached data
-        '''
         cached_tables = self._get_tables_from_cache()
         if cached_tables is not None:
             return cached_tables
 
-        '''
+        if isinstance(self.parser, List):
+            all_tables = []
+            for parser in self.parser:
+                logger.info(f"Extracting data for {parser.value}")
+                logger.info(datetime.now())
+                # create output dir (if it doesn't exist)
+                output_dir_parser = Path(f"{self.output_dir}/{parser}")
+                output_dir_parser.mkdir(parents=True, exist_ok=True)
+                # extract and save tables
+                tables = self._extract(parser)
+                self._save_tables(tables, output_dir_parser)
+                all_tables.append(tables)
+        else:
+            # extract tables
+            all_tables = self._extract(self.parser)
+            output_dir_parser = Path(f"{self.output_dir}/{self.parser}")
+            output_dir_parser.mkdir(parents=True, exist_ok=True)
+            # save tables
+            self._save_tables(all_tables, output_dir_parser)
 
-        # extract tables
-        tables = self._extract()
-        if tables is None:
-            logger.error(f"Unable to extract tables for {self.company.isin}")
-            return None
-        # save tables
-        self._save_tables(tables)
-        return tables
+        return all_tables
 
-    def _extract(self):
+    def _extract(self, parser):
         """
         Method for extracting tables for specified parser.
 
@@ -82,18 +95,18 @@ class TableExtractor:
             return None
 
         # parse document
-        if self.parser == TableParsers.DOCLING.value:
+        if parser == TableParsers.DOCLING.value:
             # write filtered pdf to cache
             filtered_file_path = f"{self.output_dir}/{self.file_name}-filtered.pdf"
             self._write_pages_to_pdf(pages, filtered_file_path)
             # extract from filtered pdf
             emissions_tables = self._extract_with_docling(filtered_file_path)
             return emissions_tables
-        elif self.parser == TableParsers.TABULA.value:
+        elif parser == TableParsers.TABULA.value:
             emissions_tables = self._extract_with_tabula(indeces)
             return emissions_tables
         else:
-            logger.error(f"Parser {self.parser} is not of valid type. Returning None.")
+            logger.error(f"Invalid parsesr {self.parser} specified.")
             return None
 
     def _extract_with_docling(self, file_path):
@@ -139,31 +152,51 @@ class TableExtractor:
         with open(path, "wb") as file:
             writer.write(file)
 
-    def _save_tables(self, tables: List[pd.DataFrame]):
+    def _save_tables(self, tables: Union[List[pd.DataFrame], None], output_dir):
         """
         Save tables to output dir
 
         Args
             tables (list[pd.DataFrame]): list of tables to write to folder
         """
-        # create output dir (if it doesn't exist)
-        output_dir = Path(f"{self.output_dir}/{self.parser}")
-        output_dir.mkdir(parents=True, exist_ok=True)
+        if tables is None:
+            logger.error(f"No tables found for {self.company.isin}")
+            return None
 
         for idx, table in enumerate(tables):
             # Save the table as csv
-            element_csv_filepath = output_dir / f"{self.file_name}-table-{idx+1}.csv"
+            element_csv_filepath = os.path.join(output_dir, f"{self.file_name}-table-{idx+1}.csv")
             table.to_csv(element_csv_filepath)
 
-
-
-    # I would say this is not necessary
     def _get_tables_from_cache(self):
+
         """
-        Load tables from cache if recently saved
-        """
-        parser_dir = f"{self.output_dir}/{self.parser}"
+            Load tables from cache if recently saved
+            """
+        # Define the root output path and process the company name
+        ROOT_OUTPUT_PATH = os.getenv("ROOT_OUTPUT_PATH")
+        company_name = str(self.company.name).upper().replace(" ", "_").replace("/", "_")
+        parser_dir = None
+        # Check if the company name exists in the folder name
+        for folder in os.listdir(ROOT_OUTPUT_PATH):
+            if (company_name in folder) or (folder in company_name):
+                folder_path = os.path.join(ROOT_OUTPUT_PATH, folder)
+                # Check if the folder_path contains a subfolder named self.parser
+                if os.path.isdir(folder_path):
+                    for subfolder in os.listdir(folder_path):
+                        if subfolder == self.parser and os.path.isdir(os.path.join(folder_path, subfolder)):
+                            parser_dir = os.path.join(folder_path, subfolder)
+                            break
+
+                if parser_dir:  # If the parser directory is found, break the outer loop
+                    break
+
+        if parser_dir is None:
+            logger.debug("No cached data found.")
+            return None
         # check if cache path exists
+
+
         if os.path.isdir(parser_dir):
             last_modified_times = [
                 {
@@ -178,9 +211,12 @@ class TableExtractor:
             cutoff_date = current_date - dateutil.relativedelta.relativedelta(months=1)
             valid_files = []
             for item in last_modified_times:
-                if item.values()[0] >= cutoff_date:
-                    valid_files.append(item.keys()[0])
-            # load tables if any present
+                # Iterate over key-value pairs in the dictionary
+                for file_path, modified_time in item.items():
+                    if modified_time >= cutoff_date:
+                        valid_files.append(file_path)
+
+                # Load tables if any valid files are found
             if valid_files:
                 tables = [
                     pd.read_csv(file)
@@ -247,6 +283,8 @@ if __name__ == "__main__":
     company = Company(isin="US5949181045")
     file_path = "data/cache/US5949181045/RW1lmju.pdf"
 
-    extractor = TableExtractor(company, file_path, TableParsers.DOCLING)
+    extractor = TableExtractor(
+        company, file_path, TableParsers.TABULA
+    )
     tables = extractor.extract()
     logger.info(f"Emissions tables for {company.identifier} extracted!")
