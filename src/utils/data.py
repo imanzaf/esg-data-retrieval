@@ -131,6 +131,7 @@ def update_esg_urls_order(search_results: List[dict]):
     updated_urls = {index: value.get("link") for index, value in enumerate(sorted_urls)}
     return updated_urls
 
+
 def openfigi_post_request(data):
     """
     Function to send a POST request to the OpenFIGI API with the given data.

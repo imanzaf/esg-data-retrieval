@@ -165,17 +165,20 @@ class TableExtractor:
 
         for idx, table in enumerate(tables):
             # Save the table as csv
-            element_csv_filepath = os.path.join(output_dir, f"{self.file_name}-table-{idx+1}.csv")
+            element_csv_filepath = os.path.join(
+                output_dir, f"{self.file_name}-table-{idx+1}.csv"
+            )
             table.to_csv(element_csv_filepath)
 
     def _get_tables_from_cache(self):
-
         """
-            Load tables from cache if recently saved
-            """
+        Load tables from cache if recently saved
+        """
         # Define the root output path and process the company name
         ROOT_OUTPUT_PATH = os.getenv("ROOT_OUTPUT_PATH")
-        company_name = str(self.company.name).upper().replace(" ", "_").replace("/", "_")
+        company_name = (
+            str(self.company.name).upper().replace(" ", "_").replace("/", "_")
+        )
         parser_dir = None
         # Check if the company name exists in the folder name
         for folder in os.listdir(ROOT_OUTPUT_PATH):
@@ -184,7 +187,9 @@ class TableExtractor:
                 # Check if the folder_path contains a subfolder named self.parser
                 if os.path.isdir(folder_path):
                     for subfolder in os.listdir(folder_path):
-                        if subfolder == self.parser and os.path.isdir(os.path.join(folder_path, subfolder)):
+                        if subfolder == self.parser and os.path.isdir(
+                            os.path.join(folder_path, subfolder)
+                        ):
                             parser_dir = os.path.join(folder_path, subfolder)
                             break
 
@@ -195,7 +200,6 @@ class TableExtractor:
             logger.debug("No cached data found.")
             return None
         # check if cache path exists
-
 
         if os.path.isdir(parser_dir):
             last_modified_times = [
@@ -283,8 +287,6 @@ if __name__ == "__main__":
     company = Company(isin="US5949181045")
     file_path = "data/cache/US5949181045/RW1lmju.pdf"
 
-    extractor = TableExtractor(
-        company, file_path, TableParsers.TABULA
-    )
+    extractor = TableExtractor(company, file_path, TableParsers.TABULA)
     tables = extractor.extract()
     logger.info(f"Emissions tables for {company.identifier} extracted!")

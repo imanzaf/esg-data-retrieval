@@ -1,7 +1,9 @@
 import os
 import sys
-from src.utils import table_data_filtering
+
 from dotenv import load_dotenv
+
+from src.utils import table_data_filtering
 
 # Load environment variables from .env file
 load_dotenv()
@@ -24,9 +26,7 @@ def get_emissions_data(identifier, idType, parser):
         # Download pdf file
         path = data.download_pdf_from_urls([url], company.output_path)
         # get emissions data
-        output = TableExtractor(
-            company, path, parser
-        ).extract()
+        output = TableExtractor(company, path, parser).extract()
         if output is not None:
             break
 
