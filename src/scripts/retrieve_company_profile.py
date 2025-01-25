@@ -14,7 +14,7 @@ from src.utils.data import download_pdf_from_urls  # noqa: E402
 # TODO - switch to retrieve from inputs to flask app
 ROOT_DATA_DIR = os.getenv("ROOT_DIR")
 COMPANY_IDENTIFIER = (
-    "US0231351067"  # note: src/extract/tables.py requires ISIN currently
+    "GB00BNC5T391"  # note: src/extract/tables.py requires ISIN currently
 )
 
 if __name__ == "__main__":
