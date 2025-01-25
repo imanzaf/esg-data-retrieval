@@ -4,7 +4,7 @@ import re
 import pandas as pd
 
 
-def filter_tables(directory_path):
+def filter_tables(directory_path, parser):
     # Regex to match 'Scope 1' and 'Scope 2'
     regex_scope = r"(Scope\s1|Scope\s2)"
 
@@ -15,9 +15,9 @@ def filter_tables(directory_path):
     scope_data = []
 
     # Iterate over all files in the directory
-    for filename in os.listdir(directory_path):
+    for filename in os.listdir(os.path.join(directory_path, parser.value)):
         if filename.endswith(".csv"):
-            file_path = os.path.join(directory_path, filename)
+            file_path = os.path.join(directory_path, parser.value, filename)
             try:
                 print(f"Processing file: {file_path}")
                 # Read the CSV file
@@ -76,8 +76,9 @@ def filter_tables(directory_path):
         combined_scope_data = combined_scope_data.dropna(how="all")
 
         # Save the filtered data to a new CSV file
-        output_path = os.path.join(directory_path, "final_data.csv")
+        output_path = os.path.join(directory_path,  "esg_data.csv")
         combined_scope_data.to_csv(output_path, index=False)
         print(f"Filtered data saved to: {output_path}")
+        return combined_scope_data
     else:
         print("No data to combine.")

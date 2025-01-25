@@ -51,10 +51,10 @@ class TableExtractor:
         1. Returns list of extracted tables as pandas dataframes
         2. Saves tables to cache
         """
-        # check for cached data
-        cached_tables = self._get_tables_from_cache()
-        if cached_tables is not None:
-            return cached_tables
+        # # check for cached data
+        # cached_tables = self._get_tables_from_cache()
+        # if cached_tables is not None:
+        #     return cached_tables
 
         if isinstance(self.parser, List):
             all_tables = []
@@ -170,70 +170,6 @@ class TableExtractor:
             )
             table.to_csv(element_csv_filepath)
 
-    def _get_tables_from_cache(self):
-        """
-        Load tables from cache if recently saved
-        """
-        # Define the root output path and process the company name
-        ROOT_OUTPUT_PATH = os.getenv("ROOT_OUTPUT_PATH")
-        company_name = (
-            str(self.company.name).upper().replace(" ", "_").replace("/", "_")
-        )
-        parser_dir = None
-        # Check if the company name exists in the folder name
-        for folder in os.listdir(ROOT_OUTPUT_PATH):
-            if (company_name in folder) or (folder in company_name):
-                folder_path = os.path.join(ROOT_OUTPUT_PATH, folder)
-                # Check if the folder_path contains a subfolder named self.parser
-                if os.path.isdir(folder_path):
-                    for subfolder in os.listdir(folder_path):
-                        if subfolder == self.parser and os.path.isdir(
-                            os.path.join(folder_path, subfolder)
-                        ):
-                            parser_dir = os.path.join(folder_path, subfolder)
-                            break
-
-                if parser_dir:  # If the parser directory is found, break the outer loop
-                    break
-
-        if parser_dir is None:
-            logger.debug("No cached data found.")
-            return None
-        # check if cache path exists
-
-        if os.path.isdir(parser_dir):
-            last_modified_times = [
-                {
-                    f"{parser_dir}/{file}": datetime.fromtimestamp(
-                        os.path.getmtime(f"{parser_dir}/{file}")
-                    )
-                }
-                for file in os.listdir(parser_dir)
-            ]
-            # filter for files modified within past month
-            current_date = datetime.today()
-            cutoff_date = current_date - dateutil.relativedelta.relativedelta(months=1)
-            valid_files = []
-            for item in last_modified_times:
-                # Iterate over key-value pairs in the dictionary
-                for file_path, modified_time in item.items():
-                    if modified_time >= cutoff_date:
-                        valid_files.append(file_path)
-
-                # Load tables if any valid files are found
-            if valid_files:
-                tables = [
-                    pd.read_csv(file)
-                    for file in valid_files
-                    if str(file).endswith(".csv")
-                ]
-                return tables
-            else:
-                logger.debug("No recent cached data found.")
-                return None
-        else:
-            logger.debug("No cached data found.")
-            return None
 
     def _filter_pdf_pages(self, pdf_pages):
         """
