@@ -1,13 +1,15 @@
-from dotenv import load_dotenv
-from typing import List
 import datetime as dt
-from loguru import logger
-import requests
 import json
 import os
-from pydantic import BaseModel
 import re
 import sys
+from typing import List
+
+import requests
+from dotenv import load_dotenv
+from loguru import logger
+from pydantic import BaseModel
+
 from src.utils.data_models import SearchKeyWords
 
 load_dotenv()
@@ -31,7 +33,7 @@ class ESGReports:
     def __init__(self, company: CompanyProfile):
         self.company = company
         self.urls = self._get_report_search_results()
-        
+
         # set output path
         try:
             # set output path
@@ -42,7 +44,10 @@ class ESGReports:
         except Exception:
             self.output_path = os.path.join(
                 ROOT_OUTPUT_PATH,
-                str(self.company.identifier).upper().replace(" ", "_").replace("/", "_"),
+                str(self.company.identifier)
+                .upper()
+                .replace(" ", "_")
+                .replace("/", "_"),
             )
         os.makedirs(self.output_path, exist_ok=True)
         # dump company profile to json
@@ -80,7 +85,7 @@ class ESGReports:
         }
         self.urls = esg_urls
         logger.debug(f"ESG report urls for {self.company.name}: {self.urls}")
-    
+
     @staticmethod
     def _sort_search_reults(company_name: str, search_results: List[dict]):
 
