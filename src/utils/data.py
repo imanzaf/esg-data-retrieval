@@ -56,6 +56,7 @@ def get_msci_index_df(write=False):
     return df_filtered
 
 
+
 class SearchResult(BaseModel):
     company_name: str
     url: str
@@ -63,7 +64,8 @@ class SearchResult(BaseModel):
     description: str
     
     def score_search(self):
-        text_score = self.score_text(self.title) + self.score_text(self.description)
+        stripped_name = self.company_name.split(" ")[0]
+        text_score = self.score_text(self.title) + self.score_text(self.description) + (1 if stripped_name in self.title else 0) + (1 if stripped_name in self.description else 0)
         url_score = self.score_text(self.url) + (1 if self.company_name_lookup() else 0)
         return text_score + url_score
 
