@@ -3,6 +3,7 @@
 import datetime as dt
 import json
 import os
+import time
 import sys
 
 import requests
@@ -14,15 +15,9 @@ sys.path.append(os.getenv("ROOT_DIR"))
 
 ROOT_DIR = os.getenv("ROOT_DIR")
 ROOT_OUTPUT_PATH = os.getenv("ROOT_OUTPUT_PATH")
-API_KEY = os.getenv("GOOGLE_API_KEY")
-SEARCH_ENGINE_ID = os.getenv("GOOGLE_SEARCH_ENGINE_ID")
-
-if not any([API_KEY, SEARCH_ENGINE_ID]):
-    raise ValueError(
-        "Environment variables GOOGLE_API_KEY or GOOGLE_SEARCH_ENGINE_ID are not set."
-    )
-
-from src.utils.data import openfigi_post_request, sort_search_reults  # noqa: E402
+# OPENFIGI variables
+OPENFIGI_API_KEY = os.getenv("OPENFIGI_API_KEY")
+OPENFIGI_URL = os.getenv("OPENFIGI_URL")
 
 
 class CompanyProfile:
@@ -44,37 +39,7 @@ class CompanyProfile:
 
         # invoke company details function to retrieve missing attributes
         self._complete_company_profile()
-        try:
-            # set output path
-            self.output_path = os.path.join(
-                ROOT_OUTPUT_PATH,
-                str(self.name).upper().replace(" ", "_").replace("/", "_"),
-            )
-        except Exception:
-            self.output_path = os.path.join(
-                ROOT_OUTPUT_PATH,
-                str(self.identifier).upper().replace(" ", "_").replace("/", "_"),
-            )
         logger.debug(f"Company Identifier: {self.identifier}")
-        if search:
-            os.makedirs(self.output_path, exist_ok=True)
-            # invoke function to retrineve esg report url
-            self.esg_report_urls = {}
-            self._get_esg_report_urls()
-            # dump company profile to json
-            self.dump_as_json()
-
-    def dump_as_json(self):
-        """Dumps the company profile as a JSON file into the specified folder."""
-        if not ROOT_DIR:
-            raise ValueError("ROOT_DIR is not set in the .env file.")
-        try:
-            file_path = f"{self.output_path}/profile.json"
-            with open(file_path, "w") as json_file:
-                json.dump(self.__dict__, json_file, indent=4)
-            logger.info(f"Company profile JSON saved to {file_path}")
-        except Exception as e:
-            print(f"Failed to save company profile JSON: {e}")
 
     @staticmethod
     def is_valid_isin(ISIN):
@@ -97,8 +62,7 @@ class CompanyProfile:
             return True
         return False
 
-    @staticmethod
-    def get_profile_from_identifier(identifier, idType):
+    def get_profile_from_identifier(self, identifier, idType):
         """
         Function to fetch the ticker symbol from OpenFIGI API using the ISIN code.
         """
@@ -106,11 +70,11 @@ class CompanyProfile:
         openfigi_response = None
 
         if idType == "isin":
-            openfigi_response = openfigi_post_request(
+            openfigi_response = self._openfigi_post_request(
                 [{"idType": "ID_ISIN", "idValue": identifier}]
             )
         elif idType == "ticker":
-            openfigi_response = openfigi_post_request(
+            openfigi_response = self._openfigi_post_request(
                 [{"idType": "TICKER", "idValue": identifier}]
             )
 
@@ -143,39 +107,37 @@ class CompanyProfile:
                     f"ISIN {self.isin} not found. Unable to fetch the corresponding details."
                 )
                 sys.exit()
-
-    def _get_esg_report_urls(self) -> None:
+    
+    @staticmethod
+    def _openfigi_post_request(data):
         """
-        Retrieve the top 3 URLs of the company's ESG reports using Google Custom Search.
+        Function to send a POST request to the OpenFIGI API with the given data.
+
+        Args:
+            data (list): List of dictionaries containing the data to send in the request
+
+        Returns:
+            dict: Dictionary containing the response from the OpenFIGI API
         """
-        # Search parameters
-        current_year = str(dt.datetime.now().year)
-        search_query = f"{self.name} {current_year} ESG report filetype:pdf"
-        url = "https://www.googleapis.com/customsearch/v1"
-        params = {
-            "q": search_query,
-            "key": API_KEY,
-            "cx": SEARCH_ENGINE_ID,
+        headers = {
+            "Content-Type": "application/json",
+            "X-OPENFIGI-APIKEY": OPENFIGI_API_KEY,
         }
+        try:
+            # Make the POST request to OpenFIGI API
+            response = requests.post(OPENFIGI_URL, json=data, headers=headers)
 
-        # Make the search request
-        response = requests.get(url, params=params)
-        response.raise_for_status()
-        search_results = response.json().get("items", [])[:5]  # Get top 5 results
+            # Handle rate-limiting with retries
+            while response.status_code == 429:
+                logger.warning("Rate limit reached for OPENFIGI, retrying in 3 seconds...")
+                time.sleep(3)
+                response = requests.post(OPENFIGI_URL, json=data, headers=headers)
 
-        if not search_results:
-            logger.warning(f"No ESG reports found for {self.name}")
-            # TODO - return response to display in UI
-            sys.exit()
-
-        sorted_results = sort_search_reults(
-            self.name, search_results
-        )  # Invoke function to get proper order of keywords
-        esg_urls = {
-            index: value.get("link", "") for index, value in enumerate(sorted_results)
-        }
-        self.esg_report_urls = esg_urls
-        logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
+            # Return the JSON response
+            return response.json()
+        except Exception as e:
+            logger.error(f"Error sending POST request to OpenFIGI API: {e}")
+            return None
 
 
 # Main script to fetch company information
@@ -185,4 +147,3 @@ if __name__ == "__main__":
     identifier = input("Enter ISIN, Ticker, or Company Name: ").strip()
     company = CompanyProfile(identifier, id_type)
     logger.info(f"Company Name: {company.name}, Ticker: {company.ticker}")
-    print(company.esg_report_urls[0])

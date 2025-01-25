@@ -16,28 +16,28 @@ sys.path.append(f"{os.getenv('ROOT_DIR')}")
 
 from src.extract.tables import TableExtractor  # noqa: E402
 from src.find.company_profile import CompanyProfile  # noqa: E402
+from src.find.esg_reports import ESGReports  # noqa: E402
 from src.utils import table_data_filtering  # noqa: E402
 from src.utils.data import download_pdf_from_urls  # noqa: E402
 from src.utils.data_models import TableParsers  # noqa: E402
 
 
 def get_emissions_data(identifier, idType, parser):
-    # check cache for data
-    company = CompanyProfile(identifier, idType, search=False)
-    if os.path.exists(company.output_path):
-        try:
-            data = pd.read_csv(os.path.join(company.output_path, "esg_data.csv"))
-            logger.info(f"Found cached data for {company.name}")
-            return data
-        except Exception:
-            logger.warning(
-                "Unable to retrieve cached data. Retrieving emissions data from web..."
-            )
+    company = CompanyProfile(identifier, idType)
 
-    # TODO - reinit is inefficient
-    company = CompanyProfile(identifier, idType, search=True)
+    # check cache for data
+    try:
+        data = pd.read_csv(os.path.join(company.output_path, "esg_data.csv"))
+        logger.info(f"Found cached data for {company.name}")
+        return data
+    except Exception:
+        logger.warning(
+            "Unable to retrieve cached data. Retrieving emissions data from web..."
+        )
+
+    esg_reports = ESGReports(company)
     # Loop over urls until emissions data retrieved
-    for url in company.esg_report_urls.values():
+    for url in esg_reports.urls.values():
         try:
             # Download pdf file
             path = download_pdf_from_urls([url], company.output_path)
@@ -58,7 +58,7 @@ def get_emissions_data(identifier, idType, parser):
 if __name__ == "__main__":
     start = time.time()
 
-    identifier = "US0378331005"
+    identifier = "US67066G1040"
     idType = "isin"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)

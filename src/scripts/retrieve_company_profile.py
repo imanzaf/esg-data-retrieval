@@ -21,8 +21,3 @@ if __name__ == "__main__":
     # get the ticker symbol and company name from ISIN
     company = CompanyProfile(COMPANY_IDENTIFIER, "ISIN")
     logger.info(f"Retrieved details for {company.name}")
-
-    # download esg report
-    download_pdf_from_urls(company.esg_report_urls.values(), company.output_path)
-
-    logger.info("Done!")
