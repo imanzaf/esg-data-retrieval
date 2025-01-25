@@ -7,6 +7,8 @@ from io import BytesIO
 from typing import List
 import re
 
+from src.utils.data_models import SearchKeyWords
+from pydantic import BaseModel
 import pandas as pd
 import requests
 from dotenv import load_dotenv
@@ -59,28 +61,8 @@ def count_keywords(name, text):
     Count the number of predefined keywords in the given URL, with double weight
     for the current year and the previous year keywords.
     """
-    current_year = str(dt.datetime.now().year)
-    previous_year = str(dt.datetime.now().year - 1)
-
-    # Keywords with regular weight
-    keywords = [
-        "esg",
-        "csr",
-        "sustainability",
-        "emission",
-        "environment",
-        "scope 1",
-        "scope 2",
-        "scope",
-        "sustainable",
-        "impact",
-        "report",
-        "progress" "fact" "sheet",
-    ]
-    # current year and previous year
-    count = (current_year in text) + (previous_year in text)
     # Add counts for the other keywords
-    count += sum(keyword.lower() in text.lower() for keyword in keywords)
+    
 
     # Create a regex pattern for the company name
 
@@ -97,68 +79,45 @@ def count_keywords(name, text):
     return count
 
 
-def update_esg_urls_order(name, search_results: List[dict]):
-    # get current and previous year
-    current_year = str(dt.datetime.now().year)
-    previous_year = str(dt.datetime.now().year - 1)
-    before_previous_year = str(dt.datetime.now().year - 2)
+class SearchResult(BaseModel):
+    company_name: str
+    url: str
+    title: str
+    description: str
+    
+    def score_search(self):
+        text_score = self.score_text(self.title) + self.score_text(self.description)
+        url_score = self.score_text(self.url) + (1 if self.company_name_lookup() else 0)
+        return text_score + url_score
 
-    def count_keywords_wrapper(item):
-        # Wrapper function to count keywords with field-specific context
-        text = item.get("text", "")
-        return count_keywords(name, text)
+    @staticmethod
+    def score_text(text: str):
+        count = sum(keyword.value.lower() in text.lower() for keyword in SearchKeyWords)
+        return count
+
+    def company_name_lookup(self):
+        # get the site name from url
+        url_index = re.search(r"(?:https?://)?(?:www\.)?([a-zA-Z0-9]+)", self.url)
+        # check if company name starts with site name
+        if self.company_name.startswith(url_index):
+            return True
+        else:
+            return False
 
 
-    def check_search_zero_metadata():
-        search_zero_metadata = [search_results[0].get("title"), search_results[0].get("snippet"),
-                                search_results[0].get("link")]
-        for m in search_zero_metadata:
-            name_parts = re.split(r"[.\s]+", name)
-            first_word = name_parts[0]  # Take the first part as the primary company name
-            # Build regex to match the first word as a standalone word
-            company_pattern = re.compile(rf"\b{re.escape(first_word)}\b", re.IGNORECASE)
-            if ((current_year or previous_year)and company_pattern and ("esg" or "environment")) in m.lower():
-                return True
-        return False
+def sort_search_reults(company_name: str, search_results: List[dict]):
 
-    if check_search_zero_metadata():
-        sorted_urls = search_results
-    # Loop through years and check if any of them is in the first link's title
-    else:
-        sorted_urls = sorted(
-            [
-                {"text": result.get("title", ""), "link": result.get("link", "")}
-                for result in search_results
-            ],
-            key=lambda item: count_keywords_wrapper(item),
-            reverse=True,
-        )
+    for result in search_results:
+        result_obj = SearchResult(company_name=company_name, url=result.get("link", ""), title=result.get("title", ""), description=result.get("snippet", ""))
+        result["score"] = result_obj.score_search()
+    
+    sorted_results = sorted(
+        search_results,
+        key=lambda item: item.get("score"),
+        reverse=True,
+    )
 
-        if (current_year or previous_year or before_previous_year) in search_results[0].get("link", ""):
-        # If the year is not found in the first link, sort the URLs
-            sorted_urls = sorted(
-                [
-                    {"text": result.get("snippet", ""), "link": result.get("link", "")}
-                    for result in search_results
-                ],
-                key=lambda item: count_keywords_wrapper(item),
-                reverse=True,
-            )
-
-        if (current_year or previous_year or before_previous_year) in search_results[0].get("snippet", ""):
-                # If the year is not found in the first link, sort the URLs
-                sorted_urls = sorted(
-                    [
-                        {"text": result.get("link", ""), "link": result.get("link", "")}
-                        for result in search_results
-                    ],
-                    key=lambda item: count_keywords_wrapper(item),
-                    reverse=True,
-                )
-
-    # Create a new dictionary where the values are just the URL attribute, and are re-indexed according to their new order
-    updated_urls = {index: value.get("link", "") for index, value in enumerate(sorted_urls)}
-    return updated_urls
+    return sorted_results
 
 
 def openfigi_post_request(data):
