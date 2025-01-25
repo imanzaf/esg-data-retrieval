@@ -1,0 +1,14 @@
+{
+    "identifier": "US2546871060",
+    "idType": "isin",
+    "isin": "US2546871060",
+    "name": "WALT DISNEY CO/THE",
+    "ticker": "DIS",
+    "description": "DIS",
+    "output_path": "/workspaces/esg-data-retrieval/data/cache/WALT_DISNEY_CO_THE",
+    "esg_report_urls": {
+        "0": "https://thewaltdisneycompany.eu/app/uploads/2024/04/TWDC-EMEA-CSR-Report_2023.pdf",
+        "1": "https://impact.disney.com/app/uploads/Current/2030-Environmental-Goals-White-Paper-1.pdf",
+        "2": "https://thewaltdisneycompany.com/app/uploads/2023/03/2022-CSR-Report.pdf"
+    }
+}

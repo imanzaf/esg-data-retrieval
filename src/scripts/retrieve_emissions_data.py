@@ -2,6 +2,7 @@ import os
 import sys
 import pandas as pd
 from loguru import logger
+import time
 
 from dotenv import load_dotenv
 
@@ -39,7 +40,7 @@ def get_emissions_data(identifier, idType, parser):
         path = download_pdf_from_urls([url], company.output_path)
         # get emissions data
         output = TableExtractor(company, path, parser).extract()
-        if output is not None:
+        if output not in [None, [], False]:
             break
 
     data = table_data_filtering.filter_tables(company.output_path, parser)
@@ -48,7 +49,14 @@ def get_emissions_data(identifier, idType, parser):
 
 # Example Usage
 if __name__ == "__main__":
-    identifier = "GB00BNC5T391"
+    start = time.time()
+
+    identifier = "US0231351067"
     idType = "isin"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)
+
+    end = time.time()
+    total = end - start
+
+    logger.info(f"time taken: {total}")

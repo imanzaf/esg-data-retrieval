@@ -51,10 +51,6 @@ class TableExtractor:
         1. Returns list of extracted tables as pandas dataframes
         2. Saves tables to cache
         """
-        # # check for cached data
-        # cached_tables = self._get_tables_from_cache()
-        # if cached_tables is not None:
-        #     return cached_tables
 
         if isinstance(self.parser, List):
             all_tables = []

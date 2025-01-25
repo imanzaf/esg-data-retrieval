@@ -1,0 +1,14 @@
+{
+    "identifier": "US38141G1040",
+    "idType": "isin",
+    "isin": "US38141G1040",
+    "name": "GOLDMAN SACHS GROUP INC",
+    "ticker": "GS",
+    "description": "GS",
+    "output_path": "/workspaces/esg-data-retrieval/data/cache/GOLDMAN_SACHS_GROUP_INC",
+    "esg_report_urls": {
+        "0": "https://www.goldmansachs.com/accelerating-transition/accelerating-transition-report.pdf",
+        "1": "https://am.gs.com/cms-assets/gsam-app/documents/insights/en/evergreen/AM_Stewardship_Report_2023.pdf",
+        "2": "https://www.goldmansachs.com/our-commitments/sustainability/2023-sustainability-report/multimedia/report.pdf"
+    }
+}
