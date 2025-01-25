@@ -1,5 +1,8 @@
 import os
 import sys
+import pandas as pd
+from loguru import logger
+import time
 
 from dotenv import load_dotenv
 
@@ -13,29 +16,51 @@ sys.path.append(f"{os.getenv('ROOT_DIR')}")
 
 from src.extract.tables import TableExtractor  # noqa: E402
 from src.find.company_profile import CompanyProfile  # noqa: E402
-from src.utils import data  # noqa: E402
+from src.utils.data import download_pdf_from_urls  # noqa: E402
 from src.utils.data_models import TableParsers  # noqa: E402
-from src.utils import table_data_filtering
+from src.utils import table_data_filtering  # noqa: E402
 
 
 def get_emissions_data(identifier, idType, parser):
-    company = CompanyProfile(identifier, idType)
+    # check cache for data
+    company = CompanyProfile(identifier, idType, search=False)
+    if os.path.exists(company.output_path):
+        try:
+            data = pd.read_csv(os.path.join(company.output_path, "esg_data.csv"))
+            logger.info(f"Found cached data for {company.name}")
+            return data
+        except:
+            logger.warning("Unable to retrieve cached data. Retrieving emissions data from web...")
+    
+    # TODO - reinit is inefficient
+    company = CompanyProfile(identifier, idType, search=True)
     # Loop over urls until emissions data retrieved
     for url in company.esg_report_urls.values():
-        # Download pdf file
-        path = data.download_pdf_from_urls([url], company.output_path)
-        # get emissions data
-        output = TableExtractor(company, path, parser).extract()
-        if output is not None:
-            break
-
-    path = os.path.join(company.output_path, parser.value)
-    table_data_filtering.filter_tables(path)
+        try:
+            # Download pdf file
+            path = download_pdf_from_urls([url], company.output_path)
+            # get emissions data
+            output = TableExtractor(company, path, parser).extract()
+            if output not in [None, [], False]:
+                break
+        except:
+            continue
+    
+    # TODO - pass tables as objects 
+    data = table_data_filtering.filter_tables(company.output_path, parser)
+    return data
 
 
 # Example Usage
 if __name__ == "__main__":
-    identifier = "US2546871060"
-    idType = "ISIN"
+    start = time.time()
+
+    identifier = "US38141G1040"
+    idType = "isin"
     parser = TableParsers.DOCLING
-    get_emissions_data(identifier, idType, parser)
+    data = get_emissions_data(identifier, idType, parser)
+
+    end = time.time()
+    total = end - start
+
+    logger.info(f"time taken: {total}")

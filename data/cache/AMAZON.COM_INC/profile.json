@@ -1,0 +1,14 @@
+{
+    "identifier": "US0231351067",
+    "idType": "isin",
+    "isin": "US0231351067",
+    "name": "AMAZON.COM INC",
+    "ticker": "AMZN",
+    "description": "AMZN",
+    "output_path": "/workspaces/esg-data-retrieval/data/cache/AMAZON.COM_INC",
+    "esg_report_urls": {
+        "0": "https://s2.q4cdn.com/299287126/files/doc_financials/2024/ar/Amazon-com-Inc-2024-Proxy-Statement.pdf",
+        "1": "https://serve360.marriott.com/wp-content/uploads/2023/06/Marriott-2023-Serve-360-ESG-Report-accessible.pdf",
+        "2": "https://sustainability.aboutamazon.com/2021-sustainability-report.pdf"
+    }
+}

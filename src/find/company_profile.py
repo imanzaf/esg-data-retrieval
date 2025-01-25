@@ -27,7 +27,7 @@ from src.utils.data import openfigi_post_request, sort_search_reults  # noqa: E4
 
 class CompanyProfile:
 
-    def __init__(self, identifier, idType):  # idType is TICKER, NAME or ISIN
+    def __init__(self, identifier, idType, search=True):  # idType is TICKER, NAME or ISIN
         # initialise default attributes
         self.identifier = identifier
         self.idType = idType.lower()
@@ -42,16 +42,23 @@ class CompanyProfile:
 
         # invoke company details function to retrieve missing attributes
         self._complete_company_profile()
-        # set output path
-        self.output_path = os.path.join(
-            ROOT_OUTPUT_PATH, str(self.name).upper().replace(" ", "_").replace("/", "_")
-        )
-        os.makedirs(self.output_path, exist_ok=True)
-        # invoke function to retrieve esg report url
-        self.esg_report_urls = {}
-        self._get_esg_report_urls()
-        # dump company profile to json
-        self.dump_as_json()
+        try:
+            # set output path
+            self.output_path = os.path.join(
+                ROOT_OUTPUT_PATH, str(self.name).upper().replace(" ", "_").replace("/", "_")
+            )
+        except:
+            self.output_path = os.path.join(
+                ROOT_OUTPUT_PATH, str(self.identifier).upper().replace(" ", "_").replace("/", "_")
+            )
+        logger.debug(f"Company Identifier: {self.identifier}")
+        if search:
+            os.makedirs(self.output_path, exist_ok=True)
+            # invoke function to retrineve esg report url
+            self.esg_report_urls = {}
+            self._get_esg_report_urls()
+            # dump company profile to json
+            self.dump_as_json()
 
     def dump_as_json(self):
         """Dumps the company profile as a JSON file into the specified folder."""
