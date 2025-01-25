@@ -9,7 +9,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Union
 
-import dateutil.relativedelta
 import pandas as pd
 import tabula
 from docling.document_converter import DocumentConverter
@@ -165,7 +164,6 @@ class TableExtractor:
                 output_dir, f"{self.file_name}-table-{idx+1}.csv"
             )
             table.to_csv(element_csv_filepath)
-
 
     def _filter_pdf_pages(self, pdf_pages):
         """

@@ -1,10 +1,10 @@
 import os
 import sys
-import pandas as pd
-from loguru import logger
 import time
 
+import pandas as pd
 from dotenv import load_dotenv
+from loguru import logger
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,9 +16,9 @@ sys.path.append(f"{os.getenv('ROOT_DIR')}")
 
 from src.extract.tables import TableExtractor  # noqa: E402
 from src.find.company_profile import CompanyProfile  # noqa: E402
+from src.utils import table_data_filtering  # noqa: E402
 from src.utils.data import download_pdf_from_urls  # noqa: E402
 from src.utils.data_models import TableParsers  # noqa: E402
-from src.utils import table_data_filtering  # noqa: E402
 
 
 def get_emissions_data(identifier, idType, parser):
@@ -29,9 +29,11 @@ def get_emissions_data(identifier, idType, parser):
             data = pd.read_csv(os.path.join(company.output_path, "esg_data.csv"))
             logger.info(f"Found cached data for {company.name}")
             return data
-        except:
-            logger.warning("Unable to retrieve cached data. Retrieving emissions data from web...")
-    
+        except Exception:
+            logger.warning(
+                "Unable to retrieve cached data. Retrieving emissions data from web..."
+            )
+
     # TODO - reinit is inefficient
     company = CompanyProfile(identifier, idType, search=True)
     # Loop over urls until emissions data retrieved
@@ -43,10 +45,11 @@ def get_emissions_data(identifier, idType, parser):
             output = TableExtractor(company, path, parser).extract()
             if output not in [None, [], False]:
                 break
-        except:
+        except Exception as e:
+            logger.debug(f"Unable to parse data from {url}: {e}")
             continue
-    
-    # TODO - pass tables as objects 
+
+    # TODO - pass tables as objects
     data = table_data_filtering.filter_tables(company.output_path, parser)
     return data
 

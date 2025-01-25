@@ -76,7 +76,7 @@ def filter_tables(directory_path, parser):
         combined_scope_data = combined_scope_data.dropna(how="all")
 
         # Save the filtered data to a new CSV file
-        output_path = os.path.join(directory_path,  "esg_data.csv")
+        output_path = os.path.join(directory_path, "esg_data.csv")
         combined_scope_data.to_csv(output_path, index=False)
         print(f"Filtered data saved to: {output_path}")
         return combined_scope_data

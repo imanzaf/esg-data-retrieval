@@ -27,7 +27,9 @@ from src.utils.data import openfigi_post_request, sort_search_reults  # noqa: E4
 
 class CompanyProfile:
 
-    def __init__(self, identifier, idType, search=True):  # idType is TICKER, NAME or ISIN
+    def __init__(
+        self, identifier, idType, search=True
+    ):  # idType is TICKER, NAME or ISIN
         # initialise default attributes
         self.identifier = identifier
         self.idType = idType.lower()
@@ -45,11 +47,13 @@ class CompanyProfile:
         try:
             # set output path
             self.output_path = os.path.join(
-                ROOT_OUTPUT_PATH, str(self.name).upper().replace(" ", "_").replace("/", "_")
+                ROOT_OUTPUT_PATH,
+                str(self.name).upper().replace(" ", "_").replace("/", "_"),
             )
-        except:
+        except Exception:
             self.output_path = os.path.join(
-                ROOT_OUTPUT_PATH, str(self.identifier).upper().replace(" ", "_").replace("/", "_")
+                ROOT_OUTPUT_PATH,
+                str(self.identifier).upper().replace(" ", "_").replace("/", "_"),
             )
         logger.debug(f"Company Identifier: {self.identifier}")
         if search:
@@ -164,10 +168,12 @@ class CompanyProfile:
             # TODO - return response to display in UI
             sys.exit()
 
-        sorted_results = sort_search_reults(self.name,
-            search_results
+        sorted_results = sort_search_reults(
+            self.name, search_results
         )  # Invoke function to get proper order of keywords
-        esg_urls = {index: value.get("link", "") for index, value in enumerate(sorted_results)}
+        esg_urls = {
+            index: value.get("link", "") for index, value in enumerate(sorted_results)
+        }
         self.esg_report_urls = esg_urls
         logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
 

@@ -2,9 +2,9 @@
 Stores enums and data models
 """
 
+import datetime as dt
 from enum import Enum
 from typing import Union
-import datetime as dt
 
 from pydantic import BaseModel, Field
 
@@ -24,6 +24,7 @@ class SearchKeyWords(Enum):
     FACT_SHEET = "fact sheet"
     YEAR = str(dt.datetime.now().year)
     YEAR_LAG = str(dt.datetime.now().year - 1)
+
 
 class RegexPatterns(Enum):
     SCOPE1 = r"\b(scope\s*1|scope\s*i|scope\s*one)\b"

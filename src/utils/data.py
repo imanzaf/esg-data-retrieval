@@ -1,18 +1,18 @@
-import datetime as dt
 import os
+import re
 import sys
 import time
 import urllib
 from io import BytesIO
 from typing import List
-import re
 
-from src.utils.data_models import SearchKeyWords
-from pydantic import BaseModel
 import pandas as pd
 import requests
 from dotenv import load_dotenv
 from loguru import logger
+from pydantic import BaseModel
+
+from src.utils.data_models import SearchKeyWords
 
 load_dotenv()
 
@@ -56,16 +56,20 @@ def get_msci_index_df(write=False):
     return df_filtered
 
 
-
 class SearchResult(BaseModel):
     company_name: str
     url: str
     title: str
     description: str
-    
+
     def score_search(self):
         stripped_name = self.company_name.split(" ")[0]
-        text_score = self.score_text(self.title) + self.score_text(self.description) + (1 if stripped_name in self.title else 0) + (1 if stripped_name in self.description else 0)
+        text_score = (
+            self.score_text(self.title)
+            + self.score_text(self.description)
+            + (1 if stripped_name in self.title else 0)
+            + (1 if stripped_name in self.description else 0)
+        )
         url_score = self.score_text(self.url) + (1 if self.company_name_lookup() else 0)
         return text_score + url_score
 
@@ -76,7 +80,9 @@ class SearchResult(BaseModel):
 
     def company_name_lookup(self):
         # get the site name from url
-        url_index = re.search(r"(?:https?://)?(?:www\.)?([a-zA-Z0-9]+)", self.url).group()
+        url_index = re.search(
+            r"(?:https?://)?(?:www\.)?([a-zA-Z0-9]+)", self.url
+        ).group()
         # check if company name starts with site name
         if self.company_name.startswith(url_index):
             return True
@@ -87,9 +93,14 @@ class SearchResult(BaseModel):
 def sort_search_reults(company_name: str, search_results: List[dict]):
 
     for result in search_results:
-        result_obj = SearchResult(company_name=company_name, url=result.get("link", ""), title=result.get("title", ""), description=result.get("snippet", ""))
+        result_obj = SearchResult(
+            company_name=company_name,
+            url=result.get("link", ""),
+            title=result.get("title", ""),
+            description=result.get("snippet", ""),
+        )
         result["score"] = result_obj.score_search()
-    
+
     sorted_results = sorted(
         search_results,
         key=lambda item: item.get("score"),
