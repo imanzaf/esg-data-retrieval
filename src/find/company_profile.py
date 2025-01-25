@@ -43,10 +43,16 @@ class CompanyProfile:
 
         # invoke company details function to retrieve missing attributes
         self._complete_company_profile()
-        # set output path
-        self.output_path = os.path.join(
-            ROOT_OUTPUT_PATH, str(self.name).upper().replace(" ", "_").replace("/", "_")
-        )
+        logger.info(f"Company Identifier: {self.identifier}")
+        try:
+            # set output path
+            self.output_path = os.path.join(
+                ROOT_OUTPUT_PATH, str(self.name).upper().replace(" ", "_").replace("/", "_")
+            )
+        except:
+            self.output_path = os.path.join(
+                ROOT_OUTPUT_PATH, str(self.identifier).upper().replace(" ", "_").replace("/", "_")
+            )
         os.makedirs(self.output_path, exist_ok=True)
         # invoke function to retrieve esg report url
         self.esg_report_urls = {}

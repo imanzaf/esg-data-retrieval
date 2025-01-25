@@ -3,8 +3,6 @@ import sys
 
 from dotenv import load_dotenv
 
-from src.utils import table_data_filtering
-
 # Load environment variables from .env file
 load_dotenv()
 # Get ROOT_DIR from the environment variables
@@ -17,6 +15,7 @@ from src.extract.tables import TableExtractor  # noqa: E402
 from src.find.company_profile import CompanyProfile  # noqa: E402
 from src.utils import data  # noqa: E402
 from src.utils.data_models import TableParsers  # noqa: E402
+from src.utils import table_data_filtering  # noqa: E402
 
 
 def get_emissions_data(identifier, idType, parser):
@@ -36,7 +35,7 @@ def get_emissions_data(identifier, idType, parser):
 
 # Example Usage
 if __name__ == "__main__":
-    identifier = "Apple"
-    idType = "Name"
+    identifier = "GB00BNC5T391"
+    idType = "isin"
     parser = TableParsers.DOCLING
     get_emissions_data(identifier, idType, parser)
