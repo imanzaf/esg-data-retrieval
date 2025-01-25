@@ -36,13 +36,17 @@ def get_emissions_data(identifier, idType, parser):
     company = CompanyProfile(identifier, idType, search=True)
     # Loop over urls until emissions data retrieved
     for url in company.esg_report_urls.values():
-        # Download pdf file
-        path = download_pdf_from_urls([url], company.output_path)
-        # get emissions data
-        output = TableExtractor(company, path, parser).extract()
-        if output not in [None, [], False]:
-            break
-
+        try:
+            # Download pdf file
+            path = download_pdf_from_urls([url], company.output_path)
+            # get emissions data
+            output = TableExtractor(company, path, parser).extract()
+            if output not in [None, [], False]:
+                break
+        except:
+            continue
+    
+    # TODO - pass tables as objects 
     data = table_data_filtering.filter_tables(company.output_path, parser)
     return data
 
@@ -51,7 +55,7 @@ def get_emissions_data(identifier, idType, parser):
 if __name__ == "__main__":
     start = time.time()
 
-    identifier = "US0231351067"
+    identifier = "US38141G1040"
     idType = "isin"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)
