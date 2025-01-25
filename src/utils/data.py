@@ -56,29 +56,6 @@ def get_msci_index_df(write=False):
     return df_filtered
 
 
-def count_keywords(name, text):
-    """
-    Count the number of predefined keywords in the given URL, with double weight
-    for the current year and the previous year keywords.
-    """
-    # Add counts for the other keywords
-    
-
-    # Create a regex pattern for the company name
-
-    # Regex for matching the company name
-    # Split the company name by spaces and dots
-    name_parts = re.split(r"[.\s]+", name)
-    first_word = name_parts[0]  # Take the first part as the primary company name
-
-    # Build regex to match the first word as a standalone word
-    company_pattern = re.compile(rf"\b{re.escape(first_word)}\b", re.IGNORECASE)
-
-    # Count matches of the company name
-    count += len(company_pattern.findall(text))
-    return count
-
-
 class SearchResult(BaseModel):
     company_name: str
     url: str
