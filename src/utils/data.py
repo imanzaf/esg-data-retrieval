@@ -97,7 +97,7 @@ class SearchResult(BaseModel):
 
     def company_name_lookup(self):
         # get the site name from url
-        url_index = re.search(r"(?:https?://)?(?:www\.)?([a-zA-Z0-9]+)", self.url)
+        url_index = re.search(r"(?:https?://)?(?:www\.)?([a-zA-Z0-9]+)", self.url).group()
         # check if company name starts with site name
         if self.company_name.startswith(url_index):
             return True

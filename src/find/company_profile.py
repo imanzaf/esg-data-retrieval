@@ -161,8 +161,8 @@ class CompanyProfile:
             search_results
         )  # Invoke function to get proper order of keywords
         esg_urls = {index: value.get("link", "") for index, value in enumerate(sorted_results)}
-        logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
         self.esg_report_urls = esg_urls
+        logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")
 
 
 # Main script to fetch company information
