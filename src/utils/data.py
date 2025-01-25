@@ -16,7 +16,7 @@ load_dotenv()
 sys.path.append(os.getenv("ROOT_DIR"))
 
 # URL to the CSV file (ACWI ETF holdings)
-MSCI_FUND_URL = os.getenv("MSCI_FUND_URL")
+MSCI_FUND_URL = "https://www.blackrock.com/ca/investors/en/products/239697/ishares-msci-world-index-etf/1515395013957.ajax?fileType=xls&fileName=iShares-MSCI-World-Index-ETF_fund&dataType=fund"
 # OPENFIGI variables
 OPENFIGI_API_KEY = os.getenv("OPENFIGI_API_KEY")
 OPENFIGI_URL = os.getenv("OPENFIGI_URL")
@@ -33,12 +33,16 @@ def get_msci_index_df(write=False):
     Returns:
         pd.DataFrame: DataFrame containing the MSCI ACWI ETF holdings data
     """
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
+    }
+
     # if file already downloaded read directly from disk
     if os.path.exists(f'{os.getenv("ROOT_DIR")}/data/ACWI_holdings.csv'):
         # Load the CSV file from disk
         df = pd.read_csv(f'{os.getenv("ROOT_DIR")}/data/ACWI_holdings.csv', header=9)
     else:
-        response = requests.get(MSCI_FUND_URL)
+        response = requests.get(MSCI_FUND_URL, headers=headers)
         # Save the CSV file to disk (optional)
         if write:
             with open(f'{os.getenv("ROOT_DIR")}/data/ACWI_holdings.csv', "wb") as f:
@@ -80,7 +84,7 @@ def count_keywords(url: dict):
     # Double weight for current year and previous year
     count = 2 * (current_year in text) + 2 * (previous_year in text)
     # Add counts for the other keywords
-    count += sum(keyword.lower() in text for keyword in keywords)
+    count += sum(keyword.lower() in text.lower() for keyword in keywords)
 
     return count
 

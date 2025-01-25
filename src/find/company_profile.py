@@ -151,7 +151,7 @@ class CompanyProfile:
         # Make the search request
         response = requests.get(url, params=params)
         response.raise_for_status()
-        search_results = response.json().get("items", [])[:3]  # Get top 3 results
+        search_results = response.json().get("items", [])[:4]  # Get top 3 results
 
         if not search_results:
             logger.warning(f"No ESG reports found for {self.identifier}.")
