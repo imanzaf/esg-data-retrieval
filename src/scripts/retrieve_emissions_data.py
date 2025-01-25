@@ -36,7 +36,7 @@ def get_emissions_data(identifier, idType, parser):
 
 # Example Usage
 if __name__ == "__main__":
-    identifier = "Apple"
-    idType = "Name"
+    identifier = "US0231351067"
+    idType = "ISIN"
     parser = TableParsers.DOCLING
     get_emissions_data(identifier, idType, parser)

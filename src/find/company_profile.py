@@ -151,7 +151,7 @@ class CompanyProfile:
         # Make the search request
         response = requests.get(url, params=params)
         response.raise_for_status()
-        search_results = response.json().get("items", [])[:3]  # Get top 3 results
+        search_results = response.json().get("items", [])[:5]  # Get top 5 results
 
         if not search_results:
             logger.warning(f"No ESG reports found for {self.identifier}.")
@@ -185,7 +185,7 @@ class CompanyProfile:
             # TODO - return response to display in UI
             sys.exit()
 
-        self.esg_report_urls = update_esg_urls_order(
+        self.esg_report_urls = update_esg_urls_order(self.name,
             list(self.esg_report_urls.values())
         )  # Invoke function to get proper order of keywords
         logger.debug(f"ESG report urls for {self.name}: {self.esg_report_urls}")

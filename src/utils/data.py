@@ -5,6 +5,7 @@ import time
 import urllib
 from io import BytesIO
 from typing import List
+import re
 
 import pandas as pd
 import requests
@@ -53,12 +54,11 @@ def get_msci_index_df(write=False):
     return df_filtered
 
 
-def count_keywords(url: dict):
+def count_keywords(name, text):
     """
     Count the number of predefined keywords in the given URL, with double weight
     for the current year and the previous year keywords.
     """
-    text = url.get("text")
     current_year = str(dt.datetime.now().year)
     previous_year = str(dt.datetime.now().year - 1)
 
@@ -72,63 +72,92 @@ def count_keywords(url: dict):
         "scope 1",
         "scope 2",
         "scope",
+        "sustainable",
+        "impact",
         "report",
-        "statement",
-        "policy",
         "progress" "fact" "sheet",
     ]
-    # Double weight for current year and previous year
-    count = 2 * (current_year in text) + 2 * (previous_year in text)
+    # current year and previous year
+    count = (current_year in text) + (previous_year in text)
     # Add counts for the other keywords
-    count += sum(keyword.lower() in text for keyword in keywords)
+    count += sum(keyword.lower() in text.lower() for keyword in keywords)
 
+    # Create a regex pattern for the company name
+
+    # Regex for matching the company name
+    # Split the company name by spaces and dots
+    name_parts = re.split(r"[.\s]+", name)
+    first_word = name_parts[0]  # Take the first part as the primary company name
+
+    # Build regex to match the first word as a standalone word
+    company_pattern = re.compile(rf"\b{re.escape(first_word)}\b", re.IGNORECASE)
+
+    # Count matches of the company name
+    count += len(company_pattern.findall(text))
     return count
 
 
-def update_esg_urls_order(search_results: List[dict]):
+def update_esg_urls_order(name, search_results: List[dict]):
     # get current and previous year
     current_year = str(dt.datetime.now().year)
     previous_year = str(dt.datetime.now().year - 1)
+    before_previous_year = str(dt.datetime.now().year - 2)
 
-    sorted_urls = search_results
-    # Check if the any title contains the current or previous year
-    if any([current_year in url.get("title") for url in search_results]) or any(
-        [previous_year in url.get("title") for url in search_results]
-    ):
+    def count_keywords_wrapper(item):
+        # Wrapper function to count keywords with field-specific context
+        text = item.get("text", "")
+        return count_keywords(name, text)
+
+
+    def check_search_zero_metadata():
+        search_zero_metadata = [search_results[0].get("title"), search_results[0].get("snippet"),
+                                search_results[0].get("link")]
+        for m in search_zero_metadata:
+            name_parts = re.split(r"[.\s]+", name)
+            first_word = name_parts[0]  # Take the first part as the primary company name
+            # Build regex to match the first word as a standalone word
+            company_pattern = re.compile(rf"\b{re.escape(first_word)}\b", re.IGNORECASE)
+            if ((current_year or previous_year)and company_pattern and ("esg" or "environment")) in m.lower():
+                return True
+        return False
+
+    if check_search_zero_metadata():
+        sorted_urls = search_results
+    # Loop through years and check if any of them is in the first link's title
+    else:
         sorted_urls = sorted(
             [
-                {"text": result.get("title"), "link": result.get("link")}
+                {"text": result.get("title", ""), "link": result.get("link", "")}
                 for result in search_results
             ],
-            key=count_keywords,
-            reverse=True,
-        )
-    # Check if any description contains the current or previous year
-    elif any([current_year in url.get("snippet") for url in search_results]) or any(
-        [previous_year in url.get("snippet") for url in search_results]
-    ):
-        sorted_urls = sorted(
-            [
-                {"text": result.get("snippet"), "link": result.get("link")}
-                for result in search_results
-            ],
-            key=count_keywords,
+            key=lambda item: count_keywords_wrapper(item),
             reverse=True,
         )
 
-    elif any([current_year in url.get("link") for url in search_results]) or any(
-        [previous_year in url.get("link") for url in search_results]
-    ):
-        sorted_urls = sorted(
-            [
-                {"text": result.get("snippet"), "link": result.get("link")}
-                for result in search_results
-            ],
-            key=count_keywords,
-            reverse=True,
-        )
+        if (current_year or previous_year or before_previous_year) in search_results[0].get("link", ""):
+        # If the year is not found in the first link, sort the URLs
+            sorted_urls = sorted(
+                [
+                    {"text": result.get("snippet", ""), "link": result.get("link", "")}
+                    for result in search_results
+                ],
+                key=lambda item: count_keywords_wrapper(item),
+                reverse=True,
+            )
+
+        if (current_year or previous_year or before_previous_year) in search_results[0].get("snippet", ""):
+                # If the year is not found in the first link, sort the URLs
+                sorted_urls = sorted(
+                    [
+                        {"text": result.get("link", ""), "link": result.get("link", "")}
+                        for result in search_results
+                    ],
+                    key=lambda item: count_keywords_wrapper(item),
+                    reverse=True,
+                )
+
     # Create a new dictionary where the values are just the URL attribute, and are re-indexed according to their new order
-    updated_urls = {index: value.get("link") for index, value in enumerate(sorted_urls)}
+    updated_urls = {index: value.get("link", "") for index, value in enumerate(sorted_urls)}
     return updated_urls
 
 
