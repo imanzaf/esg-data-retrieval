@@ -35,11 +35,12 @@ class TableExtractor:
         company: CompanyProfile,
         file_path: str,
         parser: Union[TableParsers, List[TableParsers]],
+        output_path: str,
     ):
         self.company = company
         self.file_path = file_path
         self.file_name = os.path.basename(file_path).replace(".pdf", "")
-        self.output_dir = company.output_path
+        self.output_dir = output_path
         self.parser = parser.value
 
         # create output dir

@@ -48,7 +48,7 @@ class ESGReports:
         # dump company profile to json
         self.save_profile()
 
-    def _get_report_search_results(self) -> None:
+    def _get_report_search_results(self) -> dict:
         """
         Retrieve the top 3 URLs of the company's ESG reports using Google Custom Search.
         """
@@ -78,8 +78,8 @@ class ESGReports:
         esg_urls = {
             index: value.get("link", "") for index, value in enumerate(sorted_results)
         }
-        self.urls = esg_urls
-        logger.debug(f"ESG report urls for {self.company.name}: {self.urls}")
+        logger.debug(f"ESG report urls for {self.company.name}: {esg_urls}")
+        return esg_urls
     
     @staticmethod
     def _sort_search_reults(company_name: str, search_results: List[dict]):
@@ -106,9 +106,15 @@ class ESGReports:
         if not ROOT_DIR:
             raise ValueError("ROOT_DIR is not set in the .env file.")
         try:
+            # get attributes as dictionary
+            data = {
+                "company": self.company.__dict__,
+                "esg_reports": self.urls,
+            }
+
             file_path = f"{self.output_path}/profile.json"
             with open(file_path, "w") as json_file:
-                json.dump(self.__dict__, json_file, indent=4)
+                json.dump(data, json_file, indent=4)
             logger.info(f"Company profile JSON saved to {file_path}")
         except Exception as e:
             print(f"Failed to save company profile JSON: {e}")

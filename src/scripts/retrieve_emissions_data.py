@@ -38,11 +38,12 @@ def get_emissions_data(identifier, idType, parser):
     esg_reports = ESGReports(company)
     # Loop over urls until emissions data retrieved
     for url in esg_reports.urls.values():
+        logger.info(f"Trying extraction with {url}")
         try:
             # Download pdf file
-            path = download_pdf_from_urls([url], company.output_path)
+            path = download_pdf_from_urls([url], esg_reports.output_path)
             # get emissions data
-            output = TableExtractor(company, path, parser).extract()
+            output = TableExtractor(company, path, parser, esg_reports.output_path).extract()
             if output not in [None, [], False]:
                 break
         except Exception as e:
@@ -50,7 +51,7 @@ def get_emissions_data(identifier, idType, parser):
             continue
 
     # TODO - pass tables as objects
-    data = table_data_filtering.filter_tables(company.output_path, parser)
+    data = table_data_filtering.filter_tables(esg_reports.output_path, parser)
     return data
 
 
