@@ -8,7 +8,6 @@ load_dotenv()
 sys.path.append(os.getenv("ROOT_DIR"))
 
 from src.find.company_profile import CompanyProfile  # noqa: E402
-from src.utils.data import download_pdf_from_urls  # noqa: E402
 
 # temporarily hardcoding variables here
 # TODO - switch to retrieve from inputs to flask app

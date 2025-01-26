@@ -1,7 +1,5 @@
 import os
-import re
 import sys
-import time
 import urllib
 from io import BytesIO
 from typing import List
@@ -10,9 +8,6 @@ import pandas as pd
 import requests
 from dotenv import load_dotenv
 from loguru import logger
-from pydantic import BaseModel
-
-from src.utils.data_models import SearchKeyWords
 
 load_dotenv()
 

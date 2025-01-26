@@ -1,10 +1,8 @@
 # TODO - if name provided instead of ISIN, use yahoo finance to get ticker symbol to use as label for saving data
 
-import datetime as dt
-import json
 import os
-import time
 import sys
+import time
 
 import requests
 from dotenv import load_dotenv
@@ -107,7 +105,7 @@ class CompanyProfile:
                     f"ISIN {self.isin} not found. Unable to fetch the corresponding details."
                 )
                 sys.exit()
-    
+
     @staticmethod
     def _openfigi_post_request(data):
         """
@@ -129,7 +127,9 @@ class CompanyProfile:
 
             # Handle rate-limiting with retries
             while response.status_code == 429:
-                logger.warning("Rate limit reached for OPENFIGI, retrying in 3 seconds...")
+                logger.warning(
+                    "Rate limit reached for OPENFIGI, retrying in 3 seconds..."
+                )
                 time.sleep(3)
                 response = requests.post(OPENFIGI_URL, json=data, headers=headers)
 
