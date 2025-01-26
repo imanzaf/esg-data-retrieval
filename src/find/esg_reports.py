@@ -85,7 +85,7 @@ class ESGReports:
         }
         logger.debug(f"ESG report urls for {self.company.name}: {esg_urls}")
         return esg_urls
-    
+
     @staticmethod
     def _sort_search_reults(company_name: str, search_results: List[dict]):
 

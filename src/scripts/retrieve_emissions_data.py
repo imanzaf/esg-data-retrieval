@@ -43,7 +43,9 @@ def get_emissions_data(identifier, idType, parser):
             # Download pdf file
             path = download_pdf_from_urls([url], esg_reports.output_path)
             # get emissions data
-            output = TableExtractor(company, path, parser, esg_reports.output_path).extract()
+            output = TableExtractor(
+                company, path, parser, esg_reports.output_path
+            ).extract()
             if output not in [None, [], False]:
                 break
         except Exception as e:
