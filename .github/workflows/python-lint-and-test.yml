@@ -41,5 +41,5 @@ jobs:
         # stop build if any isort errors spotted
         isort .
     - name: Test with pytest
-     run: |
-       pytest
+      run: |
+        pytest
