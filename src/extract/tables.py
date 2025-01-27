@@ -162,7 +162,7 @@ class TableExtractor:
         for idx, table in enumerate(tables):
             # Save the table as csv
             element_csv_filepath = os.path.join(
-                output_dir, f"{self.file_name}-table-{idx+1}.csv"
+                output_dir, f"{self.file_name}-table-{idx + 1}.csv"
             )
             table.to_csv(element_csv_filepath)
 

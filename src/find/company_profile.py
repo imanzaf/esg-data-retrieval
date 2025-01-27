@@ -21,7 +21,9 @@ OPENFIGI_URL = os.getenv("OPENFIGI_URL")
 class CompanyProfile:
 
     def __init__(
-        self, identifier, idType, search=True
+        self,
+        identifier,
+        idType,
     ):  # idType is TICKER, NAME or ISIN
         # initialise default attributes
         self.identifier = identifier
