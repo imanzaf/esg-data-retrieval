@@ -44,6 +44,6 @@ class PDFParsers(Enum):
 
 
 class Company(BaseModel):
-    ticker: str = Field(None, title="Ticker Symbol")
-    name: str = Field(None, title="Company Name")
-    isin: str = Field(None, title="Company ISIN")
+    ticker: str = Field(..., title="Ticker Symbol")
+    name: str = Field(..., title="Company Name")
+    isin: str = Field(..., title="Company ISIN")
