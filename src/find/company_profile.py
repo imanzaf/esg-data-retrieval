@@ -31,12 +31,14 @@ class CompanyProfile:
             if self.idType.lower() == "isin" and self.is_valid_isin(identifier)
             else None
         )
+
         self.name = identifier if self.idType.lower() == "name" else None
         self.ticker = identifier if self.idType.lower() == "ticker" else None
         self.description = None
 
         # invoke company details function to retrieve missing attributes
         self._complete_company_profile()
+        self.output_path = (os.path.join(ROOT_OUTPUT_PATH, self.name.replace(" ", "_").upper()))
         logger.debug(f"Company Identifier: {self.identifier}")
 
     @staticmethod

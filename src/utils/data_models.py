@@ -22,8 +22,6 @@ class SearchKeyWords(Enum):
     IMPACT = "impact"
     REPORT = "report"
     FACT_SHEET = "fact sheet"
-    YEAR = str(dt.datetime.now().year)
-    YEAR_LAG = str(dt.datetime.now().year - 1)
 
 
 class RegexPatterns(Enum):

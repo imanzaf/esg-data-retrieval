@@ -21,15 +21,57 @@ from src.utils import table_data_filtering  # noqa: E402
 from src.utils.data import download_pdf_from_urls  # noqa: E402
 from src.utils.data_models import TableParsers  # noqa: E402
 
-
 def get_emissions_data(identifier, idType, parser):
     company = CompanyProfile(identifier, idType)
 
     # check cache for data
     try:
+        import os
+        import pandas as pd
+        import logging
+
+        logger = logging.getLogger(__name__)
+
+        if idType == "name":
+            cache_dir = os.path.join(OUTPUT_DIR)
+            if not os.path.exists(cache_dir):
+                logger.error(f"Cache directory does not exist: {cache_dir}")
+                return None
+
+            # Get a list of all folder names in the cache directory
+            folder_names = [folder for folder in os.listdir(cache_dir) if
+                            os.path.isdir(os.path.join(cache_dir, folder))]
+
+            # Check if company name matches any folder
+            matching_folder = next(
+                (folder for folder in folder_names if
+                 company.name.upper().replace(" ", "_") in folder.upper() or folder.upper() in company.name.upper()),
+                None
+            )
+
+            if matching_folder:
+                folder_path = os.path.join(cache_dir, matching_folder)
+                esg_file_path = os.path.join(folder_path, "esg_data.csv")
+                if os.path.exists(esg_file_path):
+                    try:
+                        data = pd.read_csv(esg_file_path)
+                        logger.info(f"Loaded ESG data from {esg_file_path} for company {company.name}")
+                        return data
+                    except Exception as e:
+                        logger.error(f"Error reading ESG data from {esg_file_path}: {e}")
+                else:
+                    logger.warning(f"No ESG data file found in {folder_path} for company {company.name}")
+            else:
+                logger.warning(f"No matching folder found for company {company.name} in {cache_dir}")
+
+        logger.info(f"No cached data found for {company.name}")
+
+
         data = pd.read_csv(os.path.join(company.output_path, "esg_data.csv"))
         logger.info(f"Found cached data for {company.name}")
         return data
+
+
     except Exception:
         logger.warning(
             "Unable to retrieve cached data. Retrieving emissions data from web..."
@@ -57,12 +99,11 @@ def get_emissions_data(identifier, idType, parser):
     return data
 
 
-# Example Usage
 if __name__ == "__main__":
     start = time.time()
 
-    identifier = "US64110L1061"
-    idType = "isin"
+    identifier = "Walt Disney"
+    idType = "name"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)
 

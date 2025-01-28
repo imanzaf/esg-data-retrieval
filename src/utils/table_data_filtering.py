@@ -9,7 +9,7 @@ def filter_tables(directory_path, parser):
     regex_scope = r"(Scope\s1|Scope\s2)"
 
     # Regex to exclude rows with words like 'excluded' or 'avoided'
-    regex_exclude = r"(excluded|Excluded|avoided|Avoided|aim|Aim|goal|Goal|revenue|Revenue|target|Target|forecast|Forecast|estimate|Estimate|projection|Projection|expectation|Expectation)"
+    regex_exclude = r"(excluded|Excluded|avoided|Avoided|aim|Aim|goal|Goal|revenue|Revenue|target|Target|forecast|Forecast|estimate|Estimate|projection|Projection|expectation|Expectation|and 3|Scope 3)"
 
     # Combine the relevant information from all files into a single DataFrame
     scope_data = []
