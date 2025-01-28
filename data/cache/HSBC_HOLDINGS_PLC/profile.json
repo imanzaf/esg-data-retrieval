@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "GB0005405286",
+        "idType": "isin",
+        "isin": "GB0005405286",
+        "name": "HSBC HOLDINGS PLC",
+        "ticker": "5",
+        "description": "5",
+        "output_path": "C:\\UCL Codes\\esg-data-retrieval\\data\\cache\\HSBC_HOLDINGS_PLC"
+    },
+    "esg_reports": {
+        "0": "https://www.hsbc.com/-/files/hsbc/investors/hsbc-results/2023/annual/pdfs/hsbc-holdings-plc/240226-annual-report-and-accounts-2023.pdf",
+        "1": "https://www.gsi-alliance.org/wp-content/uploads/2023/12/GSIA-Report-2022.pdf",
+        "2": "https://www.hsbc.com/-/files/hsbc/investors/hsbc-results/2019/annual/pdfs/hsbc-holdings-plc/200218-esg-update-2019.pdf",
+        "3": "https://www.about.us.hsbc.com/-/media/us/en/investor-relations/hsbc-usa/240221-form-10-k.pdf",
+        "4": "https://www.hsbc.com/-/files/hsbc/investors/hsbc-results/2021/annual/pdfs/hsbc-holdings-plc/220222-annual-report-and-accounts-2021.pdf"
+    }
+}

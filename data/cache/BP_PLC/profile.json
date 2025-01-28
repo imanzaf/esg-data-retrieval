@@ -1,0 +1,17 @@
+{
+    "company": {
+        "identifier": "GB0007980591",
+        "idType": "isin",
+        "isin": "GB0007980591",
+        "name": "BP PLC",
+        "ticker": "BP/",
+        "description": "BP/"
+    },
+    "esg_reports": {
+        "0": "https://www.bp.com/content/dam/bp/business-sites/en/global/corporate/pdfs/sustainability/group-reports/bp-sustainability-report-2023.pdf",
+        "1": "https://www.bp.com/content/dam/bp/business-sites/en/global/corporate/pdfs/sustainability/group-reports/bp-sustainability-report-2023.pdf",
+        "2": "https://home.barclays/content/dam/home-barclays/documents/investor-relations/reports-and-events/annual-reports/2023/Barclays-PLC-Annual-Report-2023.pdf",
+        "3": "https://www.gsk.com/media/11009/esg-performance-report-2023.pdf",
+        "4": "https://www.bp.com/content/dam/bp/business-sites/en/global/corporate/pdfs/investors/bp-net-zero-progress-update-2023.pdf"
+    }
+}
