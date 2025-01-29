@@ -1,0 +1,17 @@
+{
+    "company": {
+        "identifier": "Shell",
+        "idType": "name",
+        "isin": null,
+        "name": "Shell",
+        "ticker": null,
+        "description": null
+    },
+    "esg_reports": {
+        "0": "https://www.shell.com/investors/investor-presentations/_jcr_content/root/main/section_1139236432/text/links/item0.stream/1711542445625/f5c821a0488d7d3773dfc34e2e88a0fd898378c7/annual-esg-update-slide-deck-2024.pdf",
+        "1": "https://shellfoundation.org/wp-content/uploads/2024/08/FINAL-Annual-Report-and-Accounts-2023.pdf",
+        "2": "https://climatecasechart.com/wp-content/uploads/non-us-case-documents/2024/20241112_8918_judgment.pdf",
+        "3": "https://www.shell.com/investors/results-and-reporting/_jcr_content/root/main/section/text_copy_1891567631/links/item5.stream/1726832326846/2c3f9065f2886e789ac196789f137dbca49473e8/shell-energy-transition-strategy-2024.pdf",
+        "4": "https://www.shell.com/investors/why-invest-in-shell/_jcr_content/root/main/section_526701258_co/call_to_action_687499970/links/item0.stream/1730534005477/5ac9e402d70cb7f0854280c1b14d34335d10d2b7/shell-investment-case-presentation-updated.pdf"
+    }
+}

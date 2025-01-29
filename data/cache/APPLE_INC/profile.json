@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "US0378331005",
+        "idType": "isin",
+        "isin": "US0378331005",
+        "name": "APPLE INC",
+        "ticker": "AAPL",
+        "description": "AAPL",
+        "output_path": "C:\\UCL Codes\\esg-data-retrieval\\data\\cache\\APPLE_INC"
+    },
+    "esg_reports": {
+        "0": "https://www.applebank.com/AppleBank/media/Documents/PDFs/Apple-Bank-ESG-Report-2023-2024_1.pdf",
+        "1": "https://www.apple.com/euro/environment/pdf/Apple_Environmental_Progress_Report_2024_Global.pdf",
+        "2": "https://www.kraftheinzcompany.com/esg/pdf/KraftHeinz-2023-ESG-Report.pdf",
+        "3": "https://www.apple.com/in/environment/pdf/Apple_Environmental_Progress_Report_2023.pdf",
+        "4": "https://s2.q4cdn.com/470004039/files/doc_financials/2025/Proxy_Statement_2025.pdf"
+    }
+}

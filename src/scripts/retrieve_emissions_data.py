@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+from datetime import datetime, timedelta
 
 import pandas as pd
 from dotenv import load_dotenv
@@ -32,17 +33,26 @@ def get_emissions_data(identifier, idType, parser):
 
         logger = logging.getLogger(__name__)
 
-        if idType == "name":
-            cache_dir = os.path.join(OUTPUT_DIR)
-            if not os.path.exists(cache_dir):
-                logger.error(f"Cache directory does not exist: {cache_dir}")
-                return None
+        cache_dir = os.path.join(OUTPUT_DIR)
+        if not os.path.exists(cache_dir):
+            logger.error(f"Cache directory does not exist: {cache_dir}")
+            return None
 
-            # Get a list of all folder names in the cache directory
+        esg_file_path = None
+
+        def is_recent_file(file_path, days=30):
+            """Checks if a file was modified within the last `days` days."""
+            if os.path.exists(file_path):
+                file_mtime = datetime.fromtimestamp(os.path.getmtime(file_path))
+                return file_mtime >= (datetime.now() - timedelta(days=days))
+            return False
+
+        if idType == "name":
+            # Get all folder names in the cache directory
             folder_names = [folder for folder in os.listdir(cache_dir) if
                             os.path.isdir(os.path.join(cache_dir, folder))]
 
-            # Check if company name matches any folder
+            # Find matching folder
             matching_folder = next(
                 (folder for folder in folder_names if
                  company.name.upper().replace(" ", "_") in folder.upper() or folder.upper() in company.name.upper()),
@@ -52,29 +62,39 @@ def get_emissions_data(identifier, idType, parser):
             if matching_folder:
                 folder_path = os.path.join(cache_dir, matching_folder)
                 esg_file_path = os.path.join(folder_path, "esg_data.csv")
-                if os.path.exists(esg_file_path):
-                    try:
-                        data = pd.read_csv(esg_file_path)
-                        logger.info(f"Loaded ESG data from {esg_file_path} for company {company.name}")
-                        return data
-                    except Exception as e:
-                        logger.error(f"Error reading ESG data from {esg_file_path}: {e}")
-                else:
-                    logger.warning(f"No ESG data file found in {folder_path} for company {company.name}")
+
+        else:
+            # For other idTypes, check the standard company output path
+            esg_file_path = os.path.join(company.output_path, "esg_data.csv")
+
+        # If the ESG file exists and is recent, load it
+        if esg_file_path and os.path.exists(esg_file_path):
+            if is_recent_file(esg_file_path):
+                try:
+                    data = pd.read_csv(esg_file_path)
+                    logger.info(f"Loaded ESG data from {esg_file_path} for company {company.name}")
+                    return data
+                except Exception as e:
+                    logger.error(f"Error reading ESG data from {esg_file_path}: {e}")
             else:
-                logger.warning(f"No matching folder found for company {company.name} in {cache_dir}")
+                logger.warning(f"ESG data file {esg_file_path} is older than one month, ignoring cache.")
 
-        logger.info(f"No cached data found for {company.name}")
+        logger.info(f"No recent cached data found for {company.name}")
 
-
-        data = pd.read_csv(os.path.join(company.output_path, "esg_data.csv"))
-        logger.info(f"Found cached data for {company.name}")
-        return data
-
+        # Load fresh data
+        esg_file_path = os.path.join(company.output_path, "esg_data.csv")
+        if is_recent_file(esg_file_path):
+            if os.path.exists(esg_file_path):
+                try:
+                    data = pd.read_csv(esg_file_path)
+                    logger.info(f"Loaded ESG data for {company.name}")
+                    return data
+                except Exception as e:
+                    logger.error(f" {esg_file_path}: {e}")
 
     except Exception:
         logger.warning(
-            "Unable to retrieve cached data. Retrieving emissions data from web..."
+            "Unable to retrieve recent cached data. Retrieving emissions data from web..."
         )
 
     esg_reports = ESGReports(company)
@@ -102,8 +122,8 @@ def get_emissions_data(identifier, idType, parser):
 if __name__ == "__main__":
     start = time.time()
 
-    identifier = "Walt Disney"
-    idType = "name"
+    identifier = "US0378331005"
+    idType = "isin"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)
 
