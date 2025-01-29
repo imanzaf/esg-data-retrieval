@@ -1,0 +1,17 @@
+{
+    "company": {
+        "identifier": "NVIDA",
+        "idType": "name",
+        "isin": null,
+        "name": "NVIDA",
+        "ticker": null,
+        "description": null
+    },
+    "esg_reports": {
+        "0": "https://images.nvidia.com/aem-dam/Solutions/documents/FY2024-NVIDIA-Corporate-Sustainability-Report.pdf",
+        "1": "https://www.purestorage.com/content/dam/pdf/en/quarter-report/q2-2025.pdf",
+        "2": "https://csrreportbuilder.intel.com/pdfbuilder/pdfs/CSR-2023-24-Full-Report.pdf",
+        "3": "https://images.nvidia.com/aem-dam/Solutions/documents/FY2023-NVIDIA-Corporate-Responsibility-Report-1.pdf",
+        "4": "https://s201.q4cdn.com/141608511/files/doc_financials/2023/ar/2023-Annual-Report-1.pdf"
+    }
+}
