@@ -9,6 +9,7 @@ import requests
 from dotenv import load_dotenv
 from loguru import logger
 from pydantic import BaseModel
+from scripts.regsetup import description
 
 from src.utils.data_models import SearchKeyWords
 
@@ -44,7 +45,7 @@ class ESGReports:
         except Exception:
             self.output_path = os.path.join(
                 ROOT_OUTPUT_PATH,
-                str(self.company.identifier)
+                str(self.company.name)
                 .upper()
                 .replace(" ", "_")
                 .replace("/", "_"),
@@ -132,15 +133,17 @@ class SearchResult(BaseModel):
     description: str
 
     def score_search(self):
-        stripped_name = self.company_name.split(" ")[0]
+        stripped_name = self.company_name.split(" ")[0].lower()
+
         text_score = (
-            self.score_text(self.title)
-            + self.score_text(self.description)
-            + (1 if stripped_name in self.title else 0)
-            + (1 if stripped_name in self.description else 0)
+                self.score_text(self.title.lower())
+                + self.score_text(self.description.lower()) +
+                (-5 if (stripped_name not in self.title.lower() and stripped_name not in self.description.lower()
+                        and stripped_name not in self.url.lower()) else 1)  #strongly penalize if name is not there
         )
         url_score = self.score_text(self.url) + (1 if self.company_name_lookup() else 0)
-        return text_score + url_score
+        year_score = self.score_year(self.title.lower() + self.description.lower() + self.url.lower())
+        return text_score + url_score + year_score
 
     @staticmethod
     def score_text(text: str):
@@ -152,8 +155,30 @@ class SearchResult(BaseModel):
         url_index = re.search(
             r"(?:https?://)?(?:www\.)?([a-zA-Z0-9]+)", self.url
         ).group()
+        stripped_name = self.company_name.split(" ")[0].lower()
         # check if company name starts with site name
-        if self.company_name.startswith(url_index):
-            return True
+        if stripped_name in url_index:
+            return 2
         else:
-            return False
+            return 0
+    @staticmethod
+    def score_year(text):
+        current_year = dt.datetime.now().year
+        year_lag = current_year - 1
+        two_year_lag = current_year - 2
+        three_year_lag = current_year - 3
+
+        # Extract all years from the text
+        years_in_text = [int(year) for year in re.findall(r'\b\d{4}\b', text)]
+
+        # Check for years that are 3 years older than the current year or older
+        if any(year < three_year_lag for year in years_in_text):
+            return -2
+
+        # Check if the text contains the current year, year lag, or two-year lag
+        if current_year in years_in_text:
+            return 2
+        if any(year in {current_year, year_lag, two_year_lag} for year in years_in_text):
+            return 1
+
+        return -1
