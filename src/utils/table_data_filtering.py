@@ -1,7 +1,16 @@
 import os
 import re
+from argparse import PARSER
 
+from docling_core.types.doc import TableData
+from wheel.cli import parser
+import src.utils.get_units
 import pandas as pd
+
+from src.find.company_profile import ROOT_OUTPUT_PATH
+from src.utils.data_models import TableParsers
+from src.utils.get_units import infer_units_for_rows, get_units_raw_input
+from src.utils.standardize_table_rework import standardize_table
 
 
 def filter_tables(directory_path, parser):
@@ -9,7 +18,7 @@ def filter_tables(directory_path, parser):
     regex_scope = r"(Scope\s1|Scope\s2)"
 
     # Regex to exclude rows with words like 'excluded' or 'avoided'
-    regex_exclude = r"(excluded|Excluded|avoided|Avoided|aim|Aim|goal|Goal|revenue|Revenue|target|Target|forecast|Forecast|estimate|Estimate|projection|Projection|expectation|Expectation|and 3|Scope 3)"
+    regex_exclude = r"(excluded|Excluded|avoided|Avoided|aim|Aim|goal|Goal|revenue|Revenue|target|Target|forecast|Forecast|estimate|Estimate|projection|Projection|expectation|Expectation|and 3|Scope 3|\+ 3)"
 
     # Combine the relevant information from all files into a single DataFrame
     scope_data = []
@@ -22,6 +31,8 @@ def filter_tables(directory_path, parser):
                 print(f"Processing file: {file_path}")
                 # Read the CSV file
                 df = pd.read_csv(file_path)
+                #Append inferred units
+                df = get_units_raw_input(df)
                 print(f"File read successfully: {file_path}")
                 # Filter rows where any column matches the regex for 'Scope 1' or 'Scope 2'
                 filtered_df = df[
@@ -63,7 +74,10 @@ def filter_tables(directory_path, parser):
             # Find the index of the last date column
             last_date_col_index = combined_scope_data.columns.get_loc(date_columns[-1])
             # Keep only columns up to and including the last date column
-            combined_scope_data = combined_scope_data.iloc[:, : last_date_col_index + 1]
+            # Select all columns up to the last_date_col_index + 1
+            selected_columns = combined_scope_data.iloc[:, :last_date_col_index + 1]
+            # Add the "Units" column as the last column
+            combined_scope_data = pd.concat([selected_columns, combined_scope_data[['Units']]], axis=1)
 
         # Drop the first column
         if not combined_scope_data.empty and len(combined_scope_data.columns) > 0:
@@ -75,10 +89,23 @@ def filter_tables(directory_path, parser):
         # Drop empty rows
         combined_scope_data = combined_scope_data.dropna(how="all")
 
+        #Get units
+        combined_scope_standard = infer_units_for_rows(combined_scope_data)
+
+        #Standardise Table
+        combined_scope_standard = standardize_table(combined_scope_standard)
         # Save the filtered data to a new CSV file
-        output_path = os.path.join(directory_path, "esg_data.csv")
+        output_path = os.path.join(directory_path, "esg_backup_data.csv")
         combined_scope_data.to_csv(output_path, index=False)
+
+        output_path = os.path.join(directory_path, "esg_data.csv")
+        combined_scope_standard.to_csv(output_path, index=False)
         print(f"Filtered data saved to: {output_path}")
         return combined_scope_data
     else:
         print("No data to combine.")
+
+if __name__ == '__main__':
+    import dotenv
+    os.getenv("ROOT_OUTPUT_PATH")
+    filter_tables(os.path.join(ROOT_OUTPUT_PATH, "MICROSOFT_CORP"), TableParsers.DOCLING)
