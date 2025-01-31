@@ -122,7 +122,7 @@ def get_emissions_data(identifier, idType, parser):
 if __name__ == "__main__":
     start = time.time()
 
-    identifier = "US67066G1040"
+    identifier = "US0378331005"
     idType = "isin"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)
@@ -131,3 +131,5 @@ if __name__ == "__main__":
     total = end - start
 
     logger.info(f"time taken: {total}")
+
+    

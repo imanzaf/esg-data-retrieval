@@ -1,10 +1,10 @@
-Unnamed: 0,Scope and source,Emission factors source,Units,(mt),FY20,FY21,FY22,FY23
-0,Scope 1 (all fuels),EPA Emission Factors Hub. March 2018.,Inferred: CO₂e per FTE,,,,,
-1,Scope 2  Electricity (US),"Year 2021 eGRID Subregion Emission Factors: eGRID 2021, January 2023.",Inferred: CO₂e per FTE,,,,,
-2,Scope 2  Electricity (international unless otherwise sourced),"IEA (2022), Emission Factors",Inferred: CO₂e per FTE,,,,,
-4,Scope 2  Electricity (Brazil),"Year 2022 factors from the Brazilian Ministry of Science, Technology,  Innovation and Communication: Fator médio - Inventários corporativos.",Inferred: CO₂e per FTE,,,,,
-5,Scope 2  Electricity (Canada),National inventory report 1990-2021. Annex 13. Year 2021 factors. From April  2023 release.,Inferred: CO₂e per FTE,,,,,
-6,Scope 2  Electricity (UK),2023 Government Greenhouse Gas Conversion Factors for Company  Reporting: Methodology Paper for Conversion Factors. Year 2021 factors from  June 2023 release.,Inferred: CO₂e per FTE,,,,,
+,Scope and source,Emission factors source,Units,(mt),FY20,FY21,FY22,FY23
+0,Scope 1 (all fuels),EPA Emission Factors Hub. March 2018.,,,,,,
+1,Scope 2  Electricity (US),"Year 2021 eGRID Subregion Emission Factors: eGRID 2021, January 2023.",,,,,,
+2,Scope 2  Electricity (international unless otherwise sourced),"IEA (2022), Emission Factors",,,,,,
+4,Scope 2  Electricity (Brazil),"Year 2022 factors from the Brazilian Ministry of Science, Technology,  Innovation and Communication: Fator médio - Inventários corporativos.",,,,,,
+5,Scope 2  Electricity (Canada),National inventory report 1990-2021. Annex 13. Year 2021 factors. From April  2023 release.,,,,,,
+6,Scope 2  Electricity (UK),2023 Government Greenhouse Gas Conversion Factors for Company  Reporting: Methodology Paper for Conversion Factors. Year 2021 factors from  June 2023 release.,,,,,,
 0,,,mtCO2e,Scope 1,,,,
 1,,,mtCO2e,Scope 1 - CO2,"96,700","94,292","99,123","92,466"
 2,,,mtCO2e,Scope 1 - CH4,2,3,2,3
@@ -35,13 +35,9 @@ Unnamed: 0,Scope and source,Emission factors source,Units,(mt),FY20,FY21,FY22,FY
 28,,,mtCO2e,Scope 2 - N2O,"1,602","1,343",794,"1,679"
 1,,,tCO2e,,,,,
 0,,,Inferred: MT CO₂e,,"118,100","123,704","139,413","144,960"
-1,,,Inferred: CO₂e per FTE,,,,,
 4,,,Inferred: MT CO₂e,,"574,219","553,109","427,442","538,094"
-0,,,Inferred: CO₂e per FTE,,,,,
-6,,,Inferred: CO₂e per FTE,,,,,
-12,,,Inferred: MMT CO₂e,,,,,
 1,,,Inferred: CO₂e per FTE,,0.8,0.7,0.7,0.7
-2,,,Inferred: MT CO₂e,,30.3,29.8,32.2,38.1
+2,,,Inferred: MMT CO₂e,,30.3,29.8,32.2,38.1
 3,,,Inferred: CO₂e per FTE,,3.2,2.6,1.5,1.9
 5,,,Inferred: MMT CO₂e,,31.1,30.5,32.9,38.8
 6,,,Inferred: CO₂e per FTE,,4.0,3.3,2.2,2.6

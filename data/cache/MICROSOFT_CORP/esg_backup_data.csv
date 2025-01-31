@@ -1,38 +1,48 @@
-Unnamed: 1,FY20,FY21,FY22,FY23,Units
-Scope 1,"118,100","123,704","139,413","144,960",Inferred: MT CO₂e
-Scope 2,,,,,
-Subtotal emissions (Scope 1 + 2 market-based),"574,219","553,109","427,442","538,094",Inferred: MT CO₂e
-Scope 1 + 2 1,"574,219","553,109","427,442","538,094",Inferred: MT CO₂e
-,"96,700","94,292","99,123","92,466",Inferred: MT CO₂e
-,2,3,2,3,Inferred: CO₂e per FTE
-,1,1,1,1,Inferred: CO₂e per FTE
-,19,27,37,49,Inferred: MMT CO₂e
-,0,0,0,0,Inferred: CO₂e per FTE
-,"4,305,119","4,984,442","6,349,431","8,034,943",Inferred: MT CO₂e
-,283,330,382,515,Inferred: MT CO₂e
-,56,60,75,99,Inferred: MMT CO₂e
-,"454,034","427,606","286,992","390,884",Inferred: MT CO₂e
-,19,18,10,23,Inferred: MMT CO₂e
-,5,5,3,6,Inferred: CO₂e per FTE
-,"118,100","123,704","139,413","144,960",Inferred: MT CO₂e
-,"96,700","94,292","99,123","92,466",Inferred: MT CO₂e
-,53,63,62,63,Inferred: MMT CO₂e
-,236,150,209,292,Inferred: thousand MT CO₂e
-,"21,070","29,177","39,993","52,087",Inferred: MT CO₂e
-,41,22,26,52,Inferred: MMT CO₂e
-,"4,328,916","5,010,667","6,381,250","8,077,403",Inferred: MT CO₂e
-,"4,305,119","4,984,442","6,349,431","8,034,943",Inferred: MT CO₂e
-,"7,063","8,248","9,543","12,868",Inferred: MT CO₂e
-,"16,734","17,977","22,276","29,592",Inferred: MT CO₂e
-,"456,119","429,405","288,029","393,134",Inferred: MT CO₂e
-,"454,034","427,606","286,992","390,884",Inferred: MT CO₂e
-,483,456,243,571,Inferred: MT CO₂e
-,"1,602","1,343",794,"1,679",Inferred: MT CO₂e
-Scope 1,,,,,
-Scope 2 (location-based),,,,,
-Scope 2 (market-based),,,,,
-Scope 1,0.8,0.7,0.7,0.7,Inferred: CO₂e per FTE
-Scope 2 (location-based),30.3,29.8,32.2,38.1,Inferred: MMT CO₂e
-Scope 2 (market-based),3.2,2.6,1.5,1.9,Inferred: CO₂e per FTE
-Scope 1 + 2 (location-based),31.1,30.5,32.9,38.8,Inferred: MMT CO₂e
-Scope 1 + 2 (market-based),4.0,3.3,2.2,2.6,Inferred: CO₂e per FTE
+Unnamed: 0,Scope and source,Emission factors source,Units,(mt),FY20,FY21,FY22,FY23,Scope  3 category,Emissions calculation methodology,Percentage  of emissions  calculated  using supplier  data,Unnamed: 1
+0,Scope 1 (all fuels),EPA Emission Factors Hub. March 2018.,,,,,,,,,,
+1,Scope 2  Electricity (US),"Year 2021 eGRID Subregion Emission Factors: eGRID 2021, January 2023.",,,,,,,,,,
+2,Scope 2  Electricity (international unless otherwise sourced),"IEA (2022), Emission Factors",,,,,,,,,,
+4,Scope 2  Electricity (Brazil),"Year 2022 factors from the Brazilian Ministry of Science, Technology,  Innovation and Communication: Fator médio - Inventários corporativos.",,,,,,,,,,
+5,Scope 2  Electricity (Canada),National inventory report 1990-2021. Annex 13. Year 2021 factors. From April  2023 release.,,,,,,,,,,
+6,Scope 2  Electricity (UK),2023 Government Greenhouse Gas Conversion Factors for Company  Reporting: Methodology Paper for Conversion Factors. Year 2021 factors from  June 2023 release.,,,,,,,,,,
+0,,,mtCO2e,Scope 1,,,,,,,,
+1,,,mtCO2e,Scope 1 - CO2,"96,700","94,292","99,123","92,466",,,,
+2,,,mtCO2e,Scope 1 - CH4,2,3,2,3,,,,
+3,,,mtCO2e,Scope 1 - N2O,1,1,1,1,,,,
+4,,,mtCO2e,Scope 1 - HFCs,19,27,37,49,,,,
+5,,,mtCO2e,Scope 1 - SF6,0,0,0,0,,,,
+6,,,mtCO2e,Scope 2 (location-based),,,,,,,,
+7,,,mtCO2e,Scope 2 - CO2,"4,305,119","4,984,442","6,349,431","8,034,943",,,,
+8,,,mtCO2e,Scope 2 - CH4,283,330,382,515,,,,
+9,,,mtCO2e,Scope 2 - N2O,56,60,75,99,,,,
+10,,,mtCO2e,Scope 2 (market-based),,,,,,,,
+11,,,mtCO2e,Scope 2 - CO2,"454,034","427,606","286,992","390,884",,,,
+12,,,mtCO2e,Scope 2 - CH4,19,18,10,23,,,,
+13,,,mtCO2e,Scope 2 - N2O,5,5,3,6,,,,
+15,,,mtCO2e,Scope 1,"118,100","123,704","139,413","144,960",,,,
+16,,,mtCO2e,Scope 1 - CO2,"96,700","94,292","99,123","92,466",,,,
+17,,,mtCO2e,Scope 1 - CH4,53,63,62,63,,,,
+18,,,mtCO2e,Scope 1 - N2O,236,150,209,292,,,,
+19,,,mtCO2e,Scope 1 - HFCs,"21,070","29,177","39,993","52,087",,,,
+20,,,mtCO2e,Scope 1 - SF6,41,22,26,52,,,,
+21,,,mtCO2e,Scope 2 (location-based),"4,328,916","5,010,667","6,381,250","8,077,403",,,,
+22,,,mtCO2e,Scope 2 - CO2,"4,305,119","4,984,442","6,349,431","8,034,943",,,,
+23,,,mtCO2e,Scope 2 - CH4,"7,063","8,248","9,543","12,868",,,,
+24,,,mtCO2e,Scope 2 - N2O,"16,734","17,977","22,276","29,592",,,,
+25,,,mtCO2e,Scope 2 (market-based),"456,119","429,405","288,029","393,134",,,,
+26,,,mtCO2e,Scope 2 - CO2,"454,034","427,606","286,992","390,884",,,,
+27,,,mtCO2e,Scope 2 - CH4,483,456,243,571,,,,
+28,,,mtCO2e,Scope 2 - N2O,"1,602","1,343",794,"1,679",,,,
+1,,,tCO2e,,,,,,Fuel- and  Energy- Related  Activities (not  included in  Scope 1 or 2),"Starting in FY23, Microsoft reports this category using a market-based  approach only, which has been the approach used to track progress  against our carbon negative commitment. Fuel- and energy-related  activities (not included in Scope 1 or 2) include three emission sources.  First, upstream emissions of purchased electricity were calculated by  multiplying electricity use by emission factors from life cycle analysis tools  for the United States and UK Defra 2015 Guidelines for non-US countries.  When calculating the market-based approach and including the impact  from purchased renewable electricity, the upstream emissions associated  with fuel are zero. Second, fuel consumption was multiplied by emission  factors from the GREET and Ecoinvent life cycle analysis tools. And third,  transmission and distribution (T&D) losses (by energy use type) were  multiplied by loss percentages from the EPA's eGRID2020 database for the  United States and emission factors from IEA (2022) emission factors for  other countries. GWPs are from the IPCC Fourth Assessment Report (AR4),",96%,
+0,,,,,"118,100","123,704","139,413","144,960",,,,Scope 1
+1,,,,,,,,,,,,Scope 2
+4,,,,,"574,219","553,109","427,442","538,094",,,,Subtotal emissions (Scope 1 + 2 market-based)
+0,,,,,,,,,,,,Scope 1
+6,,,,,,,,,,,,Scope 2 (location-based)
+12,,,,,,,,,,,,Scope 2 (market-based)
+1,,,,,0.8,0.7,0.7,0.7,,,,Scope 1
+2,,,,,30.3,29.8,32.2,38.1,,,,Scope 2 (location-based)
+3,,,,,3.2,2.6,1.5,1.9,,,,Scope 2 (market-based)
+5,,,,,31.1,30.5,32.9,38.8,,,,Scope 1 + 2 (location-based)
+6,,,,,4.0,3.3,2.2,2.6,,,,Scope 1 + 2 (market-based)
+0,,,,,"574,219","553,109","427,442","538,094",,,,Scope 1 + 2 1

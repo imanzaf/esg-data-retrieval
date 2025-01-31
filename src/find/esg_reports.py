@@ -9,7 +9,6 @@ import requests
 from dotenv import load_dotenv
 from loguru import logger
 from pydantic import BaseModel
-from scripts.regsetup import description
 
 from src.utils.data_models import SearchKeyWords
 

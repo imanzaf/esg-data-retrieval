@@ -1,11 +1,13 @@
 import os
 import re
+import sys
 from argparse import PARSER
+from loguru import logger
 
-from docling_core.types.doc import TableData
-from wheel.cli import parser
-import src.utils.get_units
 import pandas as pd
+from dotenv import load_dotenv
+load_dotenv()
+sys.path.append(os.getenv("ROOT_DIR"))
 
 from src.find.company_profile import ROOT_OUTPUT_PATH
 from src.utils.data_models import TableParsers
@@ -31,18 +33,20 @@ def filter_tables(directory_path, parser):
                 print(f"Processing file: {file_path}")
                 # Read the CSV file
                 df = pd.read_csv(file_path)
+                df.to_csv(os.path.join(directory_path, "sample.csv"))
                 #Append inferred units
                 df = get_units_raw_input(df)
+                # logger.info(f"raw input cols: {df.columns}")
+                # logger.info(f"raw input units value: {df['Units']}")
                 print(f"File read successfully: {file_path}")
                 # Filter rows where any column matches the regex for 'Scope 1' or 'Scope 2'
-                filtered_df = df[
-                    df.apply(
+                filtered_df = df[df.apply(
                         lambda row: row.astype(str)
                         .str.contains(regex_scope, regex=True)
                         .any(),
                         axis=1,
-                    )
-                ]
+                    )]
+                # logger.info(f"Filtered df: {filtered_df}")
                 # Exclude rows where any column matches the regex for 'excluded' or 'avoided'
                 filtered_df = filtered_df[
                     ~filtered_df.apply(
@@ -61,7 +65,7 @@ def filter_tables(directory_path, parser):
     # Combine all filtered data
     if scope_data:
         combined_scope_data = pd.concat(scope_data, ignore_index=True).drop_duplicates()
-
+        # logger.info(combined_scope_data.columns)
         # Regex to match columns with various date formats
         regex_date = r"(\bFY\d{2}\b|\b20\d{2}\b|\b[Ff]iscal\s[Yy]ear\b)"
 
@@ -69,28 +73,45 @@ def filter_tables(directory_path, parser):
         date_columns = [
             col for col in combined_scope_data.columns if re.search(regex_date, col)
         ]
+        # logger.info(f"date cols: {date_columns}")
 
         if date_columns:
             # Find the index of the last date column
+            # date_columns.append("Units")
+            # logger.info(f"original cols: {combined_scope_data.columns}")
             last_date_col_index = combined_scope_data.columns.get_loc(date_columns[-1])
             # Keep only columns up to and including the last date column
             # Select all columns up to the last_date_col_index + 1
             selected_columns = combined_scope_data.iloc[:, :last_date_col_index + 1]
+            # logger.info(f"new cols pt 1: {selected_columns}")
+            # combined_scope_data_new = selected_columns.copy()
             # Add the "Units" column as the last column
-            combined_scope_data = pd.concat([selected_columns, combined_scope_data[['Units']]], axis=1)
+            # logger.warning(combined_scope_data.columns)
+            combined_scope_data_new = pd.concat([selected_columns, combined_scope_data[['Units']]], axis=1)
+            # combined_scope_data_new = combined_scope_data[date_columns]
+            # logger.info(f"new cols: {combined_scope_data.columns}")
+            # logger.info(f"new df: {combined_scope_data_new}")
 
         # Drop the first column
-        if not combined_scope_data.empty and len(combined_scope_data.columns) > 0:
-            combined_scope_data = combined_scope_data.iloc[:, 1:]
+        # TODO - check if needed
+        # if not combined_scope_data_new.empty and len(combined_scope_data_new.columns) > 0:
+        #     combined_scope_data_new = combined_scope_data_new.iloc[:, 1:]
+        
+        # logger.info(combined_scope_data_new.columns)
 
         # Drop empty columns
-        combined_scope_data = combined_scope_data.dropna(axis=1, how="all")
+        combined_scope_data_new = combined_scope_data_new.dropna(axis=1, how="all")
 
         # Drop empty rows
-        combined_scope_data = combined_scope_data.dropna(how="all")
-
+        combined_scope_data_new = combined_scope_data_new.dropna(how="all")
+        
+        # logger.info(f"pre inferred df: {combined_scope_data_new}")
         #Get units
-        combined_scope_standard = infer_units_for_rows(combined_scope_data)
+        combined_scope_data_new.to_csv(os.path.join(directory_path, "test_1.csv"))
+        combined_scope_standard = infer_units_for_rows(combined_scope_data_new)
+        logger.info(combined_scope_standard.columns)
+        # logger.info(combined_scope_data.head(2))
+        combined_scope_standard.to_csv(os.path.join(directory_path, "testing.csv"))
 
         #Standardise Table
         combined_scope_standard = standardize_table(combined_scope_standard)
