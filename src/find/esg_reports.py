@@ -9,7 +9,6 @@ import requests
 from dotenv import load_dotenv
 from loguru import logger
 from pydantic import BaseModel
-from scripts.regsetup import description
 
 from src.utils.data_models import SearchKeyWords
 
@@ -45,10 +44,7 @@ class ESGReports:
         except Exception:
             self.output_path = os.path.join(
                 ROOT_OUTPUT_PATH,
-                str(self.company.name)
-                .upper()
-                .replace(" ", "_")
-                .replace("/", "_"),
+                str(self.company.name).upper().replace(" ", "_").replace("/", "_"),
             )
         os.makedirs(self.output_path, exist_ok=True)
         # dump company profile to json
@@ -136,13 +132,22 @@ class SearchResult(BaseModel):
         stripped_name = self.company_name.split(" ")[0].lower()
 
         text_score = (
-                self.score_text(self.title.lower())
-                + self.score_text(self.description.lower()) +
-                (-5 if (stripped_name not in self.title.lower() and stripped_name not in self.description.lower()
-                        and stripped_name not in self.url.lower()) else 1)  #strongly penalize if name is not there
+            self.score_text(self.title.lower())
+            + self.score_text(self.description.lower())
+            + (
+                -5
+                if (
+                    stripped_name not in self.title.lower()
+                    and stripped_name not in self.description.lower()
+                    and stripped_name not in self.url.lower()
+                )
+                else 1
+            )  # strongly penalize if name is not there
         )
         url_score = self.score_text(self.url) + (1 if self.company_name_lookup() else 0)
-        year_score = self.score_year(self.title.lower() + self.description.lower() + self.url.lower())
+        year_score = self.score_year(
+            self.title.lower() + self.description.lower() + self.url.lower()
+        )
         return text_score + url_score + year_score
 
     @staticmethod
@@ -161,6 +166,7 @@ class SearchResult(BaseModel):
             return 2
         else:
             return 0
+
     @staticmethod
     def score_year(text):
         current_year = dt.datetime.now().year
@@ -169,7 +175,7 @@ class SearchResult(BaseModel):
         three_year_lag = current_year - 3
 
         # Extract all years from the text
-        years_in_text = [int(year) for year in re.findall(r'\b\d{4}\b', text)]
+        years_in_text = [int(year) for year in re.findall(r"\b\d{4}\b", text)]
 
         # Check for years that are 3 years older than the current year or older
         if any(year < three_year_lag for year in years_in_text):
@@ -178,7 +184,9 @@ class SearchResult(BaseModel):
         # Check if the text contains the current year, year lag, or two-year lag
         if current_year in years_in_text:
             return 2
-        if any(year in {current_year, year_lag, two_year_lag} for year in years_in_text):
+        if any(
+            year in {current_year, year_lag, two_year_lag} for year in years_in_text
+        ):
             return 1
 
         return -1
