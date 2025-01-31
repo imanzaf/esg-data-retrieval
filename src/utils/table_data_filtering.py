@@ -31,7 +31,7 @@ def filter_tables(directory_path, parser):
                 print(f"Processing file: {file_path}")
                 # Read the CSV file
                 df = pd.read_csv(file_path)
-                #Append inferred units
+                #Append units
                 df = get_units_raw_input(df)
                 print(f"File read successfully: {file_path}")
                 # Filter rows where any column matches the regex for 'Scope 1' or 'Scope 2'

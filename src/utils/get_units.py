@@ -47,6 +47,7 @@ def infer_emissions_unit(max, min):
     return "Inferred: MT CO₂e"  # Metric Tons
 
 
+
 def infer_units_for_rows(filtered_rows):
     """
     Infer emissions unit for each row based on numerical values.

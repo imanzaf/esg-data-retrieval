@@ -1,0 +1,14 @@
+,,2023,2022,2021,2020,2019
+0,EMISSIONS (METRIC TONS CO2e) 3,,,,,
+1,"Scope 1 Emissions 4, 5","993,347","901,714","503,221","614,971","909,382"
+2,Stationary Fuel,"170,926","181,084",NR,NR,NR
+3,Mobile Fuel,"793,721","696,695",NR,NR,NR
+4,"Refrigerants, Livestock, Other","28,700","23,934",NR,NR,NR
+5,"Scope 2 Emissions (location-based) 4, 5","782,066","702,062","675,984","714,874","913,359"
+6,"Scope 2 Emissions (market-based) 4, 5, 6","727,414","679,506","687,042","681,456","898,696"
+7,Electricity,"686,441","642,244",NR,NR,NR
+8,"Chilled Water, Hot Water, Other","40,972","37,262",NR,NR,NR
+9,"Total Scope 1 & 2 Emissions (location-based) 4, 5","1,775,413","1,603,776","1,179,205","1,329,845","1,822,741"
+10,"Total Scope 1 & 2 Emissions (market-based) 4, 5, 6","1,720,761","1,581,220","1,190,263","1,296,427","1,808,078"
+11,"Retired Carbon Credits 6, 7","803,744","801,077","410,120","470,209","860,620"
+12,"Net Emissions (market-based) 4, 6, 7","917,017","780,143","780,143","826,218","947,458"
