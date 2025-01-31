@@ -6,6 +6,7 @@ from loguru import logger
 
 import pandas as pd
 from dotenv import load_dotenv
+
 load_dotenv()
 sys.path.append(os.getenv("ROOT_DIR"))
 
@@ -34,18 +35,20 @@ def filter_tables(directory_path, parser):
                 # Read the CSV file
                 df = pd.read_csv(file_path)
                 df.to_csv(os.path.join(directory_path, "sample.csv"))
-                #Append inferred units
+                # Append inferred units
                 df = get_units_raw_input(df)
                 # logger.info(f"raw input cols: {df.columns}")
                 # logger.info(f"raw input units value: {df['Units']}")
                 print(f"File read successfully: {file_path}")
                 # Filter rows where any column matches the regex for 'Scope 1' or 'Scope 2'
-                filtered_df = df[df.apply(
+                filtered_df = df[
+                    df.apply(
                         lambda row: row.astype(str)
                         .str.contains(regex_scope, regex=True)
                         .any(),
                         axis=1,
-                    )]
+                    )
+                ]
                 # logger.info(f"Filtered df: {filtered_df}")
                 # Exclude rows where any column matches the regex for 'excluded' or 'avoided'
                 filtered_df = filtered_df[
@@ -82,12 +85,14 @@ def filter_tables(directory_path, parser):
             last_date_col_index = combined_scope_data.columns.get_loc(date_columns[-1])
             # Keep only columns up to and including the last date column
             # Select all columns up to the last_date_col_index + 1
-            selected_columns = combined_scope_data.iloc[:, :last_date_col_index + 1]
+            selected_columns = combined_scope_data.iloc[:, : last_date_col_index + 1]
             # logger.info(f"new cols pt 1: {selected_columns}")
             # combined_scope_data_new = selected_columns.copy()
             # Add the "Units" column as the last column
             # logger.warning(combined_scope_data.columns)
-            combined_scope_data_new = pd.concat([selected_columns, combined_scope_data[['Units']]], axis=1)
+            combined_scope_data_new = pd.concat(
+                [selected_columns, combined_scope_data[["Units"]]], axis=1
+            )
             # combined_scope_data_new = combined_scope_data[date_columns]
             # logger.info(f"new cols: {combined_scope_data.columns}")
             # logger.info(f"new df: {combined_scope_data_new}")
@@ -96,7 +101,7 @@ def filter_tables(directory_path, parser):
         # TODO - check if needed
         # if not combined_scope_data_new.empty and len(combined_scope_data_new.columns) > 0:
         #     combined_scope_data_new = combined_scope_data_new.iloc[:, 1:]
-        
+
         # logger.info(combined_scope_data_new.columns)
 
         # Drop empty columns
@@ -104,16 +109,16 @@ def filter_tables(directory_path, parser):
 
         # Drop empty rows
         combined_scope_data_new = combined_scope_data_new.dropna(how="all")
-        
+
         # logger.info(f"pre inferred df: {combined_scope_data_new}")
-        #Get units
+        # Get units
         combined_scope_data_new.to_csv(os.path.join(directory_path, "test_1.csv"))
         combined_scope_standard = infer_units_for_rows(combined_scope_data_new)
         logger.info(combined_scope_standard.columns)
         # logger.info(combined_scope_data.head(2))
         combined_scope_standard.to_csv(os.path.join(directory_path, "testing.csv"))
 
-        #Standardise Table
+        # Standardise Table
         combined_scope_standard = standardize_table(combined_scope_standard)
         # Save the filtered data to a new CSV file
         output_path = os.path.join(directory_path, "esg_backup_data.csv")
@@ -126,7 +131,11 @@ def filter_tables(directory_path, parser):
     else:
         print("No data to combine.")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     import dotenv
+
     os.getenv("ROOT_OUTPUT_PATH")
-    filter_tables(os.path.join(ROOT_OUTPUT_PATH, "MICROSOFT_CORP"), TableParsers.DOCLING)
+    filter_tables(
+        os.path.join(ROOT_OUTPUT_PATH, "MICROSOFT_CORP"), TableParsers.DOCLING
+    )
