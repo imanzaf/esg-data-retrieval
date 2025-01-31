@@ -3,14 +3,13 @@ import os
 import re
 
 # Directory containing the CSV files
-directory_path = "/Users/saifarifi/Desktop/ME/Masters/Semester 1/Introduction to financial markets/Data filtering/Nvidia"
+directory_path = "/workspaces/esg-data-retrieval/data/cache/MICROSOFT_CORP/docling"
 
 # Regex to match 'Scope 1' and 'Scope 2'
 regex_scope = r'(Scope\s1|Scope\s2)'
 
 # Regex to exclude rows with words like 'excluded' or 'avoided'
-regex_exclude = r'(excluded|Excluded|avoided|Avoided|aim|Aim|goal|Goal|revenue|Revenue|target|Target|forecast|Forecast|estimate|Estimate|projection|Projection|expectation|Expectation)'
-
+regex_exclude = r"(excluded|Excluded|avoided|Avoided|aim|Aim|goal|Goal|revenue|Revenue|target|Target|forecast|Forecast|estimate|Estimate|projection|Projection|expectation|Expectation|and 3|Scope 3|\+ 3)"
 # Regex to match columns with various date formats
 regex_date = r'(\bFY\d{2}\b|\b20\d{2}\b|\b[Ff]iscal\s[Yy]ear\b)'
 
@@ -68,7 +67,7 @@ if scope_data:
     combined_scope_data = combined_scope_data.dropna(how='all')
     
     # Save the filtered data to a new CSV file
-    output_path = os.path.join(directory_path, "Nvidia_Filtered.csv")
+    output_path = os.path.join(directory_path, "microsoft_new.csv")
     combined_scope_data.to_csv(output_path, index=False)
     print(f"Filtered data saved to: {output_path}")
 else:

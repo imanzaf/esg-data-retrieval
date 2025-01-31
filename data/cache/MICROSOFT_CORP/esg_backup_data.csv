@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 Unnamed: 0,Scope and source,Emission factors source,Units,(mt),FY20,FY21,FY22,FY23,Scope  3 category,Emissions calculation methodology,Percentage  of emissions  calculated  using supplier  data,Unnamed: 1
 0,Scope 1 (all fuels),EPA Emission Factors Hub. March 2018.,,,,,,,,,,
 1,Scope 2  Electricity (US),"Year 2021 eGRID Subregion Emission Factors: eGRID 2021, January 2023.",,,,,,,,,,
@@ -46,3 +47,48 @@ Unnamed: 0,Scope and source,Emission factors source,Units,(mt),FY20,FY21,FY22,FY
 5,,,,,31.1,30.5,32.9,38.8,,,,Scope 1 + 2 (location-based)
 6,,,,,4.0,3.3,2.2,2.6,,,,Scope 1 + 2 (market-based)
 0,,,,,"574,219","553,109","427,442","538,094",,,,Scope 1 + 2 1
+=======
+Scope and source,Emission factors source,(mt),FY20,FY21,FY22,FY23,Units
+Scope 1 (all fuels),EPA Emission Factors Hub. March 2018.,,,,,,
+Scope 2  Electricity (US),"Year 2021 eGRID Subregion Emission Factors: eGRID 2021, January 2023.",,,,,,
+Scope 2  Electricity (international unless otherwise sourced),"IEA (2022), Emission Factors",,,,,,
+Scope 2  Electricity (Brazil),"Year 2022 factors from the Brazilian Ministry of Science, Technology,  Innovation and Communication: Fator médio - Inventários corporativos.",,,,,,
+Scope 2  Electricity (Canada),National inventory report 1990-2021. Annex 13. Year 2021 factors. From April  2023 release.,,,,,,
+Scope 2  Electricity (UK),2023 Government Greenhouse Gas Conversion Factors for Company  Reporting: Methodology Paper for Conversion Factors. Year 2021 factors from  June 2023 release.,,,,,,
+,,Scope 1,,,,,
+,,Scope 1 - CO2,"96,700","94,292","99,123","92,466",Inferred: MT CO₂e
+,,Scope 1 - CH4,2,3,2,3,Inferred: CO₂e per FTE
+,,Scope 1 - N2O,1,1,1,1,Inferred: CO₂e per FTE
+,,Scope 1 - HFCs,19,27,37,49,Inferred: MMT CO₂e
+,,Scope 1 - SF6,0,0,0,0,Inferred: CO₂e per FTE
+,,Scope 2 (location-based),,,,,
+,,Scope 2 - CO2,"4,305,119","4,984,442","6,349,431","8,034,943",Inferred: MT CO₂e
+,,Scope 2 - CH4,283,330,382,515,Inferred: MT CO₂e
+,,Scope 2 - N2O,56,60,75,99,Inferred: MMT CO₂e
+,,Scope 2 (market-based),,,,,
+,,Scope 2 - CO2,"454,034","427,606","286,992","390,884",Inferred: MT CO₂e
+,,Scope 2 - CH4,19,18,10,23,Inferred: MMT CO₂e
+,,Scope 2 - N2O,5,5,3,6,Inferred: CO₂e per FTE
+,,Scope 1,"118,100","123,704","139,413","144,960",Inferred: MT CO₂e
+,,Scope 1 - CO2,"96,700","94,292","99,123","92,466",Inferred: MT CO₂e
+,,Scope 1 - CH4,53,63,62,63,Inferred: MMT CO₂e
+,,Scope 1 - N2O,236,150,209,292,Inferred: thousand MT CO₂e
+,,Scope 1 - HFCs,"21,070","29,177","39,993","52,087",Inferred: MT CO₂e
+,,Scope 1 - SF6,41,22,26,52,Inferred: MMT CO₂e
+,,Scope 2 (location-based),"4,328,916","5,010,667","6,381,250","8,077,403",Inferred: MT CO₂e
+,,Scope 2 - CO2,"4,305,119","4,984,442","6,349,431","8,034,943",Inferred: MT CO₂e
+,,Scope 2 - CH4,"7,063","8,248","9,543","12,868",Inferred: MT CO₂e
+,,Scope 2 - N2O,"16,734","17,977","22,276","29,592",Inferred: MT CO₂e
+,,Scope 2 (market-based),"456,119","429,405","288,029","393,134",Inferred: MT CO₂e
+,,Scope 2 - CO2,"454,034","427,606","286,992","390,884",Inferred: MT CO₂e
+,,Scope 2 - CH4,483,456,243,571,Inferred: MT CO₂e
+,,Scope 2 - N2O,"1,602","1,343",794,"1,679",Inferred: MT CO₂e
+,,,"118,100","123,704","139,413","144,960",Inferred: MT CO₂e
+,,,"574,219","553,109","427,442","538,094",Inferred: MT CO₂e
+,,,0.8,0.7,0.7,0.7,Inferred: CO₂e per FTE
+,,,30.3,29.8,32.2,38.1,Inferred: MMT CO₂e
+,,,3.2,2.6,1.5,1.9,Inferred: CO₂e per FTE
+,,,31.1,30.5,32.9,38.8,Inferred: MMT CO₂e
+,,,4.0,3.3,2.2,2.6,Inferred: CO₂e per FTE
+,,,"574,219","553,109","427,442","538,094",Inferred: MT CO₂e
+>>>>>>> Stashed changes

@@ -18,29 +18,22 @@ from src.utils.standardize_table_rework import standardize_table
 
 
 class Filter(BaseModel):
-    regex_scope: str = r"(Scope\s1|Scope\s2)"
-    regex_exclude: str = (
-        r"(excluded|Excluded|avoided|Avoided|aim|Aim|goal|Goal|revenue|Revenue|target|Target|forecast|Forecast|estimate|Estimate|projection|Projection|expectation|Expectation|and 3|Scope 3|\+ 3)"
-    )
-    regex_date: str = r"(\bFY\d{2}\b|\b20\d{2}\b|\b[Ff]iscal\s[Yy]ear\b)"
-
-    scope_data: list = []
+    # Regex to match 'Scope 1' and 'Scope 2'
+    regex_scope: str = r'(Scope\s1|Scope\s2)'
+    # Regex to exclude rows with words like 'excluded' or 'avoided'
+    regex_exclude: str = r"(excluded|Excluded|avoided|Avoided|aim|Aim|goal|Goal|revenue|Revenue|target|Target|forecast|Forecast|estimate|Estimate|projection|Projection|expectation|Expectation|and 3|Scope 3|\+ 3)"
+    # Regex to match columns with various date formats
+    regex_date: str = r'(\bFY\d{2}\b|\b20\d{2}\b|\b[Ff]iscal\s[Yy]ear\b)'
 
     directory_path: str
     parser: TableParsers
 
-    docling_tables: list = []
-    tables_with_units: list = []
-    concantenated_df: pd.DataFrame = None
     filtered_df: pd.DataFrame = None
-    inferred_df: pd.DataFrame = None
-
-    final_df: pd.DataFrame = None
 
     class Config:
         arbitrary_types_allowed = True
 
-    def load_dfs(self):
+    def _load_dfs(self):
         dfs = []
         for filename in os.listdir(
             os.path.join(self.directory_path, self.parser.value)
@@ -51,19 +44,32 @@ class Filter(BaseModel):
                 )
                 df = pd.read_csv(file_path)
                 dfs.append(df)
-        self.docling_tables = dfs
         return dfs
+    
+    def extract_filtered_df(self):
+        docling_tables = self._load_dfs()
+        dfs = self._append_units_column(docling_tables)
+        filtered_dfs = self._filter_for_scope(dfs)
+        concatenated_df = self._filter_for_figures(filtered_dfs)
+        inferred_df = self._infer_units(concatenated_df)
+        final_df = self._standardise_df(inferred_df)
 
-    def append_units_column(self):
+        self.filtered_df = final_df
+
+    def _append_units_column(self, docling_tables: list[pd.DataFrame]):
         dfs = []
-        for df in self.docling_tables:
+        for df in docling_tables:
             dfs.append(get_units_raw_input(df))
-        self.tables_with_units = dfs
         return dfs
 
-    def filter_for_scope(self):
+    def _filter_for_scope(self, dfs: list[pd.DataFrame]):
         filtered_dfs = []
-        for df in self.tables_with_units:
+        for df in dfs:
+            # Check if the table has a date column in the header
+            date_columns = [col for col in df.columns if re.search(self.regex_date, str(col))]
+            if not date_columns:
+                continue  # Skip files without date columns
+
             filtered_df = df[
                 df.apply(
                     lambda row: row.astype(str)
@@ -81,38 +87,39 @@ class Filter(BaseModel):
                 )
             ]
             filtered_dfs.append(filtered_df)
-            self.concantenated_df = pd.concat(filtered_dfs)
         return filtered_dfs
 
-    def filter_for_figures(self):
-        date_columns = [
-            col
-            for col in self.concantenated_df.columns
-            if re.search(self.regex_date, col)
-        ]
+    def _filter_for_figures(self, dfs: list[pd.DataFrame]):
+        concatenated_df = pd.concat(dfs)
 
-        last_date_col_index = self.concantenated_df.columns.get_loc(date_columns[-1])
-        filtered_df = self.concantenated_df.iloc[:, : last_date_col_index + 1]
+        # Identify the last column containing date-like information
+        date_columns = [col for col in concatenated_df.columns if re.search(self.regex_date, str(col))]
+        
+        if date_columns:
+            # Find the index of the last date column
+            last_date_col_index = concatenated_df.columns.get_loc(date_columns[-1])
+            # Keep only columns up to and including the last date column
+            combined_scope_data = concatenated_df.iloc[:, :last_date_col_index + 1]
+            # add units column
+            combined_scope_data["Units"] = concatenated_df["Units"]
+        
+        # Drop the first column if necessary
+        if not combined_scope_data.empty and len(combined_scope_data.columns) > 0:
+            if combined_scope_data.columns[0] == "Unnamed: 0":
+                combined_scope_data = combined_scope_data.iloc[:, 1:]
+            
+        # Drop empty columns
+        combined_scope_data = combined_scope_data.dropna(axis=1, how='all')
+        # Drop empty rows
+        combined_scope_data = combined_scope_data.dropna(how='all')
+        return combined_scope_data
 
-        # drop rows where units col is null
-
-
-        if not filtered_df.empty and len(filtered_df.columns) > 0:
-            filtered_df = filtered_df.iloc[:, 1:]
-        filtered_df = filtered_df.dropna()
-        filtered_df = filtered_df.dropna(axis=1, how="all")
-        filtered_df = filtered_df.dropna(how="all")
-        self.filtered_df = filtered_df
-        return filtered_df
-
-    def infer_units(self):
-        inferred_df = infer_units_for_rows(self.filtered_df)
-        self.inferred_df = inferred_df
+    def _infer_units(self, df: pd.DataFrame):
+        inferred_df = infer_units_for_rows(df)
         return inferred_df
 
-    def standardise_df(self):
-        standard = standardize_table(self.inferred_df)
-        self.final_df = standard
+    def _standardise_df(self, df: pd.DataFrame):
+        standard = standardize_table(df)
         return standard
 
 
@@ -203,14 +210,9 @@ def infer_units_for_rows(filtered_rows):
 if __name__ == "__main__":
     ROOT_DIR = os.getenv("ROOT_OUTPUT_PATH")
     filter_obj = Filter(
-        directory_path=os.path.join(ROOT_DIR, "MICROSOFT_CORP"),
+        directory_path=os.path.join(ROOT_DIR, "APPLE_INC"),
         parser=TableParsers.DOCLING,
     )
-    filter_obj.load_dfs()
-    filter_obj.append_units_column()
-    filter_obj.filter_for_scope()
-    filter_obj.filter_for_figures()
-    filter_obj.infer_units()
-    df = filter_obj.standardise_df()
+    filter_obj.extract_filtered_df()
 
-    df.to_csv(os.path.join(ROOT_DIR, "testing_iz_final.csv"))
+    filter_obj.filtered_df.to_csv(os.path.join(ROOT_DIR, "testing_apple.csv"))
