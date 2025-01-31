@@ -40,7 +40,9 @@ class CompanyProfile:
 
         # invoke company details function to retrieve missing attributes
         self._complete_company_profile()
-        self.output_path = (os.path.join(ROOT_OUTPUT_PATH, self.name.replace(" ", "_").upper()))
+        self.output_path = os.path.join(
+            ROOT_OUTPUT_PATH, self.name.replace(" ", "_").upper()
+        )
         logger.debug(f"Company Identifier: {self.identifier}")
 
     @staticmethod

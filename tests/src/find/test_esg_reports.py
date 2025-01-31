@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from src.find.esg_reports import ESGReports, SearchResult
 
 

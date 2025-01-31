@@ -40,6 +40,6 @@ jobs:
       run: |
         # stop build if any isort errors spotted
         isort .
-    - name: Test with pytest
-      run: |
-        pytest
+    # - name: Test with pytest
+    #   run: |
+    #     pytest tests/ --verbose

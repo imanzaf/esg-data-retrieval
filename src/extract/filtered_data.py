@@ -19,11 +19,13 @@ from src.utils.standardize_table_rework import standardize_table
 
 class Filter(BaseModel):
     # Regex to match 'Scope 1' and 'Scope 2'
-    regex_scope: str = r'(Scope\s1|Scope\s2)'
+    regex_scope: str = r"(Scope\s1|Scope\s2)"
     # Regex to exclude rows with words like 'excluded' or 'avoided'
-    regex_exclude: str = r"(excluded|Excluded|avoided|Avoided|aim|Aim|goal|Goal|revenue|Revenue|target|Target|forecast|Forecast|estimate|Estimate|projection|Projection|expectation|Expectation|and 3|Scope 3|\+ 3)"
+    regex_exclude: str = (
+        r"(excluded|Excluded|avoided|Avoided|aim|Aim|goal|Goal|revenue|Revenue|target|Target|forecast|Forecast|estimate|Estimate|projection|Projection|expectation|Expectation|and 3|Scope 3|\+ 3)"
+    )
     # Regex to match columns with various date formats
-    regex_date: str = r'(\bFY\d{2}\b|\b20\d{2}\b|\b[Ff]iscal\s[Yy]ear\b)'
+    regex_date: str = r"(\bFY\d{2}\b|\b20\d{2}\b|\b[Ff]iscal\s[Yy]ear\b)"
 
     directory_path: str
     parser: TableParsers
@@ -45,7 +47,7 @@ class Filter(BaseModel):
                 df = pd.read_csv(file_path)
                 dfs.append(df)
         return dfs
-    
+
     def extract_filtered_df(self):
         docling_tables = self._load_dfs()
         dfs = self._append_units_column(docling_tables)
@@ -66,7 +68,9 @@ class Filter(BaseModel):
         filtered_dfs = []
         for df in dfs:
             # Check if the table has a date column in the header
-            date_columns = [col for col in df.columns if re.search(self.regex_date, str(col))]
+            date_columns = [
+                col for col in df.columns if re.search(self.regex_date, str(col))
+            ]
             if not date_columns:
                 continue  # Skip files without date columns
 
@@ -93,25 +97,29 @@ class Filter(BaseModel):
         concatenated_df = pd.concat(dfs)
 
         # Identify the last column containing date-like information
-        date_columns = [col for col in concatenated_df.columns if re.search(self.regex_date, str(col))]
-        
+        date_columns = [
+            col
+            for col in concatenated_df.columns
+            if re.search(self.regex_date, str(col))
+        ]
+
         if date_columns:
             # Find the index of the last date column
             last_date_col_index = concatenated_df.columns.get_loc(date_columns[-1])
             # Keep only columns up to and including the last date column
-            combined_scope_data = concatenated_df.iloc[:, :last_date_col_index + 1]
+            combined_scope_data = concatenated_df.iloc[:, : last_date_col_index + 1]
             # add units column
             combined_scope_data["Units"] = concatenated_df["Units"]
-        
+
         # Drop the first column if necessary
         if not combined_scope_data.empty and len(combined_scope_data.columns) > 0:
             if combined_scope_data.columns[0] == "Unnamed: 0":
                 combined_scope_data = combined_scope_data.iloc[:, 1:]
-            
+
         # Drop empty columns
-        combined_scope_data = combined_scope_data.dropna(axis=1, how='all')
+        combined_scope_data = combined_scope_data.dropna(axis=1, how="all")
         # Drop empty rows
-        combined_scope_data = combined_scope_data.dropna(how='all')
+        combined_scope_data = combined_scope_data.dropna(how="all")
         return combined_scope_data
 
     def _infer_units(self, df: pd.DataFrame):

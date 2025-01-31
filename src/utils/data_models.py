@@ -2,7 +2,6 @@
 Stores enums and data models
 """
 
-import datetime as dt
 from enum import Enum
 
 from pydantic import BaseModel, Field

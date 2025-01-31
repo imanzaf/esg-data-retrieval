@@ -28,12 +28,6 @@ def get_emissions_data(identifier, idType, parser):
 
     # check cache for data
     try:
-        import os
-        import pandas as pd
-        import logging
-
-        logger = logging.getLogger(__name__)
-
         cache_dir = os.path.join(OUTPUT_DIR)
         if not os.path.exists(cache_dir):
             logger.error(f"Cache directory does not exist: {cache_dir}")
