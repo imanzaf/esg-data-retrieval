@@ -1,0 +1,27 @@
+,Metric,2020,2021,2022,2023,Units
+1,Scope 1 - CO2,"96,700","94,292","99,123","92,466",Inferred: MT CO₂e
+2,Scope 1 - CH,2,3,2,3,Inferred: CO₂e per FTE
+3,Scope 1 - N2O,1,1,1,1,Inferred: CO₂e per FTE
+4,Scope 1 - HFCs,19,27,37,49,Inferred: MMT CO₂e
+5,Scope 1 - SF,0,0,0,0,Inferred: CO₂e per FTE
+14,Scope 1,"118,100","123,704","139,413","144,960",Inferred: MT CO₂e
+15,Scope 1 - CO2,"96,700","94,292","99,123","92,466",Inferred: MT CO₂e
+16,Scope 1 - CH,53,63,62,63,Inferred: MMT CO₂e
+17,Scope 1 - N2O,236,150,209,292,Inferred: thousand MT CO₂e
+18,Scope 1 - HFCs,"21,070","29,177","39,993","52,087",Inferred: MT CO₂e
+19,Scope 1 - SF,41,22,26,52,Inferred: MMT CO₂e
+20,Scope 2 (location-based),"4,328,916","5,010,667","6,381,250","8,077,403",Inferred: MT CO₂e
+24,Scope 2 (market-based),"456,119","429,405","288,029","393,134",Inferred: MT CO₂e
+29,Scope 1 - CO2,"96,700","94,292","99,123","92,466",mtCO2e
+30,Scope 1 - CH,2,3,2,3,mtCO2e
+31,Scope 1 - N2O,1,1,1,1,mtCO2e
+32,Scope 1 - HFCs,19,27,37,49,mtCO2e
+33,Scope 1 - SF,0,0,0,0,mtCO2e
+42,Scope 1,"118,100","123,704","139,413","144,960",mtCO2e
+43,Scope 1 - CO2,"96,700","94,292","99,123","92,466",mtCO2e
+44,Scope 1 - CH,53,63,62,63,mtCO2e
+45,Scope 1 - N2O,236,150,209,292,mtCO2e
+46,Scope 1 - HFCs,"21,070","29,177","39,993","52,087",mtCO2e
+47,Scope 1 - SF,41,22,26,52,mtCO2e
+48,Scope 2 (location-based),"4,328,916","5,010,667","6,381,250","8,077,403",mtCO2e
+52,Scope 2 (market-based),"456,119","429,405","288,029","393,134",mtCO2e
