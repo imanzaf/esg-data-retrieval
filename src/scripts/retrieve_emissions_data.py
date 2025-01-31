@@ -18,7 +18,7 @@ sys.path.append(f"{os.getenv('ROOT_DIR')}")
 from src.extract.tables import TableExtractor  # noqa: E402
 from src.find.company_profile import CompanyProfile  # noqa: E402
 from src.find.esg_reports import ESGReports  # noqa: E402
-from src.utils import table_data_filtering  # noqa: E402
+from src.extract.filtered_data import Filter  # noqa: E402
 from src.utils.data import download_pdf_from_urls  # noqa: E402
 from src.utils.data_models import TableParsers  # noqa: E402
 
@@ -121,14 +121,19 @@ def get_emissions_data(identifier, idType, parser):
             continue
 
     # TODO - pass tables as objects
-    data = table_data_filtering.filter_tables(esg_reports.output_path, parser)
+    data_filter = Filter(directory_path=esg_reports.output_path, parser=parser)
+    data_filter.extract_filtered_df()
+    data = data_filter.filtered_df
+
+    data.to_csv(os.path.join(esg_reports.output_path, "esg_data.csv"))
+
     return data
 
 
 if __name__ == "__main__":
     start = time.time()
 
-    identifier = "US0378331005"
+    identifier = "US5949181045"
     idType = "isin"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)
