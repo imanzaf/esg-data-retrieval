@@ -15,10 +15,10 @@ OUTPUT_DIR = os.getenv("ROOT_OUTPUT_PATH")
 # append path
 sys.path.append(f"{os.getenv('ROOT_DIR')}")
 
+from src.extract.filtered_data import Filter  # noqa: E402
 from src.extract.tables import TableExtractor  # noqa: E402
 from src.find.company_profile import CompanyProfile  # noqa: E402
 from src.find.esg_reports import ESGReports  # noqa: E402
-from src.extract.filtered_data import Filter  # noqa: E402
 from src.utils.data import download_pdf_from_urls  # noqa: E402
 from src.utils.data_models import TableParsers  # noqa: E402
 

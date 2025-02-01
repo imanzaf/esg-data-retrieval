@@ -1,8 +1,9 @@
 import os
+import re
 
 import dotenv
 import pandas as pd
-import re
+
 from src.utils.data_models import TableParsers
 
 
