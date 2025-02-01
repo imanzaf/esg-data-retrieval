@@ -2,10 +2,1186 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>my app</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>My ESG App</title>
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Marked.js for client-side Markdown->HTML conversion -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Chart.js for the line chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Optional: chartjs-plugin-annotation -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2"></script>
+
+    <!-- Updated, more polished CSS -->
+    <style>
+      :root {
+        --primary-green: #1a4f1a;
+        --secondary-green: #2f8f2f;
+        --accent-green: #e8f5e9;
+        --text-dark: #2c3e50;
+      }
+
+
+      body {
+       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+       background: linear-gradient(to bottom right, #f8fcf8, #e8f5e9);
+       margin: 0;
+       color: #2c3e50;
+     }
+     .content {
+      padding: 30px;
+    }
+
+
+
+
+    .logo-header-container {
+          z-index: 10;
+          position: relative;
+          height: 160px;
+          width: 100%;
+          background-color: #063800;
+          display: flex;
+          align-items: center; /* Align items vertically */
+          justify-content: center; /* Center items horizontally */
+          gap: 20px; /* Add spacing between logo and text */
+          box-shadow: 0px 4px 15px rgba(20, 80, 20, 0.6);
+          text-align: center;
+        }
+
+
+    .logo {
+          max-height: 100px;
+          width: auto;
+        }
+
+
+    .div1 {
+          display: flex;
+          flex-direction: column; /* Stack heading and phrase */
+          align-items: center;
+          justify-content: center;
+        }
+
+    .catchy-phrase {
+          color: white;
+          font-size: 20px;
+          margin-top: 5px; /* Adjust spacing between header and phrase */
+        }
+
+    .hamburger-icon {
+              font-size: 30px;
+              color: white;
+              cursor: pointer;
+              position: absolute;
+              top: 20px;
+              left: 20px;
+              z-index: 100;
+          }
+
+
+    .report-container {
+              color: #1C1C1C;
+              display: flex;
+              padding: 10px;
+              gap: 30px;
+              align-items: center;
+              justify-content: center;
+              margin-bottom: 30px;
+          }
+
+    .sidebar1 {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              border: 1px solid #ccc;
+              border-radius: 8px;
+              margin-left: 50px;
+              float: left;
+              width: 250px;
+              height: 150px;
+              padding: 20px;
+              background-color: white;
+              color: white;
+              z-index: 1000;
+
+          }
+
+
+    .navigation {
+      position: fixed; /* Sticks to the side */
+      left: 0;
+      top: 0;
+      width: 100px;
+      height: 100vh; /* 100% of the viewport height */
+      background:  #063800;
+      box-shadow: 25px 25px 75px rgba(0,0,0,0.25), 10px 10px 70px rgba(0,0,0,0.25),
+                  inset 5px 5px 10px rgba(0,0,0,0.5), inset 5px 5px 20px rgba(255,255,255,0.2),
+                  inset -5px -5px 15px rgba(0,0,0,0.75);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 10px;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+
+
+   /* Class to toggle menu visibility */
+   .navigation.show {
+              transform: translateX(0);
+   }
+
+
+
+   .navigation li {
+              position:relative;
+              list-style:none;
+              width:80px;
+              height: 80px;
+              display:flex;
+              justify-content:center;
+              margin: 0 5px;
+          }
+
+
+   .navigation li::before {
+              content: '';
+              position: absolute;
+              top:calc(50% - 2.5px);
+              left: 20px;
+              width:5px;
+              height: 5px;
+              border-radius:50%;
+              transition:0.5s;
+
+          }
+
+
+   .navigation li.active::before {
+              background:white;
+              box-shadow:0 0 5px white,
+              0 0 10px white,
+              0 0 20px white,
+              0 0 30px white,
+              0 0 40px white;
+          }
+
+
+
+
+   .navigation li a {
+              display:flex;
+              justify-content:center;
+              align-items:center;
+              flex-direction:column;
+              text-decoration:none;
+          }
+
+
+
+
+   .navigation li a .icon {
+              color: white;
+              transition: 0.5s;
+              transition-delay: 0.2s;
+              font-size: 1.5em;
+          }
+
+
+
+
+   .navigation li.active a .icon::before{
+              transform:scale(1);
+
+          }
+
+
+
+
+   .navigation li a .text{
+              position: absolute;
+              left:130px;
+              font-size:1.25em;
+              color:white;
+              visibility:hidden;
+              transition:0.5s;
+          }
+
+
+
+
+   .navigation li a .text::before {
+              content: '';
+              position: absolute;
+              top: 50%;
+              left: -4px;
+              transform:translateY(-50%) rotate(45deg);
+              width:10px;
+              height:10px;
+          }
+
+
+
+
+   .navigation li:hover a .text {
+              visibility: visible;
+          }
+
+
+   .logout {
+            z-index: 15;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            color:  #063800;
+            border: none;
+            padding: 20px 35px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+          }
+
+   .logout:hover {
+             background-color: #145a32;
+            color: white;
+    }
+
+
+    h1 {
+        color: var(--primary-green);
+        margin-top: 0;
+        font-weight: 600;
+        margin-bottom: 25px;
+        font-size: 2.2em;
+        letter-spacing: -0.5px;
+      }
+
+
+    h2 {
+        color: var(--primary-green);
+        font-weight: 600;
+        font-size: 1.6em;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e0f0e0;
+      }
+
+
+    .column {
+        float: left;
+        width: 45%;
+        margin: 1%;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        box-sizing: border-box;
+        min-height: 400px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+
+    .column:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      }
+
+
+
+    #raw-markdown {
+        display: none;
+      }
+
+
+      #rendered-tables table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 20px 0;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      }
+
+
+      #rendered-tables th,
+      #rendered-tables td {
+        border: 1px solid #e0f0e0;
+        padding: 12px;
+        text-align: left;
+      }
+
+
+      #rendered-tables th {
+        background-color: var(--secondary-green);
+        color: white;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.9em;
+        letter-spacing: 0.5px;
+      }
+
+
+      /* Chart box wrapper */
+      .chart-box {
+        border: 1px solid #d4edd4;
+        background: linear-gradient(to bottom, #f9fff9, #ffffff);
+        border-radius: 12px;
+        padding: 0;
+        margin-bottom: 25px;
+        overflow: hidden;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+      }
+
+
+      .chart-box h3 {
+        background: var(--primary-green);
+        color: white;
+        margin: 0;
+        padding: 15px;
+        font-size: 1.1em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+
+      /* RAG status styling */
+      #rag-status {
+        background: var(--accent-green);
+        padding: 10px 15px;
+        border-radius: 6px;
+        color: var(--primary-green);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+
+      #rag-status::before {
+        content: '';
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--secondary-green);
+        display: inline-block;
+      }
+
+
+      /* Form styling */
+      form {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 30px;
+      }
+      .search-container {
+       display: flex;
+       align-items: center;
+       justify-content: center;
+       gap: 10px;
+      }
+
+
+      .search-container label {
+       font-size: 1.2em;
+       color: #1C1C1C;;
+      }
+       #company_input {
+        width: 95%;
+        padding: 12px;
+        border: 2px solid #d4edd4;
+        border-radius: 6px;
+        margin-bottom: 15px;
+        transition: border-color 0.3s ease;
+        font-size: 1.2em;
+      }
+
+
+      #submit-btn {
+        background: linear-gradient(to right, var(--secondary-green), var(--primary-green));
+        padding: 12px 25px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        font-size: 1.2em;
+      }
+
+
+      #submit-btn:hover {
+        transform: scale(1.02);
+      }
+
+
+      /* Chat form styling */
+      #question-form {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+
+      #question-input {
+        flex: 1;
+        padding: 12px;
+        border: 2px solid #d4edd4;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: all 0.3s ease;
+      }
+
+
+      #question-input:focus {
+        outline: none;
+        border-color: #70c270;
+      }
+
+
+      #question-form button {
+        background: var(--secondary-green);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        padding: 12px 20px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+
+      #question-form button:hover {
+        background-color: var(--primary-green);
+      }
+
+
+      /* Chat Q&A bubbles */
+      #chat-output {
+        margin-top: 15px;
+      }
+
+
+      #chat-output div {
+        background-color: #e9ffe9;
+        border: 1px solid #c7edc7;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 4px;
+        white-space: normal;
+      }
+
+
+      #chat-output table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 10px 0;
+      }
+
+
+      #chat-output th,
+      #chat-output td {
+        border: 1px solid #d4edd4;
+        padding: 8px;
+        text-align: left;
+      }
+
+
+      #chat-output th {
+        background-color: #f1f9f1;
+      }
+
+
+      /* Loading spinner */
+      #loading-spinner {
+        display: none;
+        text-align: center;
+        margin: 30px 0;
+      }
+
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        margin: 0 auto;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid var(--secondary-green);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+
+      .clear { clear: both; }
+    </style>
 </head>
 <body>
-    <h2>Financial Markets</h2>
+
+
+ <div class="logo-header-container">
+   <img src="{{ url_for('static', filename='images/missiTrack.png') }}" alt="Logo" class="logo">
+   <div class="div1">
+       <h1 style="color:white; text-align:center;"> EmissiTrack</h1>
+       <p class="catchy-phrase">Advanced Search</p>
+   </div>
+</div>
+
+
+<div class="hamburger-icon">&#9776;</div>
+       <ul class="navigation">
+           <li class="active">
+               <a href="{{url_for('firstpage')}}">
+                   <span class="icon"> <ion-icon name="home-outline"></ion-icon></span>
+                   <span class="text">EmissiTrack</span>
+               </a>
+           </li>
+           <li>
+               <a href="{{url_for('advanced_search')}}">
+                   <span class="icon"> <ion-icon name="information-circle-outline"></ion-icon></span>
+                   <span class="text">Advanced Search</span>
+               </a>
+           </li>
+           <li>
+               <a href="{{url_for('home')}}">
+                   <span class="icon"> <ion-icon name="finger-print-outline"></ion-icon></span>
+                   <span class="text">Premium Page</span>
+               </a>
+           </li>
+           <li>
+               <a href="{{url_for('login')}}">
+                   <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
+                   <span class="text">Register/Login</span>
+               </a>
+           </li>
+           <li>
+               <a href="{{url_for('firstpage')}}">
+                   <span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>
+                   <span class="text">Logout</span>
+               </a>
+           </li>
+       </ul>
+       <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+           <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+           <script>
+               document.addEventListener('DOMContentLoaded', function () {
+                   const hamburger = document.querySelector('.hamburger-icon');
+                   const navigation = document.querySelector('.navigation');
+                   let isOpen = false;
+                   hamburger.addEventListener('click', function () {
+                       // Toggle menu visibility
+                       isOpen = !isOpen;
+                       if (isOpen) {
+                           navigation.classList.add('show');
+                       } else {
+                           navigation.classList.remove('show');
+                       }
+                   });
+                   // Keep your existing navigation item click event listener
+                   let list = document.querySelectorAll('.navigation li');
+                   function activeLink() {
+                       list.forEach((item) => item.classList.remove('active'));
+                       this.classList.add('active');
+                   }
+                   list.forEach((item) => item.addEventListener('click', activeLink));
+               });
+           </script>
+ <div class="content">
+ <!-- Add search form at the top -->
+ <form method="POST" style="margin-bottom: 20px;">
+   <div class="search-container">
+   <label for="company_input">Enter Company, ISIN, or Ticker:</label>
+   <input type="text" id="company_input" name="company_name" required>
+
+
+   <label style="margin-left: 10px;"></label>
+   <label>
+     <input type="radio" name="idType" value="name" checked> Name
+   </label>
+   <label>
+     <input type="radio" name="idType" value="ticker"> Ticker
+   </label>
+   <label>
+     <input type="radio" name="idType" value="isin"> ISIN
+   </label>
+   <br><br>
+   <button type="submit" id="submit-btn">Search</button>
+ </div>
+ </form>
+
+
+ <!-- Updated loading spinner (initially hidden by CSS) -->
+ <div id="loading-spinner">
+   <div class="spinner"></div>
+   <p>Analyzing ESG Data...</p>
+ </div>
+
+
+ <!-- Wrap existing content in conditional -->
+ {% if company_name %}
+   <h1>
+     <i class="fas fa-leaf"></i>
+     ESG Insights: {{ company_name }}
+   </h1>
+ {% else %}
+   <h1>
+     <i class="fas fa-search"></i>
+     Discover ESG Analytics
+   </h1>
+ {% endif %}
+
+
+ {% if company_name %}
+
+
+
+
+ <div class="report-container">
+   {% if report_url %}
+       <p>Latest ESG Report Link for {{company_name}}: <a href="{{ report_url }}" target="_blank">{{ report_url }}</a></p>
+
+
+
+
+   {% else %}
+       <p>No report found.</p>
+   {% endif %}
+</div>
+
+
+   <!-- Left column: LLM data (tables) -->
+   <div class="column">
+     <h2>GHG Emissions Tables 🌱</h2>
+
+
+     <!-- Hidden raw markdown from the LLM -->
+     <div id="raw-markdown">{{ llm_markdown }}</div>
+
+
+     <!-- We'll display the rendered HTML tables here -->
+     <div id="rendered-tables"></div>
+   </div>
+
+
+   <!-- Right column: Chart + RAG chatbot -->
+   <div class="column">
+     <!-- Chart box above the chatbot -->
+     <div class="chart-box">
+       <h3>Key Table Emissions Over Time</h3>
+       <canvas id="keyTableChart" width="300" height="200"></canvas>
+     </div>
+
+
+     <h2>RAG Chatbot 🌍</h2>
+     <div id="rag-status">Initializing RAG...</div>
+
+
+     <form id="question-form">
+       <input type="text" id="question-input" name="question" placeholder="Type your question..." />
+       <button type="submit">Ask</button>
+     </form>
+
+
+     <!-- Add this STOP button (it doesn't belong to the question-form) -->
+     <button type="button" id="stop-rag-btn" style="margin-left: 10px; background-color: #f44336; color: white; border: none; border-radius: 4px; padding: 7px 12px;">
+       Stop RAG
+     </button>
+
+
+     <div id="chat-output"></div>
+   </div>
+
+
+   <div class="clear"></div>
+ {% endif %}
+
+
+ <script>
+   // Immediately call /rag_init in the background
+   fetch("{{ url_for('rag_init') }}", { method: "POST" })
+     .then(resp => resp.json())
+     .then(data => {
+       console.log("RAG init response:", data);
+       // Show the user that something is happening
+       const ragStatusEl = document.getElementById("rag-status");
+       ragStatusEl.innerText = data.status; // e.g. "RAG initialization started"
+
+
+       // Now poll /rag_status every 5 seconds instead of 2
+       const checkInterval = setInterval(() => {
+         fetch("{{ url_for('rag_status') }}")
+           .then(r => r.json())
+           .then(rd => {
+             if (rd.initialized) {
+               ragStatusEl.innerText = "RAG is ready!";
+               clearInterval(checkInterval); // stop polling
+             } else {
+               ragStatusEl.innerText = "RAG is still initializing...";
+             }
+           })
+           .catch(err => {
+             console.error("Error checking RAG status:", err);
+             // If there's an error talking to /rag_status, you can handle it here
+           });
+       }, 5000); // Changed from 2000 to 5000 milliseconds
+     })
+     .catch(err => {
+       console.error("RAG init error:", err);
+       document.getElementById("rag-status").innerText = "Error initializing RAG";
+     });
+
+
+   window.addEventListener('DOMContentLoaded', () => {
+     let rawMarkdown = document.getElementById('raw-markdown')?.textContent || "";
+
+
+     // 1) Remove code fences
+     rawMarkdown = rawMarkdown.replaceAll("```markdown", "").replaceAll("```", "");
+
+
+     // 2) Parse the Key Table for the chart (long format)
+     const keyTableData = parseKeyTableFromMarkdown(rawMarkdown);
+     renderKeyTableChart(keyTableData);
+
+
+     // 3) Parse and pivot each of the five tables
+     const pivotedKey = pivotTableData(keyTableData, 'category', 'year', 'emissions');
+
+     const scope1Data = parseBreakdownFromMarkdown(rawMarkdown, "Scope 1 Breakdown");
+     const pivotedScope1 = pivotTableData(scope1Data, 'subcategory', 'year', 'emissions');
+
+
+     const scope2MarketData = parseBreakdownFromMarkdown(rawMarkdown, "Scope 2 Market-based Breakdown");
+     const pivotedScope2M = pivotTableData(scope2MarketData, 'subcategory', 'year', 'emissions');
+
+
+     const scope2LocationData = parseBreakdownFromMarkdown(rawMarkdown, "Scope 2 Location-based Breakdown");
+     const pivotedScope2L = pivotTableData(scope2LocationData, 'subcategory', 'year', 'emissions');
+
+
+     const scope3Data = parseBreakdownFromMarkdown(rawMarkdown, "Scope 3 Breakdown");
+     const pivotedScope3 = pivotTableData(scope3Data, 'subcategory', 'year', 'emissions');
+
+
+     // 4) Build HTML tables
+     let html = "";
+     html += "<h3>Key Table</h3>";
+     html += buildHtmlTable(pivotedKey, "Category");
+
+
+     html += "<h3>Scope 1 Breakdown</h3>";
+     html += buildHtmlTable(pivotedScope1, "Scope 1 Source / Subcategory");
+
+
+     html += "<h3>Scope 2 Market-based Breakdown</h3>";
+     html += buildHtmlTable(pivotedScope2M, "Region or Business Unit");
+
+
+     html += "<h3>Scope 2 Location-based Breakdown</h3>";
+     html += buildHtmlTable(pivotedScope2L, "Region or Business Unit");
+
+
+     html += "<h3>Scope 3 Breakdown</h3>";
+     html += buildHtmlTable(pivotedScope3, "Scope 3 Category");
+
+
+     document.getElementById('rendered-tables').innerHTML = html;
+
+
+     // Add chart annotations
+     Chart.register(ChartjsPluginAnnotation);
+
+
+     // Add smooth scroll to tables
+     document.querySelectorAll('#rendered-tables table').forEach(table => {
+       table.addEventListener('mouseover', () => {
+         table.style.transform = 'scale(1.02)';
+         table.style.transition = 'transform 0.3s ease';
+       });
+       table.addEventListener('mouseout', () => {
+         table.style.transform = 'scale(1)';
+       });
+     });
+
+
+     // Real-time chart resizing via ResizeObserver
+     const chartCanvas = document.getElementById('keyTableChart');
+     if (chartCanvas) {
+       const resizeObserver = new ResizeObserver(entries => {
+         entries.forEach(entry => {
+           const chart = Chart.getChart(chartCanvas);
+           if (chart) {
+             chart.resize();
+           }
+         });
+       });
+       resizeObserver.observe(chartCanvas.parentElement);
+     }
+   });
+
+
+   function pivotTableData(longData, rowField, colField, valField) {
+     const rowLabels = [...new Set(longData.map(d => d[rowField]))];
+     const colLabels = [...new Set(longData.map(d => d[colField]))].sort();
+
+
+     const lookup = {};
+     longData.forEach(item => {
+       const r = item[rowField];
+       const c = item[colField];
+       lookup[`${r}-${c}`] = item[valField];
+     });
+
+
+     const pivoted = rowLabels.map(rLabel => {
+       let rowObj = { rowLabel: rLabel };
+       colLabels.forEach(cLabel => {
+         rowObj[cLabel] = lookup[`${rLabel}-${cLabel}`] ?? null;
+       });
+       return rowObj;
+     });
+
+
+     return { rowLabels, colLabels, pivoted };
+   }
+
+
+   function buildHtmlTable(pivotResult, rowName = "Category") {
+     const { pivoted, colLabels } = pivotResult;
+     let html = '<table><thead><tr><th>' + rowName + '</th>';
+     colLabels.forEach(yr => {
+       html += `<th>${yr}</th>`;
+     });
+     html += '</tr></thead><tbody>';
+
+
+     pivoted.forEach(row => {
+       html += `<tr><td>${row.rowLabel}</td>`;
+       colLabels.forEach(yr => {
+         let val = row[yr] !== null ? row[yr] : '';
+         html += `<td>${val}</td>`;
+       });
+       html += '</tr>';
+     });
+     html += '</tbody></table>';
+     return html;
+   }
+
+
+   function parseBreakdownFromMarkdown(md, headingName) {
+     let lines = md.split('\n');
+     let foundHeading = false;
+     let result = [];
+
+
+     for (let i = 0; i < lines.length; i++) {
+       let line = lines[i].trim();
+
+
+       // Case-insensitive check for the heading name
+       if (line.toLowerCase().includes(headingName.toLowerCase())) {
+         foundHeading = true;
+         continue;
+       }
+
+
+       if (foundHeading) {
+         // If we see a new heading (# up to ######), we stop
+         if (line.match(/^#{1,6}\s/)) {
+           break;
+         }
+
+
+         if (line.startsWith("|") && line.endsWith("|")) {
+           if (line.includes("|---")) continue;
+
+
+           let cols = line.split("|").map(c => c.trim()).filter(Boolean);
+           if (cols.length < 3) continue;
+           let lower = cols.join(" ").toLowerCase();
+           if (lower.includes("year") && lower.includes("emissions")) {
+             continue;
+           }
+
+
+           let subcategory = cols[0];
+           let yearStr = cols[1].toUpperCase();
+           let match = yearStr.match(/\d{4}|\d{2}/);
+           let year = null;
+           if (match) {
+             let num = parseInt(match[0]);
+             if (num < 50) year = 2000 + num;
+             else if (num < 100) year = 1900 + num;
+             else year = num;
+           }
+
+
+           let eStr = cols[2].replace(/[^\d.-]/g,'');
+           let emissions = parseFloat(eStr);
+           if (isNaN(emissions)) emissions = 0;
+
+
+           result.push({ subcategory, year, emissions });
+         }
+       }
+     }
+     return result;
+   }
+
+
+   // Modified question form handler
+   document.getElementById("question-form")?.addEventListener("submit", function(e) {
+     e.preventDefault();
+     const questionInput = document.getElementById("question-input");
+     const question = questionInput.value.trim();
+     if (!question) return;
+
+
+     // Show immediate feedback
+     const outputDiv = document.getElementById("chat-output");
+     const waitingMsg = document.createElement("div");
+     waitingMsg.innerHTML = "<em>Processing your question, please wait...</em>";
+     outputDiv.appendChild(waitingMsg);
+
+
+     // Disable the ASK button so user knows it's "in progress"
+     const askButton = this.querySelector("button[type='submit']");
+     askButton.disabled = true;
+
+
+     const formData = new FormData();
+     formData.append("question", question);
+
+
+     fetch("{{ url_for('ask_question') }}", {
+       method: "POST",
+       body: formData
+     })
+       .then(resp => resp.json())
+       .then(data => {
+         // Remove the "waiting" message
+         outputDiv.removeChild(waitingMsg);
+         // Re-enable the ASK button
+         askButton.disabled = false;
+
+
+         let newQA = document.createElement("div");
+         // Clean out triple backticks
+         let cleanAnswer = data.answer.replaceAll("```markdown", "").replaceAll("```", "");
+         // Convert markdown to HTML
+         let htmlAnswer = marked.parse(cleanAnswer);
+
+
+         newQA.innerHTML = `
+           <b>Q:</b> ${question}<br>
+           <b>A:</b> ${htmlAnswer}
+         `;
+         outputDiv.appendChild(newQA);
+       })
+       .catch(err => {
+         console.error("Ask error:", err);
+         // Remove "waiting" message
+         outputDiv.removeChild(waitingMsg);
+         // Re-enable the button
+         askButton.disabled = false;
+
+
+         const newQA = document.createElement("div");
+         newQA.innerHTML = `
+           <b>Q:</b> ${question}<br>
+           <b>A:</b> Sorry, there was an error. Please try again.
+         `;
+         outputDiv.appendChild(newQA);
+       });
+   });
+
+
+   /* ========== The same parse/render chart code as before ========== */
+   function parseKeyTableFromMarkdown(md) {
+     let lines = md.split('\n');
+     let inKeyTable = false;
+     let entries = [];
+
+
+     for (let i = 0; i < lines.length; i++) {
+       let line = lines[i].trim();
+
+
+       // 1) Detect "Key Table" (case-insensitive)
+       if (!inKeyTable && line.toLowerCase().includes("key table")) {
+         inKeyTable = true;
+         continue;
+       }
+       // 2) If we've found Key Table and see a new heading (# up to ######), we stop
+       if (inKeyTable && line.match(/^#{1,6}\s/)) {
+         break;
+       }
+
+
+       // 3) If inKeyTable, gather table rows
+       if (inKeyTable && line.startsWith("|") && line.endsWith("|")) {
+         // skip lines like "|---"
+         if (line.includes("|---")) continue;
+
+
+         // split columns
+         let cols = line.split("|").map(c => c.trim()).filter(Boolean);
+         if (cols.length < 3) continue; // not enough columns
+
+
+         // skip header row
+         let lower = cols.join(" ").toLowerCase();
+         if (lower.includes("category") && lower.includes("year")) {
+           continue;
+         }
+
+
+         // parse category
+         let category = cols[0];
+
+
+         // parse year
+         let yearStr = cols[1].toUpperCase();
+         let match = yearStr.match(/\d{4}|\d{2}/);
+         let year = null;
+         if (match) {
+           let num = parseInt(match[0]);
+           // Example logic for 2-digit years
+           if (num < 50) year = 2000 + num;
+           else if (num < 100) year = 1900 + num;
+           else year = num;
+         }
+         if (!year) {
+           continue;
+         }
+
+
+         // parse emissions
+         let emissStr = cols[2];
+         let cleaned = emissStr.replace(/[^\d.-]/g, '');
+         let emissions = parseFloat(cleaned);
+         if (isNaN(emissions)) emissions = 0;
+
+
+         entries.push({ category, year, emissions });
+       }
+     }
+     return entries;
+   }
+
+
+   function renderKeyTableChart(data) {
+     if (!data || data.length === 0) {
+       console.log("No Key Table data found to chart.");
+       return;
+     }
+
+
+     let categories = {
+       "Scope 1": [],
+       "Scope 2 (Market-based)": [],
+       "Scope 2 (Location-based)": []
+     };
+
+
+     data.forEach(entry => {
+       if (categories.hasOwnProperty(entry.category) && entry.year && entry.emissions !== null) {
+         categories[entry.category].push({ x: entry.year, y: entry.emissions });
+       }
+     });
+
+
+     Object.keys(categories).forEach(cat => {
+       categories[cat].sort((a,b) => a.x - b.x);
+     });
+
+
+     const chartDatasets = [];
+     const colorMap = {
+       "Scope 1": "#26c6da",
+       "Scope 2 (Market-based)": "#ef5350",
+       "Scope 2 (Location-based)": "#66bb6a"
+     };
+
+
+     for (let cat of Object.keys(categories)) {
+       if (categories[cat].length > 0) {
+         chartDatasets.push({
+           label: cat,
+           data: categories[cat],
+           backgroundColor: colorMap[cat] || "#888",
+           borderColor: colorMap[cat] || "#888",
+           borderWidth: 1,
+           borderRadius: 4
+         });
+       }
+     }
+
+
+     const ctx = document.getElementById('keyTableChart').getContext('2d');
+     new Chart(ctx, {
+       type: 'bar',
+       data: { datasets: chartDatasets },
+       options: {
+         scales: {
+           x: {
+             type: 'linear',
+             title: { display: true, text: 'Year' },
+             ticks: {
+               stepSize: 1,
+               callback: function(value) {
+                 return value;
+               }
+             }
+           },
+           y: {
+             title: {
+               display: true,
+               text: 'Emissions (tCO2e)'
+             }
+           }
+         },
+         plugins: {
+           title: {
+             display: false
+           }
+         }
+       }
+     });
+   }
+   /* ================================================================ */
+
+
+   document.addEventListener('DOMContentLoaded', function() {
+     // STOP RAG button
+     const stopButton = document.getElementById('stop-rag-btn');
+     if (stopButton) {
+       stopButton.addEventListener('click', function() {
+         fetch("{{ url_for('reset_rag') }}", {
+           method: "POST"
+         })
+         .then(resp => resp.json())
+         .then(data => {
+           console.log("Stop RAG response:", data);
+           document.getElementById('rag-status').innerText = "RAG reset.";
+         })
+         .catch(err => console.error("Error stopping RAG:", err));
+       });
+     }
+   });
+ </script>
+  </div>
 </body>
 </html>
+

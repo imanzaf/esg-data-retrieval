@@ -10,6 +10,7 @@
 
 To set up a local instance of the app, follow these instructions carefully to ensure the environment is configured correctly. A local instance runs on your personal computer, allowing you to interact with the app in isolation.
 
+zsh: illegal hardware instruction
 
 ### Prerequisites
 

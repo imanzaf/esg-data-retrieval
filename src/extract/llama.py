@@ -47,7 +47,7 @@ class LlamaExtractor(BaseModel):
     # and merges JSON blocks to find the best data
     def extract_emissions_data(
         self, pdf_file: str, company_name: str
-    ) -> tuple[dict | None, list]:
+    ):  # -> tuple[dict | None, list]:
 
         try:
             parser = LlamaParse(

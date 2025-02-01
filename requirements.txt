@@ -1,23 +1,19 @@
 # project requirements
 pandas
+numpy==1.26.4
 python-dotenv
 loguru
 pydantic
 requests
 flask
-transformers
 docling
-# torch
-jpype1
-# tf-keras==2.16.0
-# tensorflow-cpu==2.16.1
 PyPDF2
-# llama-parse
-# pycryptodome
 openai
-tabula-py
 docling
 google-search-results  # serpapi
+yfinance
+llama_parse
+tabula-py
 
 # dev requirements
 pre-commit
@@ -25,3 +21,13 @@ black
 flake8
 isort
 pytest
+
+Flask-SocketIO
+folium
+
+# The main LangChain library
+langchain
+langchain_community
+langchain_core
+pymupdf4llm
+langchain_openai
