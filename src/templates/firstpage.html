@@ -1,0 +1,765 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmissiTrack</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<style>
+   html, body {
+      width: 100vw;  /* Ensures full width of the viewport */
+      overflow-x: hidden; /* Prevents horizontal scroll issues */
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1C1C1C;
+      color: #333333;
+    }
+
+
+    .footer {
+       display: flex; flex-direction: column;
+       justify-content: space-around;
+       align-items: center;
+       background-color: #1C1C1C;
+       color: #F5F5F5;
+       padding: 20px;
+       flex-wrap: wrap;
+       text-align: center;
+    }
+
+
+    .footer-section {
+       flex: 1;
+       min-width: 200px;
+       margin: 10px;
+    }
+
+
+
+    .footer-section ul {
+       list-style: none;
+       padding: 0;
+       display: flex;
+       gap:15px;
+       justify-content: center;
+    }
+
+
+    .footer-section ul li {
+       margin: 5px 0;
+    }
+
+
+    .footer-section ul li a {
+       color: #F5F5F5;
+       text-decoration: none;
+    }
+
+
+    .footer-section ul li a:hover {
+       text-decoration: underline;
+    }
+
+
+    .social-icons a {
+       font-size: 24px;
+       color: white;
+       margin: 0 10px;
+       text-decoration: none;
+    }
+
+
+    .social-icons a:hover {
+       color: #606060;
+    }
+
+
+    #description {
+         font-weight:bold;
+    }
+
+
+     #learnMoreSection p {
+         margin-bottom: 50px; /* Adjust this value as needed */
+     }
+
+
+     #learnMoreBtn {
+         position:relative;
+         left: 50%; /* Adjust this value to move it more to the right */
+         top:200px;
+         width: auto; /* Adjust width automatically based on content */
+         font-size: 20px; /* Increase font size */
+         padding: 16px 32px;
+         font-size: 20px; /* Increase font size */
+         text-align: center; /* Center the text */
+         display: inline-flex; /* Ensure proper button behavior */
+         width: auto; /* Adjust width automatically based on content */
+         height: 50px; /* Adjust height automatically */
+         white-space: nowrap;
+         color:white;
+         font-weight: bold;
+         align-items: center; /* Centers vertically */
+         justify-content: center; /* Centers horizontally */
+         transform: translateX(-50%);
+         left: 51%;
+         background-color:#063800;
+
+     }
+
+
+     #learnMoreSection {
+         color:white;
+     }
+
+
+   .btn {/* Keeps the button fixed in one position */
+       bottom: 120px;
+       padding: 16px 32px;
+       font-size: 16px;
+       color:   #2D2D2D ;
+       background-color:white  ;
+       border: none;
+       border-radius: 8px;
+       text-decoration: none;
+       cursor: pointer;
+       justify-content: center;
+       transition: background-color 0.3s ease;
+       display: inline-flex; /* Enables flexbox */
+  align-items: center; /* Centers text vertically */
+  justify-content: center; /* Centers text horizontally */
+
+
+   }
+
+   .btn:hover {
+       background-color: #3B6633;
+   }
+
+
+
+
+   h3{
+          color:  white ;
+          font-size: 24px;
+          font-weight: bold;
+          margin-top: 0px;
+   }
+
+
+
+
+   @keyframes moveText {
+       0% {
+           transform: translateX(0);
+       }
+       100% {
+           transform: translateX(-100%);
+       }
+   }
+
+
+  .content-container {
+  display: flex;
+  justify-content: center; /* Centers elements horizontally */
+  align-items: center; /* Aligns elements vertically */
+  gap: 200px; /* Space between the two elements */
+  max-width: 1100px; /* Prevents excessive stretching */
+  margin: 250px auto 50px;  /* Centers everything on the page */
+  flex-wrap: wrap; /* Ensures responsiveness */
+  position: relative;
+}
+
+
+
+/* Ensure Both Containers Have the Same Size */
+#imageContainer, .information_container {
+  width: 450px; /* Same width for both */
+  height: 440px; /* Same height for both */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px; /* Ensures uniform rounded corners */
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3); /* Matches the box-shadow */
+}
+
+   .information_container{
+    background-color: #063800;
+    box-shadow: 0px 16px 32px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    color: white;
+    align-items: center;
+    border-radius: 10px;
+    padding: 20px;
+    display: block;
+       white-space: pre-line;
+       font-size: 23px;
+       font-weight: bold;
+   }
+
+
+   #container {
+       width: 100%;
+       text-align: right; /* Aligns text to the right */
+       position: absolute;
+       top: 150px;
+   }
+
+
+   #imageContainer {
+       text-align: center;
+   }
+
+
+   #dynamicImage {
+       width: 450px; /* Adjust size as needed */
+       height: 440px;
+       border-radius: 10px;
+
+
+
+
+   }
+
+
+   #dynamicText {
+    z-index: 15;
+       font-size: 24px;
+        font-family: ;
+       display: inline-block;
+       padding: 10px;
+       color: #063800;
+       position: relative;
+       white-space: nowrap; /* Prevent text from wrapping */
+       animation: moveText 45s linear infinite alternate;
+   }
+
+
+   #dynamicTextContainer {
+        z-index: 10;
+       display: inline-block;
+       background-color: white; /* White background box */
+       padding: 10px 20px; /* Adds padding inside the box */
+       border-radius: 8px; /* Rounds the corners */
+       position: relative;
+       width:100%;
+       height:60px;
+       top:0px;
+
+   }
+
+   .div1 {
+    z-index: 10; /* Ensures it appears above other elements */
+    position: relative; /* Required for z-index to work */
+       height: 160px;
+       width: 100%; /* Ensure it takes full width */
+       margin: 0;
+       background-color: #063800;
+       display: flex;
+       align-items: center; /* Centers vertically */
+       justify-content: center; /* Centers horizontally */
+       box-shadow: 0px 4px 15px rgba(20, 80, 20, 0.6);
+   }
+   .catchy-phrase {
+   color: white;
+   font-size: 20px;
+   margin-top: 5px; /* Adjust spacing between header and phrase */
+}
+
+
+    .hamburger-icon {
+        font-size: 30px;
+        color: white;
+        cursor: pointer;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+    }
+
+    .sidebar1 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin-left: 50px;
+        float: left;
+        width: 250px;
+        height: 150px;
+        padding: 20px;
+        background-color: white;
+        color: white;
+
+    }
+    .navigation {
+        position: fixed; /* Sticks to the side */
+        left: 0;
+        top: 0;
+        width: 100px;
+        height: 100vh; /* 100% of the viewport height */
+        background:  #063800;
+        box-shadow: 25px 25px 75px rgba(0,0,0,0.25), 10px 10px 70px rgba(0,0,0,0.25),
+                    inset 5px 5px 10px rgba(0,0,0,0.5), inset 5px 5px 20px rgba(255,255,255,0.2),
+                    inset -5px -5px 15px rgba(0,0,0,0.75);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 10px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+}
+
+     .navigation.show {
+        transform: translateX(0);
+    }
+
+    .navigation li {
+        position:relative;
+        list-style:none;
+        width:80px;
+        height: 80px;
+        display:flex;
+        justify-content:center;
+        margin: 0 5px;
+
+    }
+
+    .navigation li::before {
+        content: '';
+        position: absolute;
+        top:calc(50% - 2.5px);
+        left: 20px;
+        width:5px;
+        height: 5px;
+        border-radius:50%;
+        transition:0.5s;
+
+    }
+
+    .navigation li.active::before {
+        background:white;
+        box-shadow:0 0 5px white,
+        0 0 10px white,
+        0 0 20px white,
+        0 0 30px white,
+        0 0 40px white;
+    }
+
+    .navigation li a {
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        flex-direction:column;
+        text-decoration:none;
+    }
+
+    .navigation li a .icon {
+        color: white;
+        transition: 0.5s;
+        transition-delay: 0.2s;
+        font-size: 1.5em; /* Adjust this value to your preference */
+    }
+
+    .navigation li.active a .icon::before{
+        transform:scale(1);
+
+    }
+
+    .navigation li a .text{
+        position: absolute;
+        left:130px;
+        font-size:1.25em;
+        color:white;
+        visibility:hidden;
+        transition:0.5s;
+
+
+    }
+
+
+    .navigation li a .text::before {
+        content: '';
+        position: absolute;
+        top: 50%
+        left: -4px;
+        transform:translateY(-50%) rotate(45deg);
+        width:10px;
+        height:10px;
+    }
+
+    .navigation li:hover a .text {
+        visibility: visible;
+    }
+    .logo {
+     z-index: 20;
+     max-height: 100px;
+     width: auto;
+     top: 30px;
+     left: 200px;
+     margin-right: 10px;
+    }
+
+   *{
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+         font-family: sans-serif;
+     }
+
+
+     .main{
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         justify-content: center;
+         width: 100%;
+         margin-top: 90px;
+     }
+
+     .full-boxer{
+         display: flex;
+         flex-wrap: wrap;
+         justify-content: center;
+         align-items: center;
+         width: 100%;
+     }
+
+
+     .box-top{
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         margin-bottom: 20px;
+     }
+
+     .comment-box:hover{
+         margin-top: 12px;
+     }
+
+      .comments-container {
+     background-color: #414340;
+     padding: 30px;
+     border-radius: 10px;
+     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+     margin: 10px auto;
+     width: 80%;
+ }
+ .full-boxer {
+     display: flex;
+     flex-wrap: wrap;
+     justify-content: space-around;
+ }
+ .comment-box {
+     background: white;
+     padding: 20px;
+     margin: 15px;
+     border-radius: 8px;
+     cursor: pointer;
+     box-shadow: 3px 3px 25px rgba(0,0,0,0.3);
+     width: 22%;
+
+ }
+
+
+     .Profile{
+         display: flex;
+         align-items: center;
+     }
+
+
+     .profile-image{
+         width: 70px;
+         height: 70px;
+         box-shadow: 2px 2px 30px rgba(0,0,0,0.3);
+         overflow: hidden;
+         border-radius: 50%;
+         margin-right: 10px;
+     }
+
+
+     .profile-image img{
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
+         object-position: center;
+     }
+
+     .Name{
+         display: flex;
+         flex-direction: column;
+         margin-left: 10px;
+     }
+
+
+     .Name strong{
+         color: black;
+         font-size: 18px;
+     }
+
+     .Name span{
+         color: gray;
+         margin-top: 2px;
+     }
+
+     .comment p{
+         color: black;
+     }
+     .padding-for-info {
+  max-width: 1100px;
+  padding: 0 40px;
+  text-align: center;
+  margin: 0 auto;
+
+}
+
+    .centered-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.centered-link a {
+    font-size: 18px;
+    color: white; /* Change to any preferred color */
+    text-decoration: none;
+
+}
+
+.centered-link a:hover {
+    color:white; /* Color on hover */
+    text-decoration: underline;
+}
+
+</style>
+</head>
+<body>
+<div class="div1">
+   <img src="{{ url_for('static', filename='images/missiTrack.png') }}" alt="Logo" class="logo">
+    <h1 style="color:white; text-align:center;"> EmissiTrack</h1>
+   </div>
+ <div class="catchy-phrase">
+     <h2>Your Carbon Insights, Simplified</h2></div>
+ <a href="#learnMoreSection" class="btn" id="learnMoreBtn">Learn More  <i class="fa-solid fa-arrow-down"></i></a>
+<script>
+ document.getElementById("learnMoreBtn").addEventListener("click", function(event) {
+     event.preventDefault(); // Prevent default anchor behavior
+     document.getElementById("learnMoreSection").scrollIntoView({
+         behavior: "smooth"
+     });
+ });
+</script>
+<div class="centered-link">
+    <a href="emissions_map"> View the top 40 companies along with their ESG ratings.</a>
+</div>
+
+
+<div class="content-container">
+  <div id="imageContainer">
+      <img id="dynamicImage" src="{{ url_for('static', filename='images/image1.png') }}" alt="image1">
+  </div>
+
+<div class="information_container">
+<h6 id="description">
+   EmissiTrack helps you effortlessly retrieve and analyze Scope 1 and Scope 2 carbon emissions data for listed companies using ISINs or company names. With real-time data sourcing from CSR reports, interactive filtering, and easy downloads, EmissiTrack empowers businesses and investors to make informed sustainability decisions.
+</h6>
+<br>
+<a href="/test" class="btn">Start Using for Free</a>
+</div>
+
+
+
+
+
+
+
+
+</div>
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+       const h6Element = document.getElementById("description");
+       const words = h6Element.innerText.split(" ");
+       let formattedText = "";
+       for (let i = 0; i < words.length; i++) {
+           formattedText += words[i] + " ";
+           if ((i + 1) % 6 === 0) {
+               formattedText += "<br>"; // Insert line break after every 6 words
+           }
+       }
+       h6Element.innerHTML = formattedText.trim();
+   });
+</script>
+<div id="container">
+   <div id="dynamicTextContainer">
+       <p id="dynamicText">Dynamically Filter Companies</p>
+   </div>
+</div>
+<script>
+   document.addEventListener("DOMContentLoaded", function () {
+       const wordsArray = [
+           "Retrieve Scope 1 and Scope 2 emissions data",
+           "Retrieve CSR Reports",
+           "Sustainability Reporting",
+           "ESG analysis"
+       ];
+       const dynamicText = document.getElementById("dynamicText");
+       let textContent = "";
+       // Create a long scrolling text by repeating words with spacing
+       for (let i = 0; i < wordsArray.length; i++) {
+           textContent += wordsArray[i] + " - ";
+       }
+       // Duplicate the text to create a seamless scrolling effect
+       dynamicText.innerHTML = textContent + textContent;
+   });
+   // Image Slideshow Logic
+   const images = ["image1.png", "image2.png", "image3.png"];
+   let imageIndex = 0;
+   const imgElement = document.getElementById("dynamicImage");
+   window.onload = function() {
+         document.getElementById("dynamicImage").src = "{{ url_for('static', filename='images/image1.png') }}";
+     };
+   function changeImage() {
+       imgElement.src = "{{ url_for('static', filename='images/') }}" + images[imageIndex];
+       imageIndex = (imageIndex + 1) % images.length;
+   }
+   setInterval(changeImage, 3000); // Change image every 3 seconds
+</script>
+ <section class="main">
+     <h4 style="color:white; margin-top:50px; font-weight:bold;">Learn more from our users</h4>
+     <div class="comments-container">
+     <div class="full-boxer">
+         <div class="comment-box">
+             <div class="box-top">
+                 <div class="Profile">
+                     <div class="profile-image">
+                         <img src="{{ url_for('static', filename='images/1.png') }}" alt="1">
+                     </div>
+                     <div class="Name">
+                         <strong>Ranidi Lochana</strong>
+                         <span>@Ranidi Lochana</span>
+                     </div>
+                 </div>
+             </div>
+             <div class="comment">
+                 <p>⭐️⭐️⭐️⭐️⭐️</p>
+                 <p>This tool is an excellent resource for academic research on corporate carbon footprints. The ability to retrieve and categorize emissions data dynamically, without spending hours on manual searches, is a huge time-saver. The accuracy and cleaning of the data are impressive, and the ability to export structured datasets makes it easy to conduct further analysis. Nice experience and efficient results, would recommend!</p>
+             </div>
+         </div>
+         <div class="comment-box">
+             <div class="box-top">
+                 <div class="Profile">
+                     <div class="profile-image">
+                         <img src="{{ url_for('static', filename='images/2.png') }}" alt="2">
+                     </div>
+                     <div class="Name">
+                         <strong>Senuda Dilwan</strong>
+                         <span>@senuda dilwan</span>
+                     </div>
+                 </div>
+             </div>
+             <div class="comment">
+                 <p>⭐️⭐️⭐️⭐️⭐️</p>
+                 <p>As someone responsible for reporting and benchmarking sustainability efforts, I find this tool incredibly valuable. It provides a centralized source of emissions data, reducing the hassle of manually tracking down reports from multiple sources. The user-friendly interface and downloadable CSV format are particularly helpful for integrating data into internal reports. This is the future of corporate carbon tracking!</p>
+             </div>
+         </div>
+
+         <div class="comment-box">
+             <div class="box-top">
+                 <div class="Profile">
+                     <div class="profile-image">
+                         <img src="{{ url_for('static', filename='images/3.png') }}" alt="3">
+                     </div>
+                     <div class="Name">
+                         <strong>Rumali fernando</strong>
+                         <span>@Rumali fernando</span>
+                     </div>
+                 </div>
+             </div>
+             <div class="comment">
+                 <p>⭐️⭐️⭐️⭐️⭐️</p>
+                 <p>This platform is a game-changer for ESG research! Finding Scope 1 and Scope 2 emissions data used to be a tedious, manual process, requiring hours of combing through CSR reports. This tool simplifies everything—just input an ISIN or company name, and the latest emissions data is instantly retrieved, cleaned, and categorized. The visualization features are a great bonus, making trend analysis much easier. Highly recommend!</p>
+
+             </div>
+         </div>
+
+         <div class="comment-box">
+             <div class="box-top">
+                 <div class="Profile">
+                     <div class="profile-image">
+                         <img src="{{ url_for('static', filename='images/4.png') }}" alt="4">
+                     </div>
+                     <div class="Name">
+                         <strong>Midinu Thiranjana</strong>
+                         <span>@Midinu Thiranjana</span>
+                     </div>
+                 </div>
+             </div>
+             <div class="comment">
+                 <p>⭐️⭐️⭐️⭐️⭐</p>
+                 <p>A very useful tool for investment decision-making. Reliable emissions data is critical for evaluating companies from an ESG perspective, and this platform makes it easy to access. The filtering and download options allow for quick integration with our internal models. The chatbot offered by the pro account is very useful and enables me to find data more efficiently. </p>
+
+             </div>
+         </div>
+     </div>
+     </div>
+ </section>
+ <section id="learnMoreSection">
+  <div class="padding-for-info">
+     <h2 style="text-align:center; margin-top:50px; font-weight:bold;">What is EmissiTrack?</h2>
+     <p style="text-align:center;">A Smart, Scalable, and Dynamic Solution for Tracking Corporate Carbon Footprints.</p>
+
+<p style="text-align:center;">The Carbon Emissions Tracker is a web-based platform designed to dynamically retrieve, categorize, and visualize corporate carbon emissions data for listed companies within the MSCI All World Index. This tool empowers users to access the latest Scope 1 (direct emissions) and Scope 2 (indirect emissions from purchased electricity) data from publicly available sources such as Corporate Social Responsibility (CSR) reports, government databases, and other sustainability disclosures.</p>
+
+<p style="text-align:center;">In addition to emissions data, the platform features a real-time news feed with top headlines for each company, keeping users updated on sustainability-related developments. Users can also filter companies by sector, country, industry, and other key parameters to refine their searches and insights.</p>
+     <p style="text-align:center;">Emissions data can be visualized in interactive bar charts or structured in a detailed table format. </p>
+     <p style="text-align:center;">A premium membership unlocks access to an AI-powered chatbot that assists users with data retrieval, insights, and sustainability analysis.
+The chatbot can answer queries, provide company-specific emissions insights, suggest comparisons, and summarize trends.</p>
+     </div>
+
+ </section>
+ <footer class="footer">
+
+
+   <div class="footer-section">
+       <ul>
+           <li><a href="#">About Us</a></li>
+           <li><a href="#">Contact</a></li>
+           <li><a href="#">Terms of Use</a></li>
+           <li><a href="#">Privacy Policy</a></li>
+       </ul>
+   </div>
+
+
+   <div class="footer-section">
+       <div class="social-icons">
+           <a href="#"><i class="fab fa-facebook"></i></a>
+           <a href="https://www.linkedin.com/in/budha/"><i class="fab fa-linkedin"></i></a>
+           <a href=""><i class="fas fa-envelope"></i></a>
+       </div>
+   </div>
+</footer>
+
+
+<section>
+   <p style="text-align:center;color:white">&copy; 2024 EmissiTrack</p>
+</section>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

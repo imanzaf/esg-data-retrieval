@@ -7,13 +7,8 @@ requests
 flask
 transformers
 docling
-# torch
 jpype1
-# tf-keras==2.16.0
-# tensorflow-cpu==2.16.1
 PyPDF2
-# llama-parse
-# pycryptodome
 openai
 tabula-py
 docling
@@ -25,3 +20,12 @@ black
 flake8
 isort
 pytest
+
+Flask-SocketIO
+folium
+
+# The main LangChain library
+langchain
+langchain_community
+langchain_core
+langchain_openai

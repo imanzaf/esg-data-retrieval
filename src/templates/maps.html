@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+    <style>
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background-color: #1C1C1C;
+          color: #1C1C1C;
+          margin: 0;
+          padding: 0;
+      }
+
+          .logo-header-container {
+   z-index: 10;
+   position: relative;
+   height: 160px;
+   width: 100%;
+   background-color: #063800;
+   display: flex;
+   align-items: center; /* Align items vertically */
+   justify-content: center; /* Center items horizontally */
+   gap: 20px; /* Add spacing between logo and text */
+   text-align: center;
+}
+
+
+.logo {
+   max-height: 100px;
+   width: auto;
+}
+
+
+.div1 {
+   display: flex;
+   flex-direction: column; /* Stack heading and phrase */
+   align-items: center;
+   justify-content: center;
+}
+
+
+.catchy-phrase {
+   color: white;
+   font-size: 20px;
+   margin-top: 5px; /* Adjust spacing between header and phrase */
+}
+        .padding-for-info {
+   max-width: 1100px; /* Limits width for readability */
+   padding: 40px; /* Left & right padding */
+   text-align: center;
+   margin: 0 auto; /* Ensures centering */
+}
+
+
+
+
+
+     .navigation li:hover a .text {
+         visibility: visible;
+     }
+
+
+     .hamburger-icon {
+         font-size: 30px;
+        color: white;
+        cursor: pointer;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+        align-items: center;
+     }
+
+
+     .sidebar1 {
+         display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin-left: 50px;
+        margin-top: 40px;
+        float: left;
+        width: 250px;
+        height: 150px;
+        padding: 20px;
+        background-color: white;
+        color: white;
+        z-index: 1000;
+     }
+
+
+     .navigation {
+         position: absolute;
+         left:0;
+         width:100px;
+         height:100%;
+         background:  #063800!important;
+         box-shadow: 25px 25px 75px rgba(0,0,0,0.25), 10px 10px 70px rgba(0,0,0,0.25), inset 5px 5px 10px rgba(0,0,0,0.5), inset 5px 5px 20px rgba(255,255,255,0.2) , inset -5px -5px 15px rgba(0,0,0,0.75);
+         display:center;
+         justify-content:center;
+         align-items:center;
+         flex-direction:column;
+         gap:10px;
+         transform: translateX(-100%);
+         transition: transform 0.3s ease;
+
+     }
+
+     .navigation.show {
+         transform: translateX(0);
+     }
+
+     .navigation li {
+         position:relative;
+         list-style:none;
+         width:80px;
+         height: 80px;
+         display:flex;
+         justify-content:center;
+         margin: 0 5px;
+
+     }
+
+
+     .navigation li::before {
+         content: '';
+         position: absolute;
+         top:calc(50% - 2.5px);
+         left: 20px;
+         width:5px;
+         height: 5px;
+         border-radius:50%;
+         transition:0.5s;
+
+     }
+
+
+     .navigation li.active::before {
+         background:white;
+         box-shadow:0 0 5px white,
+         0 0 10px white,
+         0 0 20px white,
+         0 0 30px white,
+         0 0 40px white;
+     }
+
+     .navigation li a {
+         display:flex;
+         justify-content:center;
+         align-items:center;
+         flex-direction:column;
+         text-decoration:none;
+     }
+
+
+     .navigation li a .icon {
+         color: white;
+         transition: 0.5s;
+         transition-delay: 0.2s;
+         font-size: 1.5em; /* Adjust this value to your preference */
+     }
+
+     .navigation li.active a .icon::before{
+         transform:scale(1);
+
+
+     }
+     .navigation li a .text{
+         position: absolute;
+         left:130px;
+         font-size:1.25em;
+         color:white;
+         visibility:hidden;
+         transition:0.5s;
+
+     }
+
+    </style>
+    <title>Emissions Map</title>
+</head>
+<body>
+       <div class="logo-header-container">
+       <img src="{{ url_for('static', filename='images/missiTrack.png') }}" alt="Logo" class="logo">
+       <div class="div1">
+           <h1 style="color:white; text-align:center;"> EmissiTrack</h1>
+           <p class="catchy-phrase">Company Emissions Map</p>
+       </div>
+       </div>
+       <div class="hamburger-icon">&#9776;</div>
+     <ul class="navigation">
+      <li class="active">
+          <a href="{{url_for('test')}}">
+              <span class="icon"> <ion-icon name="home-outline"></ion-icon></span>
+          </a>
+      </li>
+      <li>
+          <a href="{{url_for('instructions')}}">
+              <span class="icon"> <ion-icon name="help-circle-outline"></ion-icon></span>
+          </a>
+      </li>
+      <li>
+          <a href="{{url_for('advanced_search')}}">
+              <span class="icon"> <ion-icon name="funnel-outline"></ion-icon></span> <!-- ✅ Corrected -->
+          </a>
+      </li>
+      <li>
+          <a href="{{url_for('register')}}">
+              <span class="icon"><ion-icon name="person-add-outline"></ion-icon></span> <!-- ✅ Corrected -->
+          </a>
+      </li>
+      <li class="active">
+          <a href=/firstpage>
+              <span class="icon"> <ion-icon name="grid-outline"></ion-icon></span> <!-- ✅ First Page Icon -->
+          </a>
+      </li>
+  </ul>
+     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+         <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+         <script>
+             document.addEventListener('DOMContentLoaded', function () {
+                 const hamburger = document.querySelector('.hamburger-icon');
+                 const navigation = document.querySelector('.navigation');
+                 let isOpen = false;
+                 hamburger.addEventListener('click', function () {
+                     // Toggle menu visibility
+                     isOpen = !isOpen;
+                     if (isOpen) {
+                         navigation.classList.add('show');
+                     } else {
+                         navigation.classList.remove('show');
+                     }
+                 });
+                 // Keep your existing navigation item click event listener
+                 let list = document.querySelectorAll('.navigation li');
+                 function activeLink() {
+                     list.forEach((item) => item.classList.remove('active'));
+                     this.classList.add('active');
+                 }
+                 list.forEach((item) => item.addEventListener('click', activeLink));
+             });
+         </script>
+   </div>
+       <div class="padding-for-info">
+           <h3 style="color:white;">Top 40 Companies and their ESG Ratings</h3>
+    <iframe src="{{ url_for('serve_emissions_map') }}" width="90%" height="700px"></iframe>
+           </div>
+</body>
+</html>

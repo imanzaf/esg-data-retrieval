@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emissions Report</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <style>
+      body {
+           font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+           background-color: #F5F5F5;
+           color: #333333;
+           margin: 0;
+           padding: 0;
+       }
+
+
+      table, th, td {
+           border: 1px solid black;
+      }
+
+
+
+
+      .content {
+         margin-left: 130px; /* Pushes content right */
+         padding: 20px;
+
+      }
+
+
+      .div1 {
+       z-index: 10; /* Ensures it appears above other elements */
+       position: relative; /* Required for z-index to work */
+          height: 160px;
+          width: 100%; /* Ensure it takes full width */
+          margin: 0;
+          background-color: #063800;
+          display: flex;
+          align-items: center; /* Centers vertically */
+          justify-content: center; /* Centers horizontally */
+          box-shadow: 0px 4px 15px rgba(20, 80, 20, 0.6);
+      }
+      .catchy-phrase {
+       z-index: 10;
+       position: absolute;
+       top: 120px;
+       transform: translate(-50%, -50%);
+       left: 50%;
+       color: white;
+       font-size: 20px;
+}
+
+
+
+
+      .navigation {
+          position: absolute;
+          left:0;
+          width:100px;
+          height:100%;
+          background:  #063800;
+          box-shadow: 25px 25px 75px rgba(0,0,0,0.25), 10px 10px 70px rgba(0,0,0,0.25), inset 5px 5px 10px rgba(0,0,0,0.5), inset 5px 5px 20px rgba(255,255,255,0.2) , inset -5px -5px 15px rgba(0,0,0,0.75);
+          display:center;
+          justify-content:center;
+          align-items:center;
+          flex-direction:column;
+          gap:10px;
+          transform: translateX(-100%);
+          transition: transform 0.3s ease;
+
+
+
+
+      }
+
+
+      .navigation.show {
+          transform: translateX(0);
+      }
+
+
+
+
+      .navigation li {
+          position:relative;
+          list-style:none;
+          width:80px;
+          height: 80px;
+          display:flex;
+          justify-content:center;
+          margin: 0 5px;
+
+      }
+
+      .navigation li::before {
+          content: '';
+          position: absolute;
+          top:calc(50% - 2.5px);
+          left: 20px;
+          width:5px;
+          height: 5px;
+          border-radius:50%;
+          transition:0.5s;
+
+      }
+
+
+
+
+      .navigation li.active::before {
+          background:white;
+          box-shadow:0 0 5px white,
+          0 0 10px white,
+          0 0 20px white,
+          0 0 30px white,
+          0 0 40px white;
+      }
+
+
+      .navigation li a {
+          display:flex;
+          justify-content:center;
+          align-items:center;
+          flex-direction:column;
+          text-decoration:none;
+      }
+
+
+
+
+      .navigation li a .icon {
+          color: white;
+          transition: 0.5s;
+          transition-delay: 0.2s;
+          font-size: 1.5em;
+      }
+
+
+      .navigation li.active a .icon::before{
+          transform:scale(1);
+
+      }
+
+
+
+
+      .navigation li a .text{
+          position: absolute;
+          left:130px;
+          font-size:1.25em;
+          color:white;
+          visibility:hidden;
+          transition:0.5s;
+
+      }
+
+
+      .navigation li:hover a .text {
+          visibility: visible;
+      }
+
+
+      .hamburger-icon {
+          font-size: 30px;
+         color: white;
+         cursor: pointer;
+         position: absolute;
+         top: 20px;
+         left: 20px;
+         z-index: 100;
+         align-items: center;
+      }
+
+
+
+
+      .sidebar1 {
+          display: flex;
+         flex-direction: column;
+         align-items: center;
+         justify-content: center;
+         border: 1px solid #ccc;
+         border-radius: 8px;
+         margin-left: 50px;
+         margin-top: 40px;
+         float: left;
+         width: 250px;
+         height: 150px;
+         padding: 20px;
+         background-color: white;
+         color: white;
+         z-index: 1000;
+      }
+
+
+
+
+      .dropbtn {
+        background-color: white;
+           color:  #063800;
+           padding: 16px;
+           font-size: 16px;
+           border: none;
+          cursor: pointer;
+      }
+
+
+       .dropdown {
+       z-index: 15;
+        position: absolute;
+         top: 20px; /* Distance from the top */
+         right: 20px;
+           display: inline-block;
+           border: 1px solid white;
+           background-color: white;
+           border-radius: 12px;
+           padding: 4px 7px;
+             font-size: 16px;
+             cursor: pointer;
+             align-items: center;
+      }
+
+
+
+
+      .dropdown-content {
+           display: none;
+           padding: 5px 15px;
+           position: absolute;
+           font-size: 16px;
+           background-color:white;
+           min-width: 100px;
+           box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+           z-index: 1;
+      }
+
+      .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+
+
+      /* Change color of dropdown links on hover */
+      .dropdown-content a:hover {background-color: #2e8b563d;}
+
+
+      /* Show the dropdown menu on hover */
+      .dropdown:hover .dropdown-content {display: block;}
+
+      /* Change the background color of the dropdown button when the dropdown content is shown */
+      .dropdown:hover .dropbtn {background-color: rgba(255, 255, 255, 0.607);}
+
+
+
+
+      .progress-bar {
+          background-color: #045000!important;/* This is the green color you used for other elements */
+      }
+
+
+      .selected-company {
+           background-color: white;
+           padding: 20px;
+           margin: 20px auto;
+           align-items: center;
+           justify-content: center;
+           box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+           border: 2px solid black;
+           display: inline-block;
+           width: 90%; /* Adjust width for better layout */
+           max-width: 1400px;
+        }
+
+
+    /* Table Styling */
+    .selected-company table {
+       width: 100%;
+       border-collapse: collapse;
+    }
+
+
+    .selected-company th, .selected-company td {
+       border: 1px solid black;
+       padding: 8px;
+       text-align: center;
+    }
+
+
+    .selected-company th {
+       background-color: #063800;
+       color: white;
+    }
+
+
+    /* Style the Download Button */
+    .selected-company a.btn-success {
+       display: block;
+       margin: 10px auto;
+       text-align: center;
+       background-color: #063800;
+       color: white;
+       padding: 10px 15px;
+       font-size: 16px;
+       border-radius: 5px;
+       text-decoration: none;
+       transition: background-color 0.3s ease;
+    }
+
+
+    .selected-company a.btn-success:hover {
+       background-color: #1E6B47;
+    }
+
+
+    .esg-container {
+             background-color: white;
+             display: flex;
+             padding: 10px;
+             gap: 30px;
+             align-items: center;
+             justify-content: center;
+             margin-bottom: 30px;
+         }
+
+
+      .list-group-item {
+         width:1400px;
+         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+         border: 2px solid black; padding: 5px; display: inline-block;
+         background-color: white;
+         padding: 20px;
+         margin-left:20px;
+         align-items: center;
+         justify-content: center;
+      }
+
+
+
+
+      .dropdown-container {
+         background-color: #F5F5F5;
+         display: flex;
+         padding: 10px;
+         gap: 30px;
+         align-items: center;
+         justify-content: center;
+         margin-bottom: 30px;
+     }
+     .dropdown-container label{
+       color: #1C1C1C;
+     }
+
+
+
+
+     .nav-tabs .nav-link {
+          background-color: #063800 !important;
+          color: white !important; /* Ensure text is readable */
+          border: none !important; /* Optional: remove default border */
+      }
+
+
+
+
+
+
+      .nav-tabs .nav-link.active {
+          background-color: #045000 !important; /* Slightly darker shade for active tab */
+          color: white !important;
+      }
+
+
+
+
+      .submit-button {
+         background-color: #063800;
+         color: #FFFFFF;
+         border: none;
+         padding: 10px 20px;
+         border-radius: 4px;
+         font-size: 16px;
+         cursor: pointer;
+     }
+     .submit-button:hover {
+         background-color: #1E6B47;
+     }
+
+
+
+
+     .report-container{
+       background-color: #F5F5F5;
+       color: #1C1C1C;
+       display: flex;
+       padding: 10px;
+       gap: 30px;
+       align-items: center;
+       justify-content: center;
+       margin-bottom: 30px;
+     }
+
+
+
+
+      #loading-spinner {
+          display: none;
+          width: 24px;
+          height: 24px;
+          border: 4px solid rgba(46, 139, 87, 0.3);
+          border-top: 4px solid #2E8B57;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+      }
+
+
+
+
+      @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+      }
+
+
+
+
+      .news-image {
+          width: 100px;  /* Set width */
+          height: 80px;  /* Set height */
+          object-fit: cover;  /* Crop image to fit */
+          border-radius: 5px;
+          box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .nav-tabs {
+           border-bottom: none !important;
+           margin-bottom: 0 !important;
+           padding-bottom: 0 !important;
+        }
+
+
+        /* Ensure tab content blends perfectly with the background */
+        .tab-content {
+           color:#F5F5F5;
+           background-color: #1C1C1C !important; /* Match the surrounding area */
+           margin-top: -1px !important; /* Fixes any white gap */
+           border-radius: 0 0 8px 8px;
+           border: none !important;
+        }
+
+
+        /* Ensure each tab-pane also has the correct background */
+        .tab-pane {
+           background-color: #1C1C1C !important;
+           margin: 0 !important;
+           border: none !important;
+        }
+
+
+        /* If a card or container inside tab-content has a background, override it */
+        .tab-pane > div {
+           background-color: #1C1C1C !important;
+           border: none !important;
+           margin: 0 !important;
+           padding: 20px;
+        }
+        .page-bottom {
+           background-color: #1C1C1C !important;
+           padding: 50px 0; /* Adds spacing */
+           min-height: 1000px; /* Adjust as needed */
+        }
+
+
+        .logo {
+               z-index: 20;
+           max-height: 100px; /* Adjusts within the header */
+           width: auto; /* Maintains aspect ratio */
+           position: absolute;
+           top: 30px; /* Aligns with the hamburger icon */
+           left: 500px; /* Pushes it to the right of the hamburger icon */
+        }
+        .padding-for-info {
+           max-width: 1100px; /* Limits width for readability */
+           padding: 0 40px; /* Left & right padding */
+           text-align: center;
+           margin: 0 auto; /* Ensures centering */
+        }
+  </style>
+  <script src="https://cdn.socket.io/4.5.3/socket.io.min.js"
+  integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi"
+  crossorigin="anonymous"></script>
+
+
+
+
+</head>
+<body>
+   <div class="div1">
+       <h1 style="color:white; text-align:center;"> EmissiTrack</h1>
+      </div>
+      <div class="catchy-phrase"> Instructions </div>
+  <img src="{{ url_for('static', filename='images/missiTrack.png') }}" alt="Logo" class="logo">
+      <div class="hamburger-icon">&#9776;</div>
+      <ul class="navigation">
+       <li class="active">
+           <a href="{{url_for('test')}}">
+               <span class="icon"> <ion-icon name="home-outline"></ion-icon></span>
+           </a>
+       </li>
+       <li>
+           <a href="#">
+               <span class="icon"> <ion-icon name="help-circle-outline"></ion-icon></span>
+           </a>
+       </li>
+       <li>
+           <a href="{{url_for('advanced_search')}}">
+               <span class="icon"> <ion-icon name="funnel-outline"></ion-icon></span> <!-- ✅ Corrected -->
+           </a>
+       </li>
+       <li>
+           <a href="{{url_for('register')}}">
+               <span class="icon"><ion-icon name="person-add-outline"></ion-icon></span> <!-- ✅ Corrected -->
+           </a>
+       </li>
+       <li class="active">
+           <a href=/firstpage>
+               <span class="icon"> <ion-icon name="grid-outline"></ion-icon></span> <!-- ✅ First Page Icon -->
+           </a>
+       </li>
+   </ul>
+      <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+          <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+          <script>
+              document.addEventListener('DOMContentLoaded', function () {
+                  const hamburger = document.querySelector('.hamburger-icon');
+                  const navigation = document.querySelector('.navigation');
+                  let isOpen = false;
+
+                  hamburger.addEventListener('click', function () {
+                      // Toggle menu visibility
+                      isOpen = !isOpen;
+                      if (isOpen) {
+                          navigation.classList.add('show');
+                      } else {
+                          navigation.classList.remove('show');
+                      }
+                  });
+
+                  // Keep your existing navigation item click event listener
+                  let list = document.querySelectorAll('.navigation li');
+                  function activeLink() {
+                      list.forEach((item) => item.classList.remove('active'));
+                      this.classList.add('active');
+                  }
+                  list.forEach((item) => item.addEventListener('click', activeLink));
+              });
+
+          </script>
+
+<div class="padding-for-info">
+
+
+   <h2 style="text-align:center; margin-top:50px; font-weight:bold;">How to use EmissiTrack Pro?</h2>
+   <p style="text-align:center;"> <strong> Step 1: Searching for a Company </strong></p>
+   <p style="text-align:center;">In the text box at the top, type the name (e.g., “Amazon”), the ticker symbol (e.g., “AMZN”), or the ISIN (unique identifier) of the company you want to research.</p>
+
+
+
+
+   <p style="text-align:center;"><strong>  Step 2: Viewing GHG Emissions Tables </strong></p>
+<p style="text-align:center;">After searching, you’ll see GHG Emissions Tables on the left.
+• This includes “Key Table,” which lists the company’s Scope 1, Scope 2 (market-based), and Scope 2 (location-based) emissions by year.
+• There may also be additional breakdown tables (Scope 1 detail, Scope 2 detail, etc.).
+</p>
+   <p style="text-align:center;"> Tip: If you see “null,” that means no data was reported for that category/year.</p>
+
+
+
+
+<p style="text-align:center;"> <strong> Step 3: Checking the Emissions Chart </strong></p>
+   <p style="text-align:center;">No data for the Key Table was found, or the system couldn’t parse the year numbers.
+• If this happens, try searching a different way (e.g., exact company name or ticker).
+</p>
+   <p style="text-align:center;"> <strong> Step 4: RAG Chatbot </strong></p>
+   <p style="text-align:center;">It automatically initializes (you’ll see “RAG initialization started”).
+• Once it’s ready, you can type questions like “How do these emissions compare to last year?” or “What are the biggest drivers for Scope 3?”
+• Click Ask to see an AI-generated response based on the PDF data that was retrieved.</p>
+<p style="text-align:center;"> Stop RAG button:  If the background data build is taking too long or you want to cancel it, click Stop RAG.</p>
+
+
+
+
+</div>
+          <!-- Bootstrap JS (Ensure Bootstrap's JavaScript is included) -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+   </body>
+   </html>
+
+

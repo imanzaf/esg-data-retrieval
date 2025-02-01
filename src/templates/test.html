@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta http-equiv="X-UA-Compatible" content="IE=edge">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Emissions Report</title>
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+ <style>
+     body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background-color: #F5F5F5;
+          color: #333333;
+          margin: 0;
+          padding: 0;
+      }
+
+
+     table, th, td {
+          border: 1px solid black;
+     }
+
+
+     .content {
+        margin-left: 130px; /* Pushes content right */
+        padding: 20px;
+
+     }
+
+
+     .navigation {
+         position: absolute;
+         left:0;
+         width:100px;
+         height:100%;
+         background:  #063800;
+         box-shadow: 25px 25px 75px rgba(0,0,0,0.25), 10px 10px 70px rgba(0,0,0,0.25), inset 5px 5px 10px rgba(0,0,0,0.5), inset 5px 5px 20px rgba(255,255,255,0.2) , inset -5px -5px 15px rgba(0,0,0,0.75);
+         display:center;
+         justify-content:center;
+         align-items:center;
+         flex-direction:column;
+         gap:10px;
+         transform: translateX(-100%);
+         transition: transform 0.3s ease;
+
+
+     }
+
+
+     /* Class to toggle menu visibility */
+     .navigation.show {
+         transform: translateX(0);
+     }
+
+     .navigation li {
+         position:relative;
+         list-style:none;
+         width:80px;
+         height: 80px;
+         display:flex;
+         justify-content:center;
+         margin: 0 5px;
+
+     }
+
+     .navigation li::before {
+         content: '';
+         position: absolute;
+         top:calc(50% - 2.5px);
+         left: 20px;
+         width:5px;
+         height: 5px;
+         border-radius:50%;
+         transition:0.5s;
+     }
+
+
+     .navigation li.active::before {
+         background:white;
+         box-shadow:0 0 5px white,
+         0 0 10px white,
+         0 0 20px white,
+         0 0 30px white,
+         0 0 40px white;
+     }
+
+
+     .navigation li a {
+         display:flex;
+         justify-content:center;
+         align-items:center;
+         flex-direction:column;
+         text-decoration:none;
+     }
+
+
+     .navigation li a .icon {
+         color: white;
+         transition: 0.5s;
+         transition-delay: 0.2s;
+         font-size: 1.5em;
+     }
+
+     .navigation li.active a .icon::before{
+         transform:scale(1);
+
+     }
+
+
+     .navigation li a .text{
+         position: absolute;
+         left:130px;
+         font-size:1.25em;
+         color:white;
+         visibility:hidden;
+         transition:0.5s;
+
+
+     }
+
+
+     .logo-header-container {
+   z-index: 10;
+   position: relative;
+   height: 160px;
+   width: 100%;
+   background-color: #063800;
+   display: flex;
+   align-items: center; /* Align items vertically */
+   justify-content: center; /* Center items horizontally */
+   gap: 20px; /* Add spacing between logo and text */
+   box-shadow: 0px 4px 15px rgba(20, 80, 20, 0.6);
+   text-align: center;
+}
+
+
+.logo {
+   max-height: 100px;
+   width: auto;
+}
+
+
+.div1 {
+   display: flex;
+   flex-direction: column; /* Stack heading and phrase */
+   align-items: center;
+   justify-content: center;
+}
+
+
+.catchy-phrase {
+   color: white;
+   font-size: 20px;
+   margin-top: 5px; /* Adjust spacing between header and phrase */
+}
+
+
+     .navigation li:hover a .text {
+         visibility: visible;
+     }
+
+
+     /* Hamburger Icon Styles */
+     .hamburger-icon {
+         font-size: 30px;
+        color: white;
+        cursor: pointer;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 100;
+        align-items: center;
+     }
+
+
+
+
+
+
+
+
+     .sidebar1 {
+         display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        margin-left: 50px;
+        margin-top: 40px;
+        float: left;
+        width: 250px;
+        height: 150px;
+        padding: 20px;
+        background-color: white;
+        color: white;
+        z-index: 1000;
+     }
+
+
+
+
+
+
+
+
+     .dropbtn {
+       background-color: white;
+          color:  #063800;
+          padding: 16px;
+          font-size: 16px;
+          border: none;
+         cursor: pointer;
+     }
+
+
+
+
+
+
+
+
+     /* The container <div> - needed to position the dropdown content */
+      .dropdown {
+      z-index: 15;
+       position: absolute;
+        top: 20px; /* Distance from the top */
+        right: 20px;
+          display: inline-block;
+          border: 1px solid white;
+          background-color: white;
+          border-radius: 12px;
+          padding: 4px 7px;
+            font-size: 16px;
+            cursor: pointer;
+            align-items: center;
+     }
+
+
+     /* Dropdown Content (Hidden by Default) */
+     .dropdown-content {
+          display: none;
+          padding: 5px 15px;
+          position: absolute;
+          font-size: 16px;
+          background-color:white;
+          min-width: 100px;
+          box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+          z-index: 1;
+     }
+
+
+
+
+
+
+
+
+     /* Links inside the dropdown */
+     .dropdown-content a {
+       color: black;
+       padding: 12px 16px;
+       text-decoration: none;
+       display: block;
+     }
+
+
+     /* Change color of dropdown links on hover */
+     .dropdown-content a:hover {background-color: #2e8b563d;}
+
+
+     /* Show the dropdown menu on hover */
+     .dropdown:hover .dropdown-content {display: block;}
+
+
+     /* Change the background color of the dropdown button when the dropdown content is shown */
+     .dropdown:hover .dropbtn {background-color: rgba(255, 255, 255, 0.607);}
+
+     .progress-bar {
+         background-color: #045000!important;/* This is the green color you used for other elements */
+     }
+
+
+     .selected-company {
+      background-color: white;
+      padding: 20px;
+      margin: 20px auto;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border: 2px solid black;
+      display: inline-block;
+      width: 90%; /* Adjust width for better layout */
+      max-width: 1400px;
+    }
+
+
+
+
+/* Table Styling */
+.selected-company table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+
+
+
+.selected-company th, .selected-company td {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: center;
+}
+
+
+
+
+.selected-company th {
+  background-color: #063800;
+  color: white;
+}
+
+
+
+
+/* Style the Download Button */
+.selected-company a.btn-success {
+  display: block;
+  margin: 10px auto;
+  text-align: center;
+  background-color: #063800;
+  color: white;
+  padding: 10px 15px;
+  font-size: 16px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+
+
+
+.selected-company a.btn-success:hover {
+  background-color: #1E6B47;
+}
+
+
+
+
+.esg-container {
+        background-color: white;
+        display: flex;
+        padding: 10px;
+        gap: 30px;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+
+
+     .list-group-item {
+        width:1400px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        border: 2px solid black; padding: 5px; display: inline-block;
+        background-color: white;
+        padding: 20px;
+        margin-left:20px;
+        align-items: center;
+        justify-content: center;
+     }
+
+
+     .dropdown-container {
+        background-color: #F5F5F5;
+        display: flex;
+        padding: 10px;
+        gap: 30px;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+    .dropdown-container label{
+      color: #1C1C1C;
+    }
+
+
+    .nav-tabs .nav-link {
+         background-color: #063800 !important;
+         color: white !important; /* Ensure text is readable */
+         border: none !important; /* Optional: remove default border */
+     }
+
+     .nav-tabs .nav-link.active {
+         background-color: #045000 !important; /* Slightly darker shade for active tab */
+         color: white !important;
+     }
+
+     .submit-button {
+        background-color: #063800;
+        color: #FFFFFF;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    .submit-button:hover {
+        background-color: #1E6B47;
+    }
+
+    .report-container{
+      background-color: #F5F5F5;
+      color: #1C1C1C;
+      display: flex;
+      padding: 10px;
+      gap: 30px;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+
+     #loading-spinner {
+         display: none;
+         width: 24px;
+         height: 24px;
+         border: 4px solid rgba(46, 139, 87, 0.3);
+         border-top: 4px solid #2E8B57;
+         border-radius: 50%;
+         animation: spin 1s linear infinite;
+     }
+
+
+     @keyframes spin {
+         0% { transform: rotate(0deg); }
+         100% { transform: rotate(360deg); }
+     }
+
+
+     .news-image {
+         width: 100px;  /* Set width */
+         height: 80px;  /* Set height */
+         object-fit: cover;  /* Crop image to fit */
+         border-radius: 5px;
+         box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+     }
+     .nav-tabs {
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+
+
+
+/* Ensure tab content blends perfectly with the background */
+.tab-content {
+  color:#F5F5F5;
+  background-color: #1C1C1C !important; /* Match the surrounding area */
+  margin-top: -1px !important; /* Fixes any white gap */
+  border-radius: 0 0 8px 8px;
+  border: none !important;
+}
+
+
+
+
+/* Ensure each tab-pane also has the correct background */
+.tab-pane {
+  background-color: #1C1C1C !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+
+
+
+/* If a card or container inside tab-content has a background, override it */
+.tab-pane > div {
+  background-color: #1C1C1C !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 20px;
+}
+.page-bottom {
+  background-color: #1C1C1C !important;
+  padding: 50px 0; /* Adds spacing */
+  min-height: 1000px; /* Adjust as needed */
+}
+
+ </style>
+ <script src="https://cdn.socket.io/4.5.3/socket.io.min.js"
+ integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi"
+ crossorigin="anonymous"></script>
+
+</head>
+<body>
+   <div class="logo-header-container">
+       <img src="{{ url_for('static', filename='images/missiTrack.png') }}" alt="Logo" class="logo">
+       <div class="div1">
+           <h1 style="color:white; text-align:center;"> EmissiTrack</h1>
+           <p class="catchy-phrase">Home</p>
+       </div>
+   </div>
+ <div class="dropdown">
+         <button class="dropbtn">My Premium Profile</button>
+         <div class="dropdown-content">
+             <a href="{{url_for('register')}}">Create an account</a>
+             <a href="{{url_for('login')}}">Login</a>
+         </div>
+ </div>
+
+     <div class="hamburger-icon">&#9776;</div>
+     <ul class="navigation">
+      <li class="active">
+          <a href="{{url_for('test')}}">
+              <span class="icon"> <ion-icon name="home-outline"></ion-icon></span>
+          </a>
+      </li>
+      <li>
+          <a href="{{url_for('instructions')}}">
+              <span class="icon"> <ion-icon name="help-circle-outline"></ion-icon></span>
+          </a>
+      </li>
+      <li>
+          <a href="{{url_for('advanced_search')}}">
+              <span class="icon"> <ion-icon name="funnel-outline"></ion-icon></span> <!-- ✅ Corrected -->
+          </a>
+      </li>
+      <li>
+          <a href="{{url_for('register')}}">
+              <span class="icon"><ion-icon name="person-add-outline"></ion-icon></span> <!-- ✅ Corrected -->
+          </a>
+      </li>
+      <li class="active">
+          <a href=/firstpage>
+              <span class="icon"> <ion-icon name="grid-outline"></ion-icon></span> <!-- ✅ First Page Icon -->
+          </a>
+      </li>
+  </ul>
+     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+         <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+         <script>
+             document.addEventListener('DOMContentLoaded', function () {
+                 const hamburger = document.querySelector('.hamburger-icon');
+                 const navigation = document.querySelector('.navigation');
+                 let isOpen = false;
+
+                 hamburger.addEventListener('click', function () {
+                     // Toggle menu visibility
+                     isOpen = !isOpen;
+                     if (isOpen) {
+                         navigation.classList.add('show');
+                     } else {
+                         navigation.classList.remove('show');
+                     }
+                 });
+
+                 // Keep your existing navigation item click event listener
+                 let list = document.querySelectorAll('.navigation li');
+                 function activeLink() {
+                     list.forEach((item) => item.classList.remove('active'));
+                     this.classList.add('active');
+                 }
+                 list.forEach((item) => item.addEventListener('click', activeLink));
+             });
+
+         </script>
+
+ <!-- Form to enter company name -->
+ <form method="post" class="mb-4">
+     <div class="dropdown-container">
+     <label for="company_name" class="form-label">Enter Company Identifier:</label>
+     <input type="text" id="company_name" name="company_name" class="form-control" style="width:850px;" required>
+
+     <div class="form-check mt-2">
+         <input class="form-check-input" type="radio" id="company" name="idType" value="name" checked>
+         <label class="form-check-label" for="company">Company</label>
+     </div>
+     <div class="form-check">
+         <input class="form-check-input" type="radio" id="ticker" name="idType" value="ticker">
+         <label class="form-check-label" for="ticker">Ticker</label>
+     </div>
+     <div class="form-check">
+         <input class="form-check-input" type="radio" id="isin" name="idType" value="isin">
+         <label class="form-check-label" for="isin">ISIN</label>
+     </div>
+     </div>
+     <!-- Submit Button and Spinner Container -->
+     <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px;">
+         <button type="submit" id="submit" class="submit-button">Search</button>
+         <div id="loading-spinner" style="display: none;"></div>
+     </div>
+
+ </form>
+ <div id="resultContainer" style="display: none;"></div>
+ {% if company_name %}
+ <div class="report-container">
+     {% if report_url %}
+         <p>Latest ESG Report Link for {{company_name}}: <a href="{{ report_url }}" target="_blank">{{ report_url }}</a></p>
+
+
+
+
+     {% else %}
+         <p>No report found.</p>
+     {% endif %}
+ </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     <!-- Tab Navigation -->
+     <ul class="nav nav-tabs mt-4" id="resultTabs" role="tablist">
+         <li class="nav-item" role="presentation">
+             <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#table-content" type="button" role="tab">Extracted Table <i class="fa-solid fa-table"></i></button>
+         </li>
+         <li class="nav-item" role="presentation">
+             <button class="nav-link" id="news-tab" data-bs-toggle="tab" data-bs-target="#news-content" type="button" role="tab">Latest News <i class="fa-solid fa-newspaper"></i></button>
+         </li>
+         <li class="nav-item" role="presentation">
+             <button class="nav-link" id="chart-tab" data-bs-toggle="tab" data-bs-target="#chart-content" type="button" role="tab">Data Visualization <i class="fa-solid fa-chart-column"></i></button>
+         </li>
+     </ul>
+
+     <!-- Tab Content -->
+         <div class="tab-content mt-3" id="resultTabsContent">
+          <!-- Table Section -->
+          <div class="tab-pane fade show active" id="table-content" role="tabpanel">
+              {% if company_name and table_html %}
+              <div class="selected-company">
+                  <a href="{{ url_for('download_table', company_name=company_name) }}" class="btn btn-success mt-3">Download Table</a>
+                  <div>
+                      {{ table_html | safe }}
+                  </div>
+              {% else %}
+                  <p>No table data available.</p>
+              {% endif %}
+          </div>
+          </div>
+
+         <!-- News Section -->
+         <div class="tab-pane fade" id="news-content" role="tabpanel">
+          <br>
+          <h3>Top Headlines for {{ company_name }}</h3>
+          {% if news_data %}
+              <div class="container-fluid"> <!-- Fluid container to match background -->
+                  <div class="row">
+                      {% for news in news_data %}
+                          <div class="col-md-6 mb-4"> <!-- Two columns per row -->
+                              <div class="card border-0 shadow-sm bg-transparent"> <!-- Transparent background -->
+                                  <div class="card-body d-flex align-items-center">
+                                      <img src="{{ news.image }}" alt="News Image" class="news-image me-3"
+                                           onerror="this.style.display='none';" style="width: 100px; height: auto;">
+                                      <div>
+                                          <strong style="color: white;">{{ news.title }}</strong> <!-- News Title -->
+                                          <br>
+                                          <small style="color: white;">Source: {{ news.publisher }}</small> <!-- Publisher Name -->
+                                          <br>
+                                          <a href="{{ news.link }}" target="_blank" class="btn btn-primary btn-sm mt-2">Read More</a> <!-- Read More Button -->
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      {% endfor %}
+                  </div>
+              </div>
+          {% else %}
+              <p>No news available for this company.</p>
+          {% endif %}
+      </div>
+
+         <!-- Data Visualization Section -->
+         <div class="tab-pane fade" id="chart-content" role="tabpanel">
+             <h3>Data Visualization</h3>
+             {% if chart_path %}
+                 <img src="{{ chart_path }}" alt="Emissions Chart" class="img-fluid">
+             {% else %}
+                 <p>No chart available.</p>
+             {% endif %}
+         {% endif %}
+         </div>
+         <div class="page-bottom">
+      </div>
+
+     </div>
+
+     <!-- Bootstrap JS (Ensure Bootstrap's JavaScript is included) -->
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- React and ReactDOM via CDN -->
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <!-- Material-UI Core (includes CircularProgress) -->
+    <script crossorigin src="https://unpkg.com/@mui/material@latest/umd/material-ui.production.min.js"></script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+     const { CircularProgress } = window.MaterialUI || {};
+     const spinnerContainer = document.getElementById("loading-spinner");
+     const submitButton = document.getElementById("submit");
+     const form = document.querySelector("form");
+
+     let spinnerInitialized = false;
+     function initializeSpinner() {
+         if (!spinnerInitialized && CircularProgress) {
+             const spinner = React.createElement(CircularProgress, { color: "success", size: 24 });
+             ReactDOM.render(spinner, spinnerContainer);
+             spinnerInitialized = true;
+         }
+     }
+
+     function showSpinner() {
+         submitButton.disabled = true;
+         submitButton.innerText = "Searching...";
+         initializeSpinner();
+         spinnerContainer.style.display = "inline-block"; // Show only when "Searching..."
+     }
+
+     function hideSpinner() {
+         submitButton.disabled = false;
+         submitButton.innerText = "Search";
+         spinnerContainer.style.display = "none";
+     }
+
+     form.addEventListener("submit", function () {
+         showSpinner();
+     });
+
+     //  Reset spinner if user navigates away or cancels search
+     submitButton.addEventListener("click", function () {
+         if (submitButton.innerText === "Searching...") {
+             hideSpinner();
+         }
+     });
+    });
+
+    </script>
+
+</body>
+</html>
+
+
+

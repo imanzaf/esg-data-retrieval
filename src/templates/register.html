@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Financial Markets</title>
+   <style>
+       body {
+           font-family: 'Inter', sans-serif;
+           background-color: #F5F5F5;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           height: 100vh;
+           margin: 0;
+       }
+       .instructions{
+           background-color: #F5F5F5;
+           color:#063800;
+           width: 47%;
+           height: 700px;
+       }
+       .container {
+           display: flex;
+       }
+       .logo-container {
+   display: flex;
+   justify-content: center;
+   margin-top: -70px;
+}
+.logo {
+   max-height: 160px;
+   width: auto;
+}
+
+
+       .box {
+           background-color: #063800;
+           width: 30%;
+           height: 700px;
+           box-shadow: 0px 16px 32px rgba(0, 0, 0, 0.5);
+           border-radius: 10px;
+           padding: 30px;
+       }
+
+
+       .content {
+           text-align: center;
+           padding-top:130px;
+           padding-left:20px;
+           padding-right:20px;
+           align-items: center;
+       }
+
+
+
+
+
+
+       form {
+           text-align: center;
+       }
+
+
+       .essay1 {
+           font-size: 14px;
+           padding-right: 120px
+       }
+
+
+       .box2 {
+           width: 400px;
+           padding: 1px;
+           border: 4px solid #ccc;
+           border-radius: 4px;
+           background-color: #fff;
+           color: #333;
+           font-size: 16px;
+           box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+       }
+
+
+
+
+       .input-field {
+   border: 1px solid #ccc;
+   border-radius: 6px;
+   padding: 12px;
+   font-size: 16px;
+   width: 95%;
+   transition: all 0.3s ease-in-out;
+}
+.input-field:focus {
+   border-color: #063800;
+   box-shadow: 0 0 8px rgba(6, 56, 0, 0.3);
+   outline: none;
+}
+       .input-field::placeholder {
+   font-size: 18px;  /* For placeholder text */
+}
+       .register-btn {
+           background-color: #FFFFFF;
+           color: #215839;
+           border: none;
+           padding: 10px 20px;
+           border-radius: 4px;
+           font-size: 16px;
+           cursor: pointer;
+       }
+       .register-btn:hover {
+           background-color: #ffffffa1;
+       }
+       footer {
+           text-align: center;
+           margin-top: 20px;
+           font-size: 14px;
+       }
+
+
+       footer a {
+           color: #F5F5F5;
+           text-decoration: none;
+       }
+
+
+       footer a:hover {
+           text-decoration: underline;
+       }
+
+   </style>
+</head>
+<body>
+   <div class="instructions">
+       <h1 > Welcome to EmissiTrack Pro</h1>
+       <h2 >User Instructions:</h2>
+        <p > <b>1.</b> In the text field at the top, type the company name, ticker, or ISIN. </p>
+       <br>
+           <p> <b>2.</b> Choose the matching “Search Type” radio button.</p>
+           <br>
+               <p>   <b>3.</b> Click “Go.”</p>
+               <br>
+                   <p>   <b>4.</b> View the left column for the extracted emissions tables.</p>
+                   <br>
+                       <p>   <b>5.</b> Check the right column for the emissions chart and the chatbot.</p>
+                       <br>
+                           <p>   <b>6.</b> (Optional) Type a question for the chatbot and click “Ask.”</p>
+                           <br>
+                               <p>  <b>7.</b> (Optional) If you need to cancel the data retrieval process, click Stop RAG.</p>
+                               <br>
+                                   <h4>  That’s it! The page is meant to help you quickly find, visualize, and chat about greenhouse gas emissions data from the company’s sustainability reports.</h4>
+   </div>
+
+
+     <div class="box">
+         <div class="content">
+           <div class="logo-container">
+               <img src="{{ url_for('static', filename='images/missiTrack2.png') }}" alt="EmissiTrack Logo" class="logo">
+           </div>
+
+             <h2 style="color:white;"> Register to access EmissiTrack Pro </h2>
+             <form method="POST" action="">
+               <br>
+               <input type="text" id="first_name" name="first_name" required class="input-field" placeholder="First Name"> <br>
+               <br>
+               <input type="text" id="last_name" name="last_name" required class="input-field" placeholder="Last Name"> <br>
+               <br>
+               <input type="email" id="email" name="email" required class="input-field" placeholder="Email Address"> <br>
+               <br>
+               <input type="password" id="password" name="Password" required class="input-field" placeholder="Password"> <br>
+               <br>
+                 <button type="submit" class="register-btn">Register</button>
+             </form>
+             <footer>
+             <p><a href="{{url_for('login')}}" style="color:white;">Already have an account, log in!</a></p>
+           </footer>
+             <footer>
+               <p style="color: #F5F5F5;">By continuing, you agree to our <a href="#">Terms of Service</a> and acknowledge that you've read our <a href="#">Privacy Policy</a>.</p>
+           </footer>
+         </div>
+     </div>
+ </div>
+</body>
+</html>

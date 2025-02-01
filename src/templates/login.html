@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>login1</title>
+   <style>
+       body {
+           font-family: 'Inter', sans-serif;
+           background-color: #F5F5F5;
+           display: flex;
+           justify-content: center;
+           align-items: center;
+           height: 100vh;
+           margin: 0;
+       }
+       .logo {
+   z-index: 20;
+   max-height: 175px; /* Adjusts within the header */
+   width: auto; /* Maintains aspect ratio */
+   position: absolute;
+   top: 150px; /* Aligns with the hamburger icon */
+   left: 627px; /* Pushes it to the right of the hamburger icon */
+}
+       .container {
+           display: flex;
+       }
+
+
+       .box {
+           background-color: #063800;
+           width: 50%;
+           height: 700px;
+           box-shadow: 0px 16px 32px rgba(0, 0, 0, 0.5);
+           border-radius: 10px;
+           padding: 30px;
+       }
+
+
+       .content {
+           text-align: center;
+           padding-top: 160px;
+       }
+
+
+       .welcome-text {
+           text-align: center;
+           color: white;
+           font-size: 36px;
+       }
+
+
+       form {
+           text-align: center;
+       }
+
+
+       ul {
+           list-style-type: none;
+           margin: 0;
+           padding: 0;
+       }
+
+
+       .login-btn {
+           background-color: #FFFFFF;
+           color: #063800;
+           border: none;
+           padding: 10px 20px;
+           border-radius: 4px;
+           font-size: 16px;
+           cursor: pointer;
+       }
+
+
+       .login-btn:hover {
+           background-color: #ffffff9a;
+       }
+
+
+       .input-field {
+   border: 1px solid #ccc;
+   border-radius: 6px;
+   padding: 12px;
+   font-size: 16px;
+   width: 95%;
+   transition: all 0.3s ease-in-out;
+}
+.input-field:focus {
+   border-color: #063800;
+   box-shadow: 0 0 8px rgba(6, 56, 0, 0.3);
+   outline: none;
+}
+
+
+
+
+       .input-field::placeholder {
+   font-size: 18px;  /* For placeholder text */
+}
+       .forgot-password {
+           font-size: 14px;
+           color: #063800;
+           text-decoration: none;
+       }
+
+
+       .forgot-password:hover {
+           text-decoration: underline;
+       }
+
+
+       footer {
+           text-align: center;
+           margin-top: 20px;
+           font-size: 14px;
+       }
+
+
+       footer a {
+           color: #F5F5F5;
+           text-decoration: none;
+       }
+
+
+       footer a:hover {
+           text-decoration: underline;
+       }
+   </style>
+</head>
+<body>
+
+
+   <div class="box">
+       <h1 class="welcome-text">Welcome Back to EmissiTrack Pro!</h1>
+       <img src="{{ url_for('static', filename='images/missiTrack2.png') }}" alt="Logo" class="logo">
+       <div class="content">
+           <h2 style="color:white;">Sign in to access your Account</h2>
+           <form method="POST" action="/login">
+               <br>
+               <input type="email" id="email" name="email" required class="input-field" placeholder="Enter your email">
+               <br>
+               <br>
+               <input type="password" id="password" name="password" required class="input-field" placeholder="Enter your password">
+               <br>
+               <br>
+               <button type="submit" class="login-btn">Login</button>
+           </form>
+           <br>
+           <a href="#" class="forgot-password">Forgot Password?</a>
+           <br>
+           <br>
+           <footer>
+           <a href="{{url_for('register')}}" style="color:white;">Don't have an account? Sign up</a>
+       </footer>
+           <br>
+           <br>
+           <footer>
+               <p style="color: #F5F5F5;">Look at our <a href="#">Privacy Policy</a> for more information.</p>
+           </footer>
+       </div>
+   </div>
+
+
+
+
+</body>
+</html>
