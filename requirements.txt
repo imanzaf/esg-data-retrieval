@@ -1,20 +1,19 @@
 # project requirements
 pandas
+numpy==1.26.4
 python-dotenv
 loguru
 pydantic
 requests
 flask
-transformers
 docling
-jpype1
 PyPDF2
 openai
-tabula-py
 docling
 google-search-results  # serpapi
 yfinance
 llama_parse
+tabula-py
 
 # dev requirements
 pre-commit
