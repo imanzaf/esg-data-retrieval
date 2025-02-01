@@ -1,8 +1,9 @@
 import os
 import re
-import pandas as pd
-import numpy as np
+
 import dotenv
+import numpy as np
+import pandas as pd
 
 
 def save_raw_data(df, output_path):
@@ -161,7 +162,7 @@ def clean_header(headers):
         # Remove all "untitled" or "Unnamed" columns after the first valid header
         new_headers = headers[: first_valid_header_index + 1] + [
             header
-            for header in headers[first_valid_header_index + 1:]
+            for header in headers[first_valid_header_index + 1 :]  # noqa: E203
             if not invalid_pattern.search(header)
         ]
     else:

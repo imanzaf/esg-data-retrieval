@@ -1,21 +1,5 @@
 """
-Scope 1 and 2 (location and market based) Emissions Data Extraction
--------------------------------------
-1) Download the PDF from the URL.
-2) Parse relevant pages using LlamaParse, determined by mentions of scope 1, scope 2, years/FY, and units.
-3) LlamaParse outputs a JSON block for each page processed. Write these raw JSON outputs containing scope 1, scope 2 (location and market) with units to `data/parsed_outputs/{company}_raw_parsed.md`.
-4) Implement scoring mechanism to identify the highest quality JSON block to put into csv
-Requires environment variable:
-  - LLAMA_API_KEY
-Usage:
-  python src/extract/llama_parse_json.py <company_name> <sustainability_report_url>
-  Example:
-  python src/extract/llama_parse_json.py "NVIDIA CORP" "https://images.nvidia.com/aem-dam/Solutions/documents/FY2024-NVIDIA-Corporate-Sustainability-Report.pdf"
-  python src/extract/llama_parse_json.py "MICROSOFT CORP" "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RW1lmju"
-  python src/extract/llama_parse_json.py "AMAZON COM INC" "https://sustainability.aboutamazon.com/2023-amazon-sustainability-report.pdf"
-  python src/extract/llama_parse_json.py "META PLATFORMS INC CLASS A" "https://sustainability.atmeta.com/wp-content/uploads/2024/08/Meta-2024-Sustainability-Report.pdf"
-  python src/extract/llama_parse_json.py "ALPHABET INC CLASS A" "https://www.smartenergydecisions.com/upload/research_+_reports/google-2024-environmental-report.pdf"
-  python src/extract/llama_parse_json.py "APPLE INC" "https://www.apple.com/environment/pdf/Apple_Environmental_Progress_Report_2024.pdf"
+Scope 1 and 2 (location and market based) Emissions Extractor (llama)
 """
 
 import json
@@ -33,14 +17,12 @@ from loguru import logger
 # Load environment variables from .env file
 load_dotenv()
 sys.path.append(f"{os.getenv('ROOT_DIR')}")
-
-
-load_dotenv()
 LLAMA_API_KEY = os.getenv("LLAMA_API_KEY")
 
 
-class EmissionsDataExtractor(BaseModel):
+class LlamaExtractor(BaseModel):
     api_key: str = LLAMA_API_KEY
+
     company_name: str
     filtered_pdf_path: str
     output_path: str
@@ -49,21 +31,15 @@ class EmissionsDataExtractor(BaseModel):
         # Main entry point: downloads PDF, identifies relevant pages, parses them, saves raw output, updates CSV.
         logger.info(f"Processing company: {self.company_name}")
 
-        # 3) Parse the relevant pages with LlamaParse
-        # pdf_file.seek(0)  # Reset pointer
-        emissions_data, documents = self.extract_emissions_data(
+        emissions_data = self.extract_emissions_data(
             self.filtered_pdf_path, self.company_name
         )
-        logger.info(f"Emissions data via llama: {emissions_data}")
-
         if not emissions_data:
             logger.warning(f"Parsing returned no data for {self.company_name}")
             return
 
-        # 4) Write raw LlamaParse output for debugging
         output_path = f"{self.output_path}/esg_data.csv"
-
-        logger.info("Updating CSV...")
+        logger.info("Writing to CSV...")
         # 5) Update CSV with extracted data
         self.update_csv(self.company_name, emissions_data, output_path)
 
@@ -74,10 +50,6 @@ class EmissionsDataExtractor(BaseModel):
     ) -> tuple[dict | None, list]:
 
         try:
-            # with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
-            #     temp_file.write(pdf_file.getvalue())
-            #     temp_path = temp_file.name
-
             parser = LlamaParse(
                 api_key=self.api_key,
                 result_type="markdown",
@@ -107,11 +79,9 @@ class EmissionsDataExtractor(BaseModel):
                     "processed_date": datetime.now().isoformat(),
                 },
             )
-            # Clean up the temp file from the system
-            # os.unlink(temp_path)
 
             final_data = self._combine_document_data(documents)
-            return final_data, documents
+            return final_data
 
         except Exception as exc:
             logger.error(f"extract_emissions_data error for {company_name}: {exc}")
@@ -182,7 +152,6 @@ class EmissionsDataExtractor(BaseModel):
 
     # Appends emissions data (company, year, scope1_value, scope1_unit, scope2_location_value, scope2_location_unit, scope2_market_value, scope2_market_unit) to CSV
     def update_csv(self, company_name: str, emissions_data: dict, csv_path: str):
-        logger.info(f"Updating CSV {csv_path} with data for {company_name}")
         rows = []
 
         s1_dict = emissions_data.get("scope1", {})
@@ -210,6 +179,7 @@ class EmissionsDataExtractor(BaseModel):
 
             standard_df[year] = [s1[0], s2m[0], s2l[0]]
 
+<<<<<<< HEAD
         try:
             standard_df["Units"] = [(s1_dict.get(max(all_years)))[1], s2m_dict.get(max(all_years))[1], s2l_dict.get(max(all_years))[1]]
         except:
@@ -218,6 +188,10 @@ class EmissionsDataExtractor(BaseModel):
             else:
                 standard_df["Units"] = None
         standard_df.to_csv(csv_path, index=False)
+=======
+        new_df = pd.DataFrame(rows)
+        new_df.to_csv(csv_path, index=False)
+>>>>>>> 139f809b4c7c8c9613e9066f232faf904dbf2951
 
         logger.info(f"Appended new results to {csv_path}")
 
@@ -227,16 +201,8 @@ if __name__ == "__main__":
     if not LLAMA_API_KEY:
         raise ValueError("Missing LLAMA_API_KEY in environment variables.")
 
-    # if len(sys.argv) < 3:
-    #     print(
-    #         "Usage: python src/extract/llama_parse_json.py <company_name> <sustainability_report_url>"
-    #     )
-    #     sys.exit(1)
-
-    # company_arg = sys.argv[1]
-    # pdf_url_arg = sys.argv[2]
     company_arg = "META"
     pdf_url_arg = "https://sustainability.fb.com/wp-content/uploads/2023/07/Meta-2023-Sustainability-Report-1.pdf"
 
-    extractor = EmissionsDataExtractor(LLAMA_API_KEY)
+    extractor = LlamaExtractor(LLAMA_API_KEY)
     extractor.process_company(company_arg, pdf_url_arg)

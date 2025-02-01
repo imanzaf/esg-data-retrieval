@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "US30303M1027",
+        "idType": "isin",
+        "isin": "US30303M1027",
+        "name": "META PLATFORMS INC-CLASS A",
+        "ticker": "META",
+        "description": "META",
+        "output_path": "C:\\UCL Codes\\esg-data-retrieval\\data\\cache\\META_PLATFORMS_INC-CLASS_A"
+    },
+    "esg_reports": {
+        "0": "https://sustainability.fb.com/wp-content/uploads/2023/07/Meta-2023-Sustainability-Report-1.pdf",
+        "1": "https://www.ssga.com/library-content/products/factsheets/mf/emea/factsheet-emea-en_gb-lu1159225991.pdf",
+        "2": "https://d18rn0p25nwr6d.cloudfront.net/CIK-0001326801/c0c08a49-7def-4086-bf1a-17e1cc951344.pdf",
+        "3": "https://www.kraftheinzcompany.com/esg/pdf/KraftHeinz-2023-ESG-Report.pdf",
+        "4": "https://images.nvidia.com/aem-dam/Solutions/documents/FY2023-NVIDIA-Corporate-Responsibility-Report-1.pdf"
+    }
+}

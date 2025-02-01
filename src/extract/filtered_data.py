@@ -1,21 +1,20 @@
 import os
 import re
 import sys
-from pydantic import BaseModel
 
 import pandas as pd
 from dotenv import load_dotenv
+from pydantic import BaseModel
 
 load_dotenv()
 sys.path.append(os.getenv("ROOT_DIR"))
 
-from src.utils.units import get_units_raw_input, infer_units_for_rows  # noqa: E402
 from src.utils.data_models import TableParsers  # noqa: E402
 from src.utils.standardize_table import standardize_table  # noqa: E402
+from src.utils.units import get_units_raw_input, infer_units_for_rows  # noqa: E402
 
 if not sys.warnoptions:
     import warnings
-
     warnings.simplefilter("ignore")
 
 
