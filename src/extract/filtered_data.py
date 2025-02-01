@@ -22,15 +22,17 @@ if not sys.warnoptions:
 
 class Filter(BaseModel):
     # Regex to match 'Scope 1', 'Scope 2', and 'Scope 3'
-    regex_scope1: str = r'Scope\s1'
-    regex_scope2: str = r'Scope\s2'
-    regex_scope3: str = r'Scope\s3'
+    regex_scope1: str = r"Scope\s1"
+    regex_scope2: str = r"Scope\s2"
+    regex_scope3: str = r"Scope\s3"
 
     # Regex to exclude rows with words like 'excluded' or 'avoided'
-    regex_exclude: str = r"(excluded|Excluded|avoided|Avoided|aim|Aim|goal|Goal|target|Target|forecast|Forecast|estimate|Estimate|projection|Projection|expectation|Expectation)"
+    regex_exclude: str = (
+        r"(excluded|Excluded|avoided|Avoided|aim|Aim|goal|Goal|target|Target|forecast|Forecast|estimate|Estimate|projection|Projection|expectation|Expectation)"
+    )
 
     # Regex to match columns with various date formats
-    regex_date: str = r'(\bFY\d{2}\b|\b20\d{2}\b|\b[Ff]iscal\s[Yy]ear\b)'
+    regex_date: str = r"(\bFY\d{2}\b|\b20\d{2}\b|\b[Ff]iscal\s[Yy]ear\b)"
 
     directory_path: str
     parser: TableParsers
@@ -70,57 +72,104 @@ class Filter(BaseModel):
         for df in docling_tables:
             dfs.append(get_units_raw_input(df))
         return dfs
-    
+
     def _filter_data_v2(self, dfs: list[pd.DataFrame]):
         scope_data = []
         for idx, df in enumerate(dfs):
             try:
-            # Checks if scope 1 exists in table
-                contains_scope1 = df.apply(lambda row: row.str.contains(self.regex_scope1, regex=True, na=False).any(), axis=1).any()
+                # Checks if scope 1 exists in table
+                contains_scope1 = df.apply(
+                    lambda row: row.str.contains(
+                        self.regex_scope1, regex=True, na=False
+                    ).any(),
+                    axis=1,
+                ).any()
                 # Checks if scope 2 exists in table
-                contains_scope2 = df.apply(lambda row: row.str.contains(self.regex_scope3, regex=True, na=False).any(), axis=1).any()
-                
+                contains_scope2 = df.apply(
+                    lambda row: row.str.contains(
+                        self.regex_scope3, regex=True, na=False
+                    ).any(),
+                    axis=1,
+                ).any()
+
                 if not (contains_scope1 and contains_scope2):
-                    print(f"Skipping file {idx} - does not contain both Scope 1 and Scope 2.")
+                    print(
+                        f"Skipping file {idx} - does not contain both Scope 1 and Scope 2."
+                    )
                     continue
-                
+
                 # **Step 2: Remove rows where both 'Scope 1' and 'Scope 3' appear in the same row**
-                scope1_and_scope3 = df.apply(lambda row: row.str.contains(self.regex_scope1, regex=True, na=False).any() and 
-                                                    row.str.contains(self.regex_scope3, regex=True, na=False).any(), axis=1)
+                scope1_and_scope3 = df.apply(
+                    lambda row: row.str.contains(
+                        self.regex_scope1, regex=True, na=False
+                    ).any()
+                    and row.str.contains(self.regex_scope3, regex=True, na=False).any(),
+                    axis=1,
+                )
                 df = df[~scope1_and_scope3]  # Remove those rows
-                
+
                 # Checks if scope 3 exists in table
-                contains_scope3 = df.apply(lambda row: row.str.contains(self.regex_scope3, regex=True, na=False).any(), axis=1).any()
+                contains_scope3 = df.apply(
+                    lambda row: row.str.contains(
+                        self.regex_scope3, regex=True, na=False
+                    ).any(),
+                    axis=1,
+                ).any()
 
                 # Check if the table has a date column in the header
-                date_columns = [col for col in df.columns if re.search(self.regex_date, str(col))]
+                date_columns = [
+                    col for col in df.columns if re.search(self.regex_date, str(col))
+                ]
                 if not date_columns:
-                    print(f"Skipping file {idx} as it has no date-related columns in the header.")
+                    print(
+                        f"Skipping file {idx} as it has no date-related columns in the header."
+                    )
                     continue
-                
+
                 # Remove rows that contain excluded words
-                df = df[~df.astype(str).apply(lambda row: row.str.contains(self.regex_exclude, regex=True, na=False).any(), axis=1)]
-                
+                df = df[
+                    ~df.astype(str).apply(
+                        lambda row: row.str.contains(
+                            self.regex_exclude, regex=True, na=False
+                        ).any(),
+                        axis=1,
+                    )
+                ]
+
                 # Convert all columns to strings to avoid dtype issues
                 df = df.astype(str)
-                
+
                 if contains_scope3:
                     # Find the index where 'Scope 3' appears and remove it and all rows below
-                    scope3_index = df.apply(lambda row: row.str.contains(self.regex_scope3, regex=True, na=False).any(), axis=1)
+                    scope3_index = df.apply(
+                        lambda row: row.str.contains(
+                            self.regex_scope3, regex=True, na=False
+                        ).any(),
+                        axis=1,
+                    )
                     if contains_scope3 and scope3_index.any():
-                        first_scope3_idx = scope3_index[scope3_index].index[0]  # First occurrence
-                        df = df.loc[:first_scope3_idx - 1]  # Keep only rows above it
+                        first_scope3_idx = scope3_index[scope3_index].index[
+                            0
+                        ]  # First occurrence
+                        df = df.loc[: first_scope3_idx - 1]  # Keep only rows above it
 
                 if contains_scope1:
                     # Find the index where 'Scope 1' appears and remove all rows above it (excluding date rows)
-                    scope1_index = df.apply(lambda row: row.str.contains(self.regex_scope1, regex=True, na=False).any(), axis=1)
+                    scope1_index = df.apply(
+                        lambda row: row.str.contains(
+                            self.regex_scope1, regex=True, na=False
+                        ).any(),
+                        axis=1,
+                    )
                     if contains_scope1 and scope1_index.any():
-                        first_scope1_idx = scope1_index[scope1_index].index[0]  # First occurrence
+                        first_scope1_idx = scope1_index[scope1_index].index[
+                            0
+                        ]  # First occurrence
                         df = df.loc[first_scope1_idx:]  # Keep 'Scope 1' row and below
-                
+
                 # Store processed data
                 scope_data.append(df)
-                
+
             except Exception as e:
                 logger.warning(f"Error processing df {idx}: {e}")
                 continue
