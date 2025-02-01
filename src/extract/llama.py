@@ -8,11 +8,11 @@ import re
 import sys
 from datetime import datetime
 
-from pydantic import BaseModel
 import pandas as pd
 from dotenv import load_dotenv
 from llama_parse import LlamaParse
 from loguru import logger
+from pydantic import BaseModel
 
 # Load environment variables from .env file
 load_dotenv()
@@ -152,7 +152,6 @@ class LlamaExtractor(BaseModel):
 
     # Appends emissions data (company, year, scope1_value, scope1_unit, scope2_location_value, scope2_location_unit, scope2_market_value, scope2_market_unit) to CSV
     def update_csv(self, company_name: str, emissions_data: dict, csv_path: str):
-        rows = []
 
         s1_dict = emissions_data.get("scope1", {})
         s2m_dict = emissions_data.get("scope2_market", {})
@@ -189,7 +188,7 @@ class LlamaExtractor(BaseModel):
                 s2m_dict.get(max(all_years))[1],
                 s2l_dict.get(max(all_years))[1],
             ]
-        except:
+        except Exception:
             if s1_dict.get(max(all_years))[1] is not None:
                 standard_df["Units"] = s1_dict.get(max(all_years))[1]
             else:

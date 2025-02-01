@@ -15,6 +15,7 @@ from src.utils.units import get_units_raw_input, infer_units_for_rows  # noqa: E
 
 if not sys.warnoptions:
     import warnings
+
     warnings.simplefilter("ignore")
 
 
