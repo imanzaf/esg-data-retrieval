@@ -143,7 +143,7 @@ def get_emissions_data(identifier, idType, parser):
             if file.endswith("filtered.pdf"):
                 pdf_path = os.path.join(esg_reports.output_path, file)
         # if any column is completely null, run llama parse instead
-        if any([all(data[col].isna()) for col in data.columns]):
+        if any([all(data[col].isna()) for col in data.columns]) or data is None:
             logger.info("Retrieving via LlamaParse...")
             extractor = LlamaExtractor(
                 company_name=company.name,
@@ -170,7 +170,7 @@ def get_emissions_data(identifier, idType, parser):
 if __name__ == "__main__":
     start = time.time()
 
-    identifier = "US0605051046"
+    identifier = "US9497461015"
     idType = "isin"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)
