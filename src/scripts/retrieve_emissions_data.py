@@ -15,6 +15,7 @@ OUTPUT_DIR = os.getenv("ROOT_OUTPUT_PATH")
 # append path
 sys.path.append(f"{os.getenv('ROOT_DIR')}")
 
+from src.extract.llama import EmissionsDataExtractor  # noqa: E402
 from src.extract.tables import TableExtractor  # noqa: E402
 from src.find.company_profile import CompanyProfile  # noqa: E402
 from src.find.esg_reports import ESGReports  # noqa: E402
@@ -120,20 +121,42 @@ def get_emissions_data(identifier, idType, parser):
             logger.debug(f"Unable to parse data from {url}: {e}")
             continue
 
-    # TODO - pass tables as objects
-    data_filter = Filter(directory_path=esg_reports.output_path, parser=parser)
-    data_filter.extract_filtered_df()
-    data = data_filter.filtered_df
+    try:
+        # TODO - pass tables as objects
+        data_filter = Filter(directory_path=esg_reports.output_path, parser=parser)
+        data_filter.extract_filtered_df()
+        data = data_filter.filtered_df
+        data.to_csv(os.path.join(esg_reports.output_path, "esg_data.csv"))
+        # get filtered pdf path
+        for file in os.listdir(esg_reports.output_path):
+            logger.info(file)
+            if file.endswith("filtered.pdf"):
+                pdf_path = os.path.join(esg_reports.output_path, file)
+        # if any column is completely null, run llama parse instead
+        if any([all(data[col].isna()) for col in data.columns]):
+            logger.info("Retrieving via LlamaParse...")
+            extractor = EmissionsDataExtractor(
+                company_name=company.name,
+                filtered_pdf_path=pdf_path,
+                output_path=esg_reports.output_path,
+            )
+            extractor.process_company()
+    except Exception as e:
+        logger.warning(f"Retrieveing via LlamaParse...: {e}")
+        extractor = EmissionsDataExtractor(
+            company_name=company.name,
+            filtered_pdf_path=pdf_path,
+            output_path=esg_reports.output_path,
+        )
+        extractor.process_company()
 
-    data.to_csv(os.path.join(esg_reports.output_path, "esg_data.csv"))
-
-    return data
+    # return data
 
 
 if __name__ == "__main__":
     start = time.time()
 
-    identifier = "US2546871060"
+    identifier = "US30303M1027"
     idType = "isin"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)

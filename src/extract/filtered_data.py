@@ -11,7 +11,12 @@ sys.path.append(os.getenv("ROOT_DIR"))
 
 from src.utils.units import get_units_raw_input, infer_units_for_rows  # noqa: E402
 from src.utils.data_models import TableParsers  # noqa: E402
-from src.utils.standardize_table import standardize_table # noqa: E402
+from src.utils.standardize_table import standardize_table  # noqa: E402
+
+if not sys.warnoptions:
+    import warnings
+
+    warnings.simplefilter("ignore")
 
 
 class Filter(BaseModel):
@@ -131,9 +136,9 @@ class Filter(BaseModel):
 if __name__ == "__main__":
     ROOT_DIR = os.getenv("ROOT_OUTPUT_PATH")
     filter_obj = Filter(
-        directory_path=os.path.join(ROOT_DIR, "BANK_OF_AMERICA_CORP"),
+        directory_path=os.path.join(ROOT_DIR, "META_PLATFORMS_INC-CLASS_A"),
         parser=TableParsers.DOCLING,
     )
     filter_obj.extract_filtered_df()
 
-    filter_obj.filtered_df.to_csv(os.path.join(ROOT_DIR, "testing_apple.csv"))
+    filter_obj.filtered_df.to_csv(os.path.join(ROOT_DIR, "testing_meta.csv"))

@@ -85,8 +85,11 @@ def infer_units_for_rows(filtered_rows):
             )
             unit_inferences.append(inferred_unit)
 
-    # Add the inferred units as a new column
-    filtered_rows["Units"] = unit_inferences
+    try:
+        # Add the inferred units as a new column
+        filtered_rows["Units"] = unit_inferences
+    except ValueError:
+        filtered_rows["Units"] = unit_inferences[0]
     return filtered_rows
 
 
