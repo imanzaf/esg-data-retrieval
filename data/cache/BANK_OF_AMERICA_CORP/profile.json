@@ -6,7 +6,7 @@
         "name": "BANK OF AMERICA CORP",
         "ticker": "BAC",
         "description": "BAC",
-        "output_path": "C:\\UCL Codes\\esg-data-retrieval\\data\\cache\\BANK_OF_AMERICA_CORP"
+        "output_path": "/workspaces/esg-data-retrieval/data/cache/BANK_OF_AMERICA_CORP"
     },
     "esg_reports": {
         "0": "https://about.bankofamerica.com/content/dam/about/pdfs/esg-themed-bond-report.pdf",
