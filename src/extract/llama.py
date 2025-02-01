@@ -159,11 +159,15 @@ class LlamaExtractor(BaseModel):
         s2l_dict = emissions_data.get("scope2_location", {}) or {}
 
         standard_df = pd.DataFrame()
-        standard_df["Metric"] = ["Scope 1", "Scope 2 (market-based)", "Scope 2 (location-based)"]
+        standard_df["Metric"] = [
+            "Scope 1",
+            "Scope 2 (market-based)",
+            "Scope 2 (location-based)",
+        ]
         # Gather all years
         all_years = set(s1_dict.keys()) | set(s2m_dict.keys()) | set(s2l_dict.keys())
         logger.info(all_years)
-        #Crete empty dataframe with columns metric, all years units
+        # Crete empty dataframe with columns metric, all years units
         for year in sorted(all_years):
             s1 = s1_dict.get(year, [None, None])
             s2m = s2m_dict.get(year, [None, None])
@@ -179,19 +183,18 @@ class LlamaExtractor(BaseModel):
 
             standard_df[year] = [s1[0], s2m[0], s2l[0]]
 
-<<<<<<< HEAD
         try:
-            standard_df["Units"] = [(s1_dict.get(max(all_years)))[1], s2m_dict.get(max(all_years))[1], s2l_dict.get(max(all_years))[1]]
+            standard_df["Units"] = [
+                (s1_dict.get(max(all_years)))[1],
+                s2m_dict.get(max(all_years))[1],
+                s2l_dict.get(max(all_years))[1],
+            ]
         except:
             if s1_dict.get(max(all_years))[1] is not None:
                 standard_df["Units"] = s1_dict.get(max(all_years))[1]
             else:
                 standard_df["Units"] = None
         standard_df.to_csv(csv_path, index=False)
-=======
-        new_df = pd.DataFrame(rows)
-        new_df.to_csv(csv_path, index=False)
->>>>>>> 139f809b4c7c8c9613e9066f232faf904dbf2951
 
         logger.info(f"Appended new results to {csv_path}")
 
