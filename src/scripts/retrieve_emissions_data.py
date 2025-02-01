@@ -117,8 +117,19 @@ def get_emissions_data(identifier, idType, parser):
             ).extract()
             if output not in [None, [], False]:
                 break
+            else:
+                # delete file before moving on to next
+                for file in os.listdir(esg_reports.output_path):
+                    if os.path.basename(path).replace(".pdf", "") in file:
+                        os.remove(os.path.join(esg_reports.output_path, file))
+                        logger.info(f"Deleted {file}")
         except Exception as e:
             logger.debug(f"Unable to parse data from {url}: {e}")
+            # delete file before moving on to next
+            for file in os.listdir(esg_reports.output_path):
+                if isinstance(path, str) and (os.path.basename(path).replace(".pdf", "") in file):
+                    os.remove(os.path.join(esg_reports.output_path, file))
+                    logger.info(f"Deleted {file}")
             continue
 
     try:
@@ -129,8 +140,6 @@ def get_emissions_data(identifier, idType, parser):
         data.to_csv(os.path.join(esg_reports.output_path, "esg_data.csv"))
         # get filtered pdf path
         for file in os.listdir(esg_reports.output_path):
-            logger.info(file)
-            # TODO - delete files not used at earlier stage
             if file.endswith("filtered.pdf"):
                 pdf_path = os.path.join(esg_reports.output_path, file)
         # if any column is completely null, run llama parse instead
@@ -155,7 +164,7 @@ def get_emissions_data(identifier, idType, parser):
 if __name__ == "__main__":
     start = time.time()
 
-    identifier = "US30303M1027"
+    identifier = "US0605051046"
     idType = "isin"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)
