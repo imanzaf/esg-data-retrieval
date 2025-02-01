@@ -1,40 +1,47 @@
-from dotenv import load_dotenv
-import sys
+import csv
+import logging
 import os
+import re
+import sys
+import threading
+from io import BytesIO
+from threading import Event
+
+import folium
+import pandas as pd
+import yfinance as yf
+from dotenv import load_dotenv
+from flask import (
+    Flask,
+    Response,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    send_from_directory,
+    url_for,
+)
+from flask_socketio import SocketIO
+
 load_dotenv()
 # append path
 sys.path.append(f"{os.getenv('ROOT_DIR')}")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(message)s")
 
-from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, Response, send_from_directory
-from src.scripts.retrieve_emissions_data import get_emissions_data
-from loguru import logger
-from src.find.company_profile import CompanyProfile
-from src.find.esg_reports import ESGReports
-from io import BytesIO
-import threading
-import folium
-import src.utils.rag_utils as rag_utils
-
-import logging
-
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
-from flask_socketio import SocketIO
-from asyncio import sleep
-from threading import Event
+import src.utils.rag_utils as rag_utils  # noqa: E402
+from src.find.company_profile import CompanyProfile  # noqa: E402
+from src.find.esg_reports import ESGReports  # noqa: E402
+from src.scripts.retrieve_emissions_data import get_emissions_data  # noqa: E402
 
 # LLM-based table extraction
-from src.scripts.retrieve_emissions_data_pro import get_emissions_data_pro
-from src.utils.data_models import TableParsers
+from src.scripts.retrieve_emissions_data_pro import get_emissions_data_pro  # noqa: E402
+from src.utils.data_models import TableParsers  # noqa: E402
 
 # Globals for RAG
 rag_chain = None
 rag_initialized = False
 pdf_path_global = None
-
-import csv
-import re
-import yfinance as yf
-import pandas as pd
 
 app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")  # Allows cross-origin requests
@@ -82,7 +89,9 @@ def get_color(emissions):
 
 # Add markers for each company
 for _, row in df.iterrows():
-    print(f"Adding marker: {row['Company']} ({row['Latitude']}, {row['Longitude']}) - {row['Emissions']} CO2")
+    print(
+        f"Adding marker: {row['Company']} ({row['Latitude']}, {row['Longitude']}) - {row['Emissions']} CO2"
+    )
 
     folium.CircleMarker(
         location=[row["Latitude"], row["Longitude"]],
@@ -132,14 +141,16 @@ def normalize_name(name):
 
     # Remove common suffixes
     name = re.sub(r"[.,'’]", "", name)  # Remove punctuation
-    name = re.sub(r"\b(INC|LTD|CO|CORPORATION|CORP|LLC|GROUP|HOLDINGS|PLC)\b", "", name)  # Remove suffixes
+    name = re.sub(
+        r"\b(INC|LTD|CO|CORPORATION|CORP|LLC|GROUP|HOLDINGS|PLC)\b", "", name
+    )  # Remove suffixes
     name = re.sub(r"\s+", " ", name).strip()  # Remove extra spaces
 
     print(f"[DEBUG] Normalized name: '{name}'")  # Debugging output
     return name
 
 
-@app.route("/get_news", methods=['POST'])
+@app.route("/get_news", methods=["POST"])
 def get_news_route():
     company_name = request.form.get("company_name")
     if not company_name:
@@ -149,10 +160,12 @@ def get_news_route():
 
     print(f"News data for {company_name}: {news_data}")
 
-    return jsonify({
-        "company_name": company_name,
-        "news_data": news_data,
-    })
+    return jsonify(
+        {
+            "company_name": company_name,
+            "news_data": news_data,
+        }
+    )
 
 
 def format_news(raw_news):
@@ -177,14 +190,18 @@ def format_news(raw_news):
             link = link_data.get("url") if isinstance(link_data, dict) else "#"
 
             # Extract the image URL
-            image_url = content.get("thumbnail", {}).get("resolutions", [{}])[0].get("url", "")
+            image_url = (
+                content.get("thumbnail", {}).get("resolutions", [{}])[0].get("url", "")
+            )
 
-            news_data.append({
-                "title": title,
-                "publisher": publisher,
-                "link": link,
-                "image": image_url  # Add image URL
-            })
+            news_data.append(
+                {
+                    "title": title,
+                    "publisher": publisher,
+                    "link": link,
+                    "image": image_url,  # Add image URL
+                }
+            )
         except Exception as e:
             print(f"[ERROR] Error formatting news article: {e}")
 
@@ -200,16 +217,23 @@ def load_ticker_map(csv_path):
     isin_map = {}
 
     try:
-        with open(csv_path, mode='r', encoding='utf-8') as file:
+        with open(csv_path, mode="r", encoding="utf-8") as file:
             reader = csv.DictReader(file)
             headers = [header.strip().upper() for header in reader.fieldnames]
 
-            if not headers or "COMPANY NAME" not in headers or "SYMBOL" not in headers or "ISIN NUMBER" not in headers:
+            if (
+                not headers
+                or "COMPANY NAME" not in headers
+                or "SYMBOL" not in headers
+                or "ISIN NUMBER" not in headers
+            ):
                 print(f"[ERROR] CSV file is missing required headers: {headers}")
                 return {}, {}
 
             for row in reader:
-                company = normalize_name(row["Company Name"])  # Normalize before storing
+                company = normalize_name(
+                    row["Company Name"]
+                )  # Normalize before storing
                 ticker = row["Symbol"].strip().upper()
                 isin = row["ISIN Number"].strip().upper()
 
@@ -279,8 +303,12 @@ def get_news(company_name):
         ticker = yf.Ticker(ticker_symbol)
         raw_news = ticker.news
 
-        if not isinstance(raw_news, list):  # Ensure raw_news is a list before processing
-            print(f"[ERROR] Unexpected news format for {ticker_symbol}: {type(raw_news)}")
+        if not isinstance(
+            raw_news, list
+        ):  # Ensure raw_news is a list before processing
+            print(
+                f"[ERROR] Unexpected news format for {ticker_symbol}: {type(raw_news)}"
+            )
             return []
 
         print(f"[DEBUG] Raw news data for {ticker_symbol}: {raw_news}")
@@ -313,7 +341,12 @@ def download_table():
     data.to_csv(csv_buffer, index=False)
     csv_buffer.seek(0)
 
-    return send_file(csv_buffer, mimetype="text/csv", as_attachment=True, download_name=f"{company_name}_emissions.csv")
+    return send_file(
+        csv_buffer,
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name=f"{company_name}_emissions.csv",
+    )
 
 
 stop_rag_event = Event()
@@ -348,7 +381,9 @@ def home():
 
         if company_name:
             parser = TableParsers.DOCLING
-            df, pdf_path = get_emissions_data_pro(company_name, selected_id_type, parser)
+            df, pdf_path = get_emissions_data_pro(
+                company_name, selected_id_type, parser
+            )
             if not df.empty and "LLM_Output" in df.columns:
                 llm_markdown = df["LLM_Output"].iloc[0]
             else:
@@ -362,7 +397,9 @@ def home():
 
             # Extract the first available report URL
             if esg_reports.urls:
-                report_url = next(iter(esg_reports.urls.values()))  # Get first URL dynamically
+                report_url = next(
+                    iter(esg_reports.urls.values())
+                )  # Get first URL dynamically
 
             print(f"DEBUG: Selected Report URL -> {report_url}")
 
@@ -370,7 +407,7 @@ def home():
         "index.html",
         company_name=company_name,
         report_url=report_url,
-        llm_markdown=llm_markdown
+        llm_markdown=llm_markdown,
     )
 
 
@@ -399,7 +436,9 @@ def rag_init():
                 return
             chain = rag_utils.build_final_system(path)
             if rag_utils.stop_rag_event.is_set() or chain is None:
-                logging.info("Stop event was set during RAG initialization or chain creation failed")
+                logging.info(
+                    "Stop event was set during RAG initialization or chain creation failed"
+                )
                 return
             rag_utils.rag_chain = chain
             rag_utils.rag_initialized = True
@@ -409,7 +448,9 @@ def rag_init():
             rag_utils.rag_chain = None
             rag_utils.rag_initialized = False
 
-    thread = threading.Thread(target=init_rag_in_background, args=(rag_utils.pdf_path_global,))
+    thread = threading.Thread(
+        target=init_rag_in_background, args=(rag_utils.pdf_path_global,)
+    )
     thread.start()
 
     return jsonify({"status": "RAG initialization started"})
@@ -443,11 +484,11 @@ def reset_rag():
     return jsonify({"status": "RAG reset"})
 
 
-df = pd.read_csv('src/company_names_tickers.csv')
+df = pd.read_csv("src/company_names_tickers.csv")
 
-unique_countries = sorted(df['Country'].dropna().astype(str).unique().tolist())
-unique_sectors = sorted(df['Sector'].dropna().astype(str).unique().tolist())
-unique_industries = sorted(df['Industry'].dropna().astype(str).unique().tolist())
+unique_countries = sorted(df["Country"].dropna().astype(str).unique().tolist())
+unique_sectors = sorted(df["Sector"].dropna().astype(str).unique().tolist())
+unique_industries = sorted(df["Industry"].dropna().astype(str).unique().tolist())
 
 
 @app.route("/advanced_search")
@@ -460,7 +501,7 @@ def advanced_search():
         companies=[],
         selected_company=None,
         emissions_data=None,
-        report_url=None
+        report_url=None,
     )
 
 
@@ -474,27 +515,31 @@ def submit():
 
     filtered_df = df
     if sector != "all":
-        filtered_df = filtered_df[filtered_df['Sector'] == sector]
+        filtered_df = filtered_df[filtered_df["Sector"] == sector]
     if country != "all":
-        filtered_df = filtered_df[filtered_df['Country'] == country]
+        filtered_df = filtered_df[filtered_df["Country"] == country]
     if industry != "all":
-        filtered_df = filtered_df[filtered_df['Industry'] == industry]
+        filtered_df = filtered_df[filtered_df["Industry"] == industry]
 
-    selected_companies = filtered_df['Company Name'].drop_duplicates().tolist()
+    selected_companies = filtered_df["Company Name"].drop_duplicates().tolist()
 
     report_url = None
     emissions_data = None
     if selected_company:
         try:
             parser = TableParsers.DOCLING
-            emissions_data = get_emissions_data(selected_company, idType="name", parser=parser)
+            emissions_data = get_emissions_data(
+                selected_company, idType="name", parser=parser
+            )
 
             esg_reports = ESGReports(CompanyProfile(selected_company, idType="name"))
             print(f"DEBUG: ESGReports URLs -> {esg_reports.urls}")  # Debugging
 
             # Extract the first available report URL
             if esg_reports.urls:
-                report_url = next(iter(esg_reports.urls.values()))  # Get first URL dynamically
+                report_url = next(
+                    iter(esg_reports.urls.values())
+                )  # Get first URL dynamically
 
             print(f"DEBUG: Selected Report URL -> {report_url}")
         except Exception as e:
@@ -509,7 +554,7 @@ def submit():
         industries=unique_industries,
         selected_company=selected_company,
         report_url=report_url,
-        emissions_data=emissions_data.to_html() if emissions_data is not None else None
+        emissions_data=emissions_data.to_html() if emissions_data is not None else None,
     )
 
 
@@ -529,7 +574,9 @@ def test():
 
         if company_name:
             # Pass user's choice of 'name', 'ticker', or 'isin'
-            data = get_emissions_data(company_name, idType=selected_id_type, parser=parser)
+            data = get_emissions_data(
+                company_name, idType=selected_id_type, parser=parser
+            )
 
             if isinstance(data, pd.DataFrame):
                 table_html = data.to_html()
@@ -539,7 +586,9 @@ def test():
 
             # Extract the first available report URL
             if esg_reports.urls:
-                report_url = next(iter(esg_reports.urls.values()))  # Get first URL dynamically
+                report_url = next(
+                    iter(esg_reports.urls.values())
+                )  # Get first URL dynamically
 
             print(f"DEBUG: Selected Report URL -> {report_url}")
 
@@ -550,7 +599,7 @@ def test():
         table_html=table_html,
         report_url=report_url,
         company_name=company_name,
-        news_data=news_data
+        news_data=news_data,
     )
 
 
@@ -573,9 +622,7 @@ def register():
     return render_template("register.html")
 
 
-VALID_USERS = {
-    "test@example.com": "password123"
-}
+VALID_USERS = {"test@example.com": "password123"}
 
 
 @app.route("/login", methods=["GET", "POST"])

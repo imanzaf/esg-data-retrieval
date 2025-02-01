@@ -4,8 +4,8 @@ import sys
 
 import pandas as pd
 from dotenv import load_dotenv
-from pydantic import BaseModel
 from loguru import logger
+from pydantic import BaseModel
 
 load_dotenv()
 sys.path.append(os.getenv("ROOT_DIR"))
