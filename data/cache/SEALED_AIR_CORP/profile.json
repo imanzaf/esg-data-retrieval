@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "US81211K1007",
+        "idType": "isin",
+        "isin": "US81211K1007",
+        "name": "SEALED AIR CORP",
+        "ticker": "SEE",
+        "description": "SEE",
+        "output_path": "C:\\UCL Codes\\esg-data-retrieval\\data\\cache\\SEALED_AIR_CORP"
+    },
+    "esg_reports": {
+        "0": "https://www.sealedair.com/content/dam/marketing-/global-brand/sustainability/see-impact-report.pdf",
+        "1": "https://www.sealedair.com/content/dam/marketing-/global-brand/sustainability/2021-global-impact-report/global-impact-report-summary-2021.pdf",
+        "2": "https://www.sealedair.com/content/dam/marketing-/global-brand/sustainability/2021-global-impact-report/see-global-impact-report-2021.pdf",
+        "3": "https://ir.sealedair.com/static-files/8afbbe37-50ab-4077-a0c2-0b1a286487c1",
+        "4": "https://ir.sealedair.com/static-files/02a3b297-eae9-4e93-b47f-0c252cd50386"
+    }
+}

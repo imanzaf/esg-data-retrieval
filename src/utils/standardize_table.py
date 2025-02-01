@@ -221,7 +221,7 @@ def standardize_table(data):
         print(cleaned_data.head())
     except Exception as e:
         print(f"Table clearing failed: {e}")
-        return data
+        return None
 
     try:
         standardized_table = standardize_emissions_table(
