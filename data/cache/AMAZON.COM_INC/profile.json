@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "US0231351067",
+        "idType": "isin",
+        "isin": "US0231351067",
+        "name": "AMAZON.COM INC",
+        "ticker": "AMZN",
+        "description": "AMZN",
+        "output_path": "/workspaces/esg-data-retrieval/data/cache/AMAZON.COM_INC"
+    },
+    "esg_reports": {
+        "0": "https://sustainability.aboutamazon.com/2023-amazon-sustainability-report.pdf",
+        "1": "https://s2.q4cdn.com/299287126/files/doc_financials/2024/ar/Amazon-com-Inc-2024-Proxy-Statement.pdf",
+        "2": "https://sustainability.aboutamazon.com/2021-sustainability-report.pdf",
+        "3": "https://investor.lenovo.com/en/sustainability/reports/FY2023-lenovo-sustainability-report.pdf",
+        "4": "https://www.sec.gov/files/corpfin/no-action/14a-8/ncpprstarbucks11424-14a8inc.pdf"
+    }
+}

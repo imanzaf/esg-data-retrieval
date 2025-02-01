@@ -1,0 +1,30 @@
+,GHG Emissions,Units,2010 (baseline),2021,2022,2023
+0,Scope 1 Direct Emissions,Metric tons CO2e,"106,870","57,076","66,775","68,050"
+1,Location-Based Scope 2 Indirect Emissions,Metric tons CO2e,"1,678,547","601,906","634,510","610,013"
+2,Total Scope 1 and Location-Based Scope 2 Emissions,Metric tons CO2e,"1,785,417","658,982","701,285","678,063"
+3,Reduction in Total Scope 1 and Location-Based Scope 2 Emissions,Percent decrease from base,Not applicable,63%,61%,62%
+4,Scope 1 and Market-Based Scope 2 Emissions,Scope 1 and Market-Based Scope 2 Emissions,Scope 1 and Market-Based Scope 2 Emissions,Scope 1 and Market-Based Scope 2 Emissions,Scope 1 and Market-Based Scope 2 Emissions,Scope 1 and Market-Based Scope 2 Emissions
+5,Scope 1 Direct Emissions,Metric tons CO2e,"106,870","57,076","66,775","68,050"
+6,Market-Based Scope 2 Indirect Emissions,Metric tons CO2e,"1,644,068","13,886","17,794","17,736"
+7,Total Gross Scope 1 and Market-Based Scope 2 Emissions,Metric tons CO2e,"1,750,939","70,963","84,569","85,786"
+8,Carbon Credits Retired 63,Metric tons CO2e,0,"70,963","84,569","85,786"
+9,Total Net Scope 1 and Market-Based Scope 2 Emissions,Metric tons CO2e,"1,750,939",0,0,0
+10,Reduction in Total Net Scope 1 and Market-Based Scope 2 Emissions,Percent decrease from base,Not applicable,100%,100%,100%
+11,Scope 3 Indirect Emissions,Scope 3 Indirect Emissions,Scope 3 Indirect Emissions,Scope 3 Indirect Emissions,Scope 3 Indirect Emissions,Scope 3 Indirect Emissions
+12,Category 1 - Purchased Goods and Services 64,Metric tons CO2e,Not available,"1,153,411","1,571,077","1,722,654"
+13,Category 2 - Capital Goods 64,Metric tons CO2e,Not available,"52,236","47,621","48,570"
+14,Category 3 - Fuel and Energy-Related Activities 65,Metric tons CO2e,"341,783","158,213","164,599","168,018"
+15,Category 4 - Upstream Transportation and Distribution 66,Metric tons CO2e,"243,881","167,033","176,322","152,752"
+16,Category 5 - Waste (Traditional Disposal) 67,Metric tons CO2e,Not available,"11,757","18,826","18,406"
+17,Category 6 - Business Travel 68,Metric tons CO2e,"189,977","18,715","82,583","92,818"
+18,- Business Travel Carbon Credits Retired,Metric tons CO2e,0,"18,823","80,172","92,819"
+19,- Total Net Scope 3 Business Travel Emissions,Metric tons CO2e,"189,977",0,"2,411",0
+20,Category 7 - Employee Commuting,Metric tons CO2e,"675,193","144,625","250,783","355,974"
+21,Category 8 - Upstream Leased Assets,Metric tons CO2e,Not relevant,Not Relevant,Not Relevant,Not Relevant
+22,Category 9 - Downstream Transportation and Distribution,Metric tons CO2e,Not available,"1,000,000","1,000,000","1,000,000"
+23,Category 10 - Processing of Sold Products,Metric tons CO2e,Not relevant,Not Relevant,Not Relevant,Not Relevant
+24,Category 11 - Use of Sold Products,Metric tons CO2e,Not available,"3,000","2,000","2,000"
+25,Category 12 - End of Life Treatment of Sold Products,Metric tons CO2e,Not available,"9,000","11,000","10,000"
+26,Category 13 - Downstream Leased Assets,Metric tons CO2e,Not relevant,Not Relevant,Not Relevant,Not Relevant
+27,Category 14 - Franchises,Metric tons CO2e,Not relevant,Not Relevant,Not Relevant,Not Relevant
+28,Category 15 - Investments 69,Metric tons CO2e,See Financed Emissions portion of this Metrics and Targets section,See Financed Emissions portion of this Metrics and Targets section,See Financed Emissions portion of this Metrics and Targets section,See Financed Emissions portion of this Metrics and Targets section
