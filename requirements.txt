@@ -13,6 +13,8 @@ openai
 tabula-py
 docling
 google-search-results  # serpapi
+yfinance
+llama_parse
 
 # dev requirements
 pre-commit
@@ -28,4 +30,5 @@ folium
 langchain
 langchain_community
 langchain_core
+pymupdf4llm
 langchain_openai
