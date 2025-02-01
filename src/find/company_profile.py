@@ -1,5 +1,3 @@
-# TODO - if name provided instead of ISIN, use yahoo finance to get ticker symbol to use as label for saving data
-
 import os
 import sys
 import time
