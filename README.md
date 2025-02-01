@@ -1,18 +1,29 @@
 # Introduction to Financial Markets (IFTE0001)
 
-**Objective:** Create a solution capable of dynamically retrieving and categorizing scope 1 (direct emissions) and scope 2
-(indirect emissions from purchased electricity) data for any specified ISIN or company name of a listed company.
-
-## Development Best Practices
-- Run the pre-commit hooks before pushing your code to ensure your it's well-formatted.
-- Install python > 3.10.0 in your development environment (for consistency across team members)
-- If using any new python package, please add it to the requirements.txt to make it easier to keep track of project dependencies
-
-## File Descriptions
-
-
-## Running the Python Scripts
+**Intro:**
 
 
 ## Running the App
 
+To set up a local instance of the app, follow these instructions carefully to ensure the environment is configured correctly.
+
+## Running the App
+
+To set up a local instance of the app, follow these instructions carefully to ensure the environment is configured correctly. A local instance runs on your personal computer, allowing you to interact with the app in isolation. 
+
+A deployed version of the app would be located in a remote server where it can be accessed by the public.
+
+### Prerequisites
+
+- **Python Environment:** Create a virtual environment using Python 3.10.0 or higher. This ensures that your local environment is isolated and does not interfere with other projects.
+  
+- **Dependencies:** Install the necessary dependencies by running the command:
+  ```bash
+  pip install -r requirements.txt
+  ```
+  This will install all the required packages listed in the `requirements.txt` file, ensuring that your app has all the necessary libraries to run smoothly.
+  ```bash
+  # add additional software dependencies
+  ```
+
+### 
