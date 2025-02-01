@@ -1,10 +1,16 @@
+from dotenv import load_dotenv
+import sys
+import os
+load_dotenv()
+# append path
+sys.path.append(f"{os.getenv('ROOT_DIR')}")
+
 from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for, Response, send_from_directory
 from src.scripts.retrieve_emissions_data import get_emissions_data
 from loguru import logger
 from src.find.company_profile import CompanyProfile
 from src.find.esg_reports import ESGReports
 from io import BytesIO
-import os
 import threading
 import folium
 import src.utils.rag_utils as rag_utils
