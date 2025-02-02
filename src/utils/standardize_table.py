@@ -197,8 +197,6 @@ def merge_rows_with_headers(cleaned_rows, headers):
         headers.pop()  # Remove the last header until alignment is achieved
 
     return pd.DataFrame(adjusted_rows, columns=headers)
-    # Ensure all rows are aligned to the headers length
-    return pd.DataFrame(adjusted_rows, columns=headers)
 
 
 def process_dataframe(df):
