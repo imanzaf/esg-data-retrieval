@@ -555,7 +555,9 @@ def submit():
         industries=unique_industries,
         selected_company=selected_company,
         report_url=report_url,
-        emissions_data=emissions_data.to_html(index=False) if emissions_data is not None else None,
+        emissions_data=(
+            emissions_data.to_html(index=False) if emissions_data is not None else None
+        ),
     )
 
 
@@ -578,7 +580,11 @@ def test():
 
             if isinstance(result, tuple) and len(result) == 2:
                 data, report_url = result
-                table_html = data.to_html(index=False) if isinstance(data, pd.DataFrame) and not data.empty else "<p>No data found.</p>"
+                table_html = (
+                    data.to_html(index=False)
+                    if isinstance(data, pd.DataFrame) and not data.empty
+                    else "<p>No data found.</p>"
+                )
             else:
                 # Handle cases where no data is returned
                 data, report_url = None, None
@@ -593,6 +599,7 @@ def test():
         company_name=company_name,
         news_data=news_data,
     )
+
 
 @app.route("/progress/<socketid>", methods=["POST"])
 def progress(socketid):
