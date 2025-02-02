@@ -193,8 +193,9 @@ def merge_rows_with_headers(cleaned_rows, headers):
     max_len = max(len(row) for row in cleaned_rows)
     # Adjust each row to match the length of the header, filling missing values with NaN
     adjusted_rows = [row + [np.nan] * (max_len - len(row)) for row in cleaned_rows]
+    while len(headers) > max_len:
+        headers.pop()  # Remove the last header until alignment is achieved
 
-    # Ensure all rows are aligned to the headers length
     return pd.DataFrame(adjusted_rows, columns=headers)
 
 
