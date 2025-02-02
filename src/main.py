@@ -567,31 +567,20 @@ def test():
     news_data = []
 
     if request.method == "POST":
-        company_name = request.form.get("company_name")  # get the text input
+        company_name = request.form.get("company_name")  # Get the text input
         parser = TableParsers.DOCLING
-
-        # NEW: get the radio button value (defaults to 'name' if none chosen)
         selected_id_type = request.form.get("idType", "name")
 
         if company_name:
-            # Pass user's choice of 'name', 'ticker', or 'isin'
-            data, report_url = get_emissions_data(
-                company_name, idType=selected_id_type, parser=parser
-            )
+            result = get_emissions_data(company_name, idType=selected_id_type, parser=parser)
 
-            if isinstance(data, pd.DataFrame):
-                table_html = data.to_html()
-
-            # esg_reports = ESGReports(CompanyProfile(company_name, selected_id_type))
-            # print(f"DEBUG: ESGReports URLs -> {esg_reports.urls}")  # Debugging
-
-            # # Extract the first available report URL
-            # if esg_reports.urls:
-            #     report_url = next(
-            #         iter(esg_reports.urls.values())
-            #     )  # Get first URL dynamically
-
-            # print(f"DEBUG: Selected Report URL -> {report_url}")
+            if isinstance(result, tuple) and len(result) == 2:
+                data, report_url = result
+                table_html = data.to_html() if isinstance(data, pd.DataFrame) and not data.empty else "<p>No data found.</p>"
+            else:
+                # Handle cases where no data is returned
+                data, report_url = None, None
+                table_html = "<p>No data found.</p>"
 
     news_data = get_news(company_name)
 
@@ -602,6 +591,7 @@ def test():
         company_name=company_name,
         news_data=news_data,
     )
+
 
 
 @app.route("/progress/<socketid>", methods=["POST"])
