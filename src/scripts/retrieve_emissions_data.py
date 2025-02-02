@@ -152,7 +152,7 @@ def get_emissions_data(identifier, idType, parser):
                 filtered_pdf_path=pdf_path,
                 output_path=esg_reports.output_path,
             )
-            extractor.process_company()
+            data = extractor.process_company()
     except Exception as e:
         logger.warning(f"Retrieveing via LlamaParse...: {e}")
 
@@ -166,13 +166,15 @@ def get_emissions_data(identifier, idType, parser):
             filtered_pdf_path=pdf_path,
             output_path=esg_reports.output_path,
         )
-        extractor.process_company()
+        data = extractor.process_company()
+
+    return data
 
 
 if __name__ == "__main__":
     start = time.time()
 
-    identifier = "US5949181045"
+    identifier = "IE00B4BNMY34"
     idType = "isin"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)

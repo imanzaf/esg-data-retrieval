@@ -41,7 +41,8 @@ class LlamaExtractor(BaseModel):
         output_path = f"{self.output_path}/esg_data.csv"
         logger.info("Writing to CSV...")
         # 5) Update CSV with extracted data
-        self.update_csv(self.company_name, emissions_data, output_path)
+        df = self.update_csv(self.company_name, emissions_data, output_path)
+        return df
 
     # Actually runs the LlamaParse logic on the relevant pages,
     # and merges JSON blocks to find the best data
@@ -152,50 +153,57 @@ class LlamaExtractor(BaseModel):
 
     # Appends emissions data (company, year, scope1_value, scope1_unit, scope2_location_value, scope2_location_unit, scope2_market_value, scope2_market_unit) to CSV
     def update_csv(self, company_name: str, emissions_data: dict, csv_path: str):
-
-        s1_dict = emissions_data.get("scope1", {})
-        s2m_dict = emissions_data.get("scope2_market", {})
-        s2l_dict = emissions_data.get("scope2_location", {}) or {}
-
-        standard_df = pd.DataFrame()
-        standard_df["Metric"] = [
-            "Scope 1",
-            "Scope 2 (market-based)",
-            "Scope 2 (location-based)",
-        ]
-        # Gather all years
-        all_years = set(s1_dict.keys()) | set(s2m_dict.keys()) | set(s2l_dict.keys())
-        logger.info(all_years)
-        # Crete empty dataframe with columns metric, all years units
-        for year in sorted(all_years):
-            s1 = s1_dict.get(year, [None, None])
-            s2m = s2m_dict.get(year, [None, None])
-            s2l = s2l_dict.get(year, [None, None])
-
-            # Ensure each is [val, unit]
-            if not isinstance(s1, list) or len(s1) != 2:
-                s1 = [None, None]
-            if not isinstance(s2m, list) or len(s2m) != 2:
-                s2m = [None, None]
-            if not isinstance(s2l, list) or len(s2l) != 2:
-                s2l = [None, None]
-
-            standard_df[year] = [s1[0], s2m[0], s2l[0]]
-
         try:
-            standard_df["Units"] = [
-                (s1_dict.get(max(all_years)))[1],
-                s2m_dict.get(max(all_years))[1],
-                s2l_dict.get(max(all_years))[1],
-            ]
-        except Exception:
-            if s1_dict.get(max(all_years))[1] is not None:
-                standard_df["Units"] = s1_dict.get(max(all_years))[1]
-            else:
-                standard_df["Units"] = None
-        standard_df.to_csv(csv_path, index=False)
+            s1_dict = emissions_data.get("scope1", {})
+            s2m_dict = emissions_data.get("scope2_market", {})
+            s2l_dict = emissions_data.get("scope2_location", {}) or {}
 
-        logger.info(f"Appended new results to {csv_path}")
+            standard_df = pd.DataFrame()
+            standard_df["Metric"] = [
+                "Scope 1",
+                "Scope 2 (market-based)",
+                "Scope 2 (location-based)",
+            ]
+            # Gather all years
+            all_years = (
+                set(s1_dict.keys()) | set(s2m_dict.keys()) | set(s2l_dict.keys())
+            )
+            logger.info(all_years)
+            # Crete empty dataframe with columns metric, all years units
+            for year in sorted(all_years):
+                s1 = s1_dict.get(year, [None, None])
+                s2m = s2m_dict.get(year, [None, None])
+                s2l = s2l_dict.get(year, [None, None])
+
+                # Ensure each is [val, unit]
+                if not isinstance(s1, list) or len(s1) != 2:
+                    s1 = [None, None]
+                if not isinstance(s2m, list) or len(s2m) != 2:
+                    s2m = [None, None]
+                if not isinstance(s2l, list) or len(s2l) != 2:
+                    s2l = [None, None]
+
+                standard_df[year] = [s1[0], s2m[0], s2l[0]]
+
+            try:
+                standard_df["Units"] = [
+                    (s1_dict.get(max(all_years)))[1],
+                    s2m_dict.get(max(all_years))[1],
+                    s2l_dict.get(max(all_years))[1],
+                ]
+            except Exception:
+                if s1_dict.get(max(all_years))[1] is not None:
+                    standard_df["Units"] = s1_dict.get(max(all_years))[1]
+                else:
+                    standard_df["Units"] = None
+            standard_df.to_csv(csv_path, index=False)
+
+            logger.info(f"Appended new results to {csv_path}")
+
+            return standard_df
+        except Exception:
+            logger.info("Error parsing with LlamaParse. Returning empty dataframe.")
+            return pd.DataFrame()
 
 
 # Main script entry point
