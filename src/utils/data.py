@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 import urllib
@@ -51,7 +52,7 @@ def get_msci_index_df(write=False):
     df_filtered = df_filtered[["Ticker", "Name"]]
     return df_filtered
 
-
+logger = logging.getLogger(__name__)
 def download_pdf_from_urls(urls: List[str], root_path: str):
     """
     Function to download a PDF file from a URL. Breaks on the first successful download.
@@ -67,7 +68,8 @@ def download_pdf_from_urls(urls: List[str], root_path: str):
                 if not url.endswith(".pdf")
                 else os.path.basename(url)
             )
-            urllib.request.urlretrieve(url, os.path.join(root_path, pdf_file_name))
+            with urllib.request.urlopen(url, timeout=10):
+                urllib.request.urlretrieve(url, os.path.join(root_path, pdf_file_name))
             return os.path.join(root_path, pdf_file_name)
         except Exception as e:
             logger.error(f"Uh oh! Could not download {url}: {e}")
