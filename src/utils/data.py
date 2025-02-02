@@ -1,4 +1,3 @@
-import logging
 import os
 import sys
 import urllib
@@ -52,7 +51,7 @@ def get_msci_index_df(write=False):
     df_filtered = df_filtered[["Ticker", "Name"]]
     return df_filtered
 
-logger = logging.getLogger(__name__)
+
 def download_pdf_from_urls(urls: List[str], root_path: str):
     """
     Function to download a PDF file from a URL. Breaks on the first successful download.
