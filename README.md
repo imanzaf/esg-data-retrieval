@@ -1,7 +1,6 @@
 # Introduction to Financial Markets (IFTE0001)
 
-**Intro:** 
-
+**Intro:** This project introduces a dynamic and scalable solution to retrieve real-time Scope 1 and Scope 2 emissions data for any registered company using various web scraping and data retrieval techniques. The goal of this prototype is to provide a low-cost emissions tracking and reporting infrastructure, making data retrieval faster and more accessible for investors and portfolio managers looking to incorporate ESG factors into their financial decision making. The product aims to overcome the limitations and challenges concerning the current  ESG reporting ecosystem and contribute to the effective management of climate related risk.
 
 **Contributors:** [Iman Zafar](iman.zafar.24@ucl.ac.uk), [Balazs Bellus](balazs.bellus.24@ucl.ac.uk), [Esther Agossa](esther.agossa.24@ucl.ac.uk), [Saif Alarifi](saif.alarifi.24@ucl.ac.uk), [Aadhira Chavan](aadhira.chavan.24@ucl.ac.uk), [Neil Andreson](neil.anderson.24@ucl.ac.uk), [Kaitlinn Boisse](kaitlinn.boisse.24@ucl.ac.uk)
 
