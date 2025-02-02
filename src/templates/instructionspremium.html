@@ -31,28 +31,41 @@
       }
 
 
-      .div1 {
-       z-index: 10; /* Ensures it appears above other elements */
-       position: relative; /* Required for z-index to work */
-          height: 160px;
-          width: 100%; /* Ensure it takes full width */
-          margin: 0;
-          background-color: #063800;
-          display: flex;
-          align-items: center; /* Centers vertically */
-          justify-content: center; /* Centers horizontally */
-          box-shadow: 0px 4px 15px rgba(20, 80, 20, 0.6);
-      }
-      .catchy-phrase {
-       z-index: 10;
-       position: absolute;
-       top: 120px;
-       transform: translate(-50%, -50%);
-       left: 50%;
-       color: white;
-       font-size: 20px;
+
+      .logo-header-container {
+   z-index: 10;
+   position: relative;
+   height: 160px;
+   width: 100%;
+   background-color: #063800;
+   display: flex;
+   align-items: center; /* Align items vertically */
+   justify-content: center; /* Center items horizontally */
+   gap: 20px; /* Add spacing between logo and text */
+   box-shadow: 0px 4px 15px rgba(20, 80, 20, 0.6);
+   text-align: center;
 }
 
+
+.logo {
+   max-height: 100px;
+   width: auto;
+}
+
+
+.div1 {
+   display: flex;
+   flex-direction: column; /* Stack heading and phrase */
+   align-items: center;
+   justify-content: center;
+}
+
+
+.catchy-phrase {
+   color: white;
+   font-size: 20px;
+   margin-top: 5px; /* Adjust spacing between header and phrase */
+}
 
 
 
@@ -474,14 +487,6 @@
         }
 
 
-        .logo {
-               z-index: 20;
-           max-height: 100px; /* Adjusts within the header */
-           width: auto; /* Maintains aspect ratio */
-           position: absolute;
-           top: 30px; /* Aligns with the hamburger icon */
-           left: 500px; /* Pushes it to the right of the hamburger icon */
-        }
         .padding-for-info {
            max-width: 1100px; /* Limits width for readability */
            padding: 0 40px; /* Left & right padding */
@@ -498,11 +503,13 @@
 
 </head>
 <body>
-   <div class="div1">
-       <h1 style="color:white; text-align:center;"> EmissiTrack</h1>
-      </div>
-      <div class="catchy-phrase"> Instructions </div>
-  <img src="{{ url_for('static', filename='images/missiTrack.png') }}" alt="Logo" class="logo">
+    <div class="logo-header-container">
+        <img src="{{ url_for('static', filename='images/missiTrack.png') }}" alt="Logo" class="logo">
+        <div class="div1">
+            <h1 style="color:white; text-align:center;"> EmissiTrack</h1>
+            <p class="catchy-phrase">Instructions</p>
+        </div>
+    </div>
       <div class="hamburger-icon">&#9776;</div>
       <ul class="navigation">
        <li class="active">
