@@ -20,6 +20,11 @@ To set up a local instance of the app, follow these instructions carefully to en
   ```
   This will install all the required packages listed in the `requirements.txt` file, ensuring that your app has all the necessary libraries to run smoothly.
 
+  Note: If you are running using GPU resources, run the additional command below to install a compatible version of faiss
+  ```bash
+  pip install faiss-gpu
+  ``` 
+
 - **Environment Variables:** Create a `.env` file in the root directory of the project. This file will store sensitive information such as API keys and other configuration settings. You can use the `.env.template` file as a starting point and fill in the necessary values.
 
 ### Invoking the App
