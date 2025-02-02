@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "IE00BLP1HW54",
+        "idType": "isin",
+        "isin": "IE00BLP1HW54",
+        "name": "AON PLC-CLASS A",
+        "ticker": "AON",
+        "description": "AON",
+        "output_path": "/Users/iman/Desktop/UCL 2024:26/IFTE0001-IntroToFM/esg-data-retrieval/data/cache/AON_PLC-CLASS_A"
+    },
+    "esg_reports": {
+        "0": "https://www.aon.com/getmedia/0329134d-3079-4fed-a1e9-ea5ce7b7c33b/aon-2022-esg-impact-report.pdf",
+        "1": "https://www.ferroglobe.com/static-files/10d53df2-fa0f-45fa-94b6-263dcafaabbd",
+        "2": "https://www.aon.com/getmedia/cfa3db10-a84c-4add-b5a5-c03eb26c9cd8/Aon-In-Sight-November-2024.pdf",
+        "3": "https://filecache.investorroom.com/mr5ir_aon/595/Q3%202024%20Aon%20plc.pdf",
+        "4": "https://assets.aon.com/-/media/files/aon/capabilities/pensions-retirement/pep-annual-report.pdf"
+    }
+}

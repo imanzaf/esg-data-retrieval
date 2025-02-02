@@ -572,11 +572,17 @@ def test():
         selected_id_type = request.form.get("idType", "name")
 
         if company_name:
-            result = get_emissions_data(company_name, idType=selected_id_type, parser=parser)
+            result = get_emissions_data(
+                company_name, idType=selected_id_type, parser=parser
+            )
 
             if isinstance(result, tuple) and len(result) == 2:
                 data, report_url = result
-                table_html = data.to_html() if isinstance(data, pd.DataFrame) and not data.empty else "<p>No data found.</p>"
+                table_html = (
+                    data.to_html()
+                    if isinstance(data, pd.DataFrame) and not data.empty
+                    else "<p>No data found.</p>"
+                )
             else:
                 # Handle cases where no data is returned
                 data, report_url = None, None
@@ -591,7 +597,6 @@ def test():
         company_name=company_name,
         news_data=news_data,
     )
-
 
 
 @app.route("/progress/<socketid>", methods=["POST"])

@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "TW0002357001",
+        "idType": "isin",
+        "isin": "TW0002357001",
+        "name": "ASUSTEK COMPUTER INC",
+        "ticker": "2357",
+        "description": "2357",
+        "output_path": "/Users/iman/Desktop/UCL 2024:26/IFTE0001-IntroToFM/esg-data-retrieval/data/cache/ASUSTEK_COMPUTER_INC"
+    },
+    "esg_reports": {
+        "0": "https://esg.asus.com/files/reports/ASUS_Detailed_2022_EN.pdf",
+        "1": "https://esg.asus.com/files/reports/ASUS_Detailed_2023_EN.pdf",
+        "2": "https://esg.asus.com/english/file/ASUS_Executive_2021_EN.pdf",
+        "3": "https://investor.lenovo.com/en/sustainability/reports/FY2023-lenovo-sustainability-report.pdf",
+        "4": "https://csrreportbuilder.intel.com/pdfbuilder/pdfs/CSR-2023-24-Full-Report.pdf"
+    }
+}
