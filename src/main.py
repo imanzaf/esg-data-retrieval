@@ -332,7 +332,7 @@ def download_table():
     if not company_name:
         return "Company name is required!", 400
 
-    data = get_emissions_data(company_name, idType="name", parser=parser)
+    data, report_url = get_emissions_data(company_name, idType="name", parser=parser)
 
     if not isinstance(data, pd.DataFrame) or data.empty:
         return "No data available for download.", 404
@@ -528,9 +528,13 @@ def submit():
     if selected_company:
         try:
             parser = TableParsers.DOCLING
-            emissions_data = get_emissions_data(
+            emissions_data, report_url = get_emissions_data(
                 selected_company, idType="name", parser=parser
             )
+
+        except Exception as e:
+            print(f"Error retrieving emissions data for {selected_company}: {e}")
+            emissions_data = None
 
             esg_reports = ESGReports(CompanyProfile(selected_company, idType="name"))
             print(f"DEBUG: ESGReports URLs -> {esg_reports.urls}")  # Debugging
@@ -542,9 +546,6 @@ def submit():
                 )  # Get first URL dynamically
 
             print(f"DEBUG: Selected Report URL -> {report_url}")
-        except Exception as e:
-            print(f"Error retrieving emissions data for {selected_company}: {e}")
-            emissions_data = None
 
     return render_template(
         "advanced_search.html",
@@ -574,23 +575,23 @@ def test():
 
         if company_name:
             # Pass user's choice of 'name', 'ticker', or 'isin'
-            data = get_emissions_data(
+            data, report_url = get_emissions_data(
                 company_name, idType=selected_id_type, parser=parser
             )
 
             if isinstance(data, pd.DataFrame):
                 table_html = data.to_html()
 
-            esg_reports = ESGReports(CompanyProfile(company_name, selected_id_type))
-            print(f"DEBUG: ESGReports URLs -> {esg_reports.urls}")  # Debugging
+            # esg_reports = ESGReports(CompanyProfile(company_name, selected_id_type))
+            # print(f"DEBUG: ESGReports URLs -> {esg_reports.urls}")  # Debugging
 
-            # Extract the first available report URL
-            if esg_reports.urls:
-                report_url = next(
-                    iter(esg_reports.urls.values())
-                )  # Get first URL dynamically
+            # # Extract the first available report URL
+            # if esg_reports.urls:
+            #     report_url = next(
+            #         iter(esg_reports.urls.values())
+            #     )  # Get first URL dynamically
 
-            print(f"DEBUG: Selected Report URL -> {report_url}")
+            # print(f"DEBUG: Selected Report URL -> {report_url}")
 
     news_data = get_news(company_name)
 
