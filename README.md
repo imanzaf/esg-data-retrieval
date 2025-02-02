@@ -40,3 +40,5 @@ To set up a local instance of the app, follow these instructions carefully to en
   ```bash
   python src/main.py
   ```
+
+3. Open the application using [this link.](http://127.0.0.1:5000/firstpage)
