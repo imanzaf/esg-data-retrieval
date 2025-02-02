@@ -555,7 +555,9 @@ def submit():
         industries=unique_industries,
         selected_company=selected_company,
         report_url=report_url,
-        emissions_data=emissions_data.to_html() if emissions_data is not None else None,
+        emissions_data=(
+            emissions_data.to_html(index=False) if emissions_data is not None else None
+        ),
     )
 
 
@@ -579,7 +581,7 @@ def test():
             if isinstance(result, tuple) and len(result) == 2:
                 data, report_url = result
                 table_html = (
-                    data.to_html()
+                    data.to_html(index=False)
                     if isinstance(data, pd.DataFrame) and not data.empty
                     else "<p>No data found.</p>"
                 )

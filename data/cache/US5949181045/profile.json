@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "US5949181045",
+        "idType": "name",
+        "isin": null,
+        "name": "US5949181045",
+        "ticker": null,
+        "description": null,
+        "output_path": "/Users/iman/Desktop/UCL 2024:26/IFTE0001-IntroToFM/esg-data-retrieval/data/cache/US5949181045"
+    },
+    "esg_reports": {
+        "0": "https://prod-epi.lgim.com/landg-assets/lgim/_document-library/esg/engagement-report-q4-2023.pdf",
+        "1": "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE2EWBx",
+        "2": "https://www.quoniam.com/wp-content/uploads/2023/06/2022_Engagement-ReportDE_Quoniam_Funds_Selection_SICAV.pdf",
+        "3": "https://bankone.mu/wp-content/files/2025/01/Newsletter-14.01.2025.pdf",
+        "4": "https://www.pancretabank.gr/media/m2sddghr/incometric-semi-annual-report-00000000-0000-2023-06-30-sr-en-0000_http-nio-8080-exec-11062108234023427.pdf"
+    }
+}
