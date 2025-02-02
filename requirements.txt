@@ -31,3 +31,8 @@ langchain_community
 langchain_core
 pymupdf4llm
 langchain_openai
+
+sentence-transformers
+einops
+#faiss-gpu
+faiss-cpu
