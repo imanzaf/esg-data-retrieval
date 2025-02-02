@@ -662,7 +662,7 @@
 
    <!-- Left column: LLM data (tables) -->
    <div class="column">
-     <h2>GHG Emissions Tables 🌱</h2>
+     <h2>GHG Emissions Tables (tCO2e) 🌱</h2>
 
 
      <!-- Hidden raw markdown from the LLM -->
@@ -678,12 +678,12 @@
    <div class="column">
      <!-- Chart box above the chatbot -->
      <div class="chart-box">
-       <h3>Key Table Emissions Over Time</h3>
+       <h3>Emissions Over Time</h3>
        <canvas id="keyTableChart" width="300" height="200"></canvas>
      </div>
 
 
-     <h2>RAG Chatbot 🌍</h2>
+     <h2>Chatbot 🌍</h2>
      <div id="rag-status">Initializing RAG...</div>
 
 
@@ -776,7 +776,7 @@
 
      // 4) Build HTML tables
      let html = "";
-     html += "<h3>Key Table</h3>";
+     html += "<h3>Summary</h3>";
      html += buildHtmlTable(pivotedKey, "Category");
 
 
@@ -1007,7 +1007,6 @@
    });
 
 
-   /* ========== The same parse/render chart code as before ========== */
    function parseKeyTableFromMarkdown(md) {
      let lines = md.split('\n');
      let inKeyTable = false;

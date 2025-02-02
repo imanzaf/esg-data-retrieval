@@ -1,7 +1,6 @@
 # Introduction to Financial Markets (IFTE0001)
 
-**Intro:** 
-
+**Intro:** This prject introduces a dynamic and scalable end-to-end software solution that optimises carbon emissions data retrieval by reporting scope 1 and scope 2 emissions directly sourced from latest ESG reports. The goal of this prototype is to bring transparency and standardisation to ESG reporting by providing robust and low-cost emissions tracking infrastructure, making data retrieval faster and more accessible for investors and portfolio managers looking to incorporate ESG factors into financial decision making. The product aims to overcome the limitations and challenges concerning current ESG reporting ecosystems and contribute to effective climate-related risk management.
 
 **Contributors:** [Iman Zafar](iman.zafar.24@ucl.ac.uk), [Balazs Bellus](balazs.bellus.24@ucl.ac.uk), [Esther Agossa](esther.agossa.24@ucl.ac.uk), [Saif Alarifi](saif.alarifi.24@ucl.ac.uk), [Aadhira Chavan](aadhira.chavan.24@ucl.ac.uk), [Neil Andreson](neil.anderson.24@ucl.ac.uk), [Kaitlinn Boisse](kaitlinn.boisse.24@ucl.ac.uk)
 
