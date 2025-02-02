@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "US0605051046",
+        "idType": "isin",
+        "isin": "US0605051046",
+        "name": "BANK OF AMERICA CORP",
+        "ticker": "BAC",
+        "description": "BAC",
+        "output_path": "C:\\UCL Codes\\esg-data-retrieval\\data\\cache\\BANK_OF_AMERICA_CORP"
+    },
+    "esg_reports": {
+        "0": "https://about.bankofamerica.com/content/dam/about/pdfs/esg-themed-bond-report.pdf",
+        "1": "https://about.bankofamerica.com/content/dam/about/report-center/esg/2024/Sustainability_at_Bank_of_America_2024_Report.pdf",
+        "2": "http://www.bankofamerica.com/ESGData",
+        "3": "https://investor.bankofamerica.com/regulatory-and-other-filings/annual-reports/content/0000070858-24-000135/0000070858-24-000135.pdf",
+        "4": "https://investor.bankofamerica.com/regulatory-and-other-filings/all-sec-filings/content/0001193125-24-064529/0001193125-24-064529.pdf"
+    }
+}

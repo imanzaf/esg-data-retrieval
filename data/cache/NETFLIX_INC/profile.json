@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "US64110L1061",
+        "idType": "isin",
+        "isin": "US64110L1061",
+        "name": "NETFLIX INC",
+        "ticker": "NFLX",
+        "description": "NFLX",
+        "output_path": "C:\\UCL Codes\\esg-data-retrieval\\data\\cache\\NETFLIX_INC"
+    },
+    "esg_reports": {
+        "0": "https://downloads.ctfassets.net/4cd45et68cgf/7rnC6zK537cM8zAGrXA90E/3c654a2d0023a4dac26a20b2fff39855/Netflix_2022-ESG-Report-FINAL.pdf",
+        "1": "https://www.uwlax.edu/globalassets/academics/departments/finance/spellman/netflix-report.pdf",
+        "2": "https://www.responsibilityreports.com/HostedData/ResponsibilityReportArchive/n/NASDAQ_NFLX_2021.pdf",
+        "3": "http://q4live.s22.clientfiles.s3-website-us-east-1.amazonaws.com/959853165/files/doc_financials/2022/ar/netflix-inc-2023-proxy-statement.pdf",
+        "4": "https://www.hermes-investment.com/uploads/2023/12/2a388bae653f2c2d70cb6d5ada8663c5/eos-netflix-case-study-11-2023.pdf"
+    }
+}

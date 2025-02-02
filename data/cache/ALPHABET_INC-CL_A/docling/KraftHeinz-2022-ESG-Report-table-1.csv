@@ -1,0 +1,27 @@
+,Metric,Unit,2019,2020,2021,GRI,SASB,TCFD,Notes
+0,Environmental Stewardship,,,,,,,,
+1,Energy,,,,,,,,
+2,Goal metric: Reduction of energy use intensity using 2019 baseline,Percentage,Goal made in  2020,-2.2%,-5.1%,302-4,,Metrics and Targets (a),
+3,Goal metric: Percentage of electricity from renewable sources,Percentage,Goal made in  2020,Not reported,7.0%,302-1,,Metrics and Targets (a),
+4,Total energy use *,MWh,"5,102,921","4,945,251","4,809,802",302-1,FB-PF-130a.1,Metrics and Targets (a),
+5,Energy use intensity *,kWh per Metric Ton of  Product,654,628,621,302-3,,Metrics and Targets (a),
+6,Total purchased electricity,MWh,"1,565,580","1,546,046","1,497,450",302-1,FB-PF-130a.1,Metrics and Targets (a),
+7,Total purchased electricity generated onsite,MWh,Not reported,Not reported,"3,085",302-1,FB-PF-130a.1,Metrics and Targets (a),
+8,Total consumption of fuel (excluding feedstock),MWh,"3,262,568","3,285,281","3,189,915",302-1,FB-MP-110a.1,Metrics and Targets (b),
+9,Greenhouse Gas Emissions,,,,,,,,
+10,Gross scope 1 emissions*,Metric Tons CO2e,"634,916","605,606","586,455",305-1,FB-MP-110a.1,Metrics and Targets (b),
+11,Gross scope 2 emissions (location-based)*,Metric Tons CO2e,"712,674","694,907","645,247",305-2,FB-MP-110a.1,Metrics and Targets (b),
+12,Gross scope 2 emissions (market-based)*,Metric Tons CO2e,Not reported,"704,689","616,650",305-2,FB-MP-110a.1,Metrics and Targets (b),
+13,Outside of scopes (biogenic emissions),Metric Tons CO2e,"77,186","92,955","79,898",305-3,FB-MP-110a.1,Metrics and Targets (b),Emissions associated with biomass use at  select facilities
+14,Scope 1 & 2 intensity,Metric Tons CO2e per  Metric ton of product,0.17,0.16,0.16,305-4,FB-MP-110a.1,Metrics and Targets (b),
+15,Total scope 3 emissions*,Metric Tons CO2e,"23,277,493","25,026,531","43,940,811",305-3,,Metrics and Targets (b),2019 data was not  externally verified
+16,Category 1: Purchased goods and services*,Metric Tons CO2e,"18,282,750","18,537,494","36,341,444",305-3,,Metrics and Targets (b),2019 data was not  externally verified
+17,Category 2: Capital goods*,Metric Tons CO2e,"397,604","351,878","447,491",305-3,,Metrics and Targets (b),2019 data was not  externally verified
+18,Category 3: Fuel and energy-related activities*,Metric Tons CO2e,"717,229","711,945","680,325",305-3,,Metrics and Targets (b),2019 data was not  externally verified
+19,Category 4: Upstream transportation and distribution*,Metric Tons CO2e,"1,366,415","1,748,423","1,587,200",305-3,,Metrics and Targets (b),2019 data was not  externally verified
+20,Category 5: Waste generated in operations*,Metric Tons CO2e,"52,066","55,658","35,961",305-3,,Metrics and Targets (b),2019 data was not  externally verified
+21,Category 6: Business travel*,Metric Tons CO2e,"18,988","4,383","3,324",305-3,,Metrics and Targets (b),2019 data was not  externally verified
+22,Category 7: Employee commuting*,Metric Tons CO2e,"105,897","93,618","82,101",305-3,,Metrics and Targets (b),2019 data was not  externally verified
+23,Category 9: Downstream transportation and distribution*,Metric Tons CO2e,"1,307,392","1,339,067","1,459,452",305-3,,Metrics and Targets (b),2019 data was not  externally verified
+24,Category 11: Use of sold products*,Metric Tons CO2e,Not Reported,"1,102,744","1,090,765",305-3,,Metrics and Targets (b),2019 data was not  externally verified
+25,Category 12: End of life treatment of sold products*,Metric Tons CO2e,"1,029,152","1,081,321","2,212,748",305-3,,Metrics and Targets (b),2019 data was not  externally verified

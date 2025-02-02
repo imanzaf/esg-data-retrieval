@@ -6,7 +6,7 @@
         "name": "AMAZON.COM INC",
         "ticker": "AMZN",
         "description": "AMZN",
-        "output_path": "/workspaces/esg-data-retrieval/data/cache/AMAZON.COM_INC"
+        "output_path": "C:\\UCL Codes\\esg-data-retrieval\\data\\cache\\AMAZON.COM_INC"
     },
     "esg_reports": {
         "0": "https://sustainability.aboutamazon.com/2023-amazon-sustainability-report.pdf",
