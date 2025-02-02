@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import time
@@ -68,6 +69,7 @@ def get_emissions_data(identifier, idType, parser):
 
         else:
             # For other idTypes, check the standard company output path
+            folder_path = company.output_path
             esg_file_path = os.path.join(company.output_path, "esg_data.csv")
 
         # If the ESG file exists and is recent, load it
@@ -75,10 +77,28 @@ def get_emissions_data(identifier, idType, parser):
             if is_recent_file(esg_file_path):
                 try:
                     data = pd.read_csv(esg_file_path)
+                    logger.info(f"data for company: {data}")
                     logger.info(
                         f"Loaded ESG data from {esg_file_path} for company {company.name}"
                     )
-                    return data
+                    profile_path = os.path.join(folder_path, "profile.json")
+
+                    # get report path
+                    if os.path.exists(profile_path):
+                        with open(os.path.join(folder_path, "profile.json")) as f:
+                            profile = json.load(f)
+                        logger.info(f"Loaded profile for {company.name}")
+                        report = next(
+                            iter(profile.get("esg_reports").values())
+                        )  # Get first URL dynamically
+                        # report = list(profile.get("esg_reports").values())[0]
+                    else:
+                        esg_reports = ESGReports(company)
+                        report = next(iter(esg_reports.urls.values()))
+                        # report = list(esg_reports.urls.values())[0]
+
+                    logger.info(f"loaded data: {data} {report}")
+                    return data, report
                 except Exception as e:
                     logger.error(f"Error reading ESG data from {esg_file_path}: {e}")
             else:
@@ -89,15 +109,15 @@ def get_emissions_data(identifier, idType, parser):
         logger.info(f"No recent cached data found for {company.name}")
 
         # Load fresh data
-        esg_file_path = os.path.join(company.output_path, "esg_data.csv")
-        if is_recent_file(esg_file_path):
-            if os.path.exists(esg_file_path):
-                try:
-                    data = pd.read_csv(esg_file_path)
-                    logger.info(f"Loaded ESG data for {company.name}")
-                    return data
-                except Exception as e:
-                    logger.error(f" {esg_file_path}: {e}")
+        # esg_file_path = os.path.join(company.output_path, "esg_data.csv")
+        # if is_recent_file(esg_file_path):
+        #     if os.path.exists(esg_file_path):
+        #         try:
+        #             data = pd.read_csv(esg_file_path)
+        #             logger.info(f"Loaded ESG data for {company.name}")
+        #             return data
+        #         except Exception as e:
+        #             logger.error(f" {esg_file_path}: {e}")
 
     except Exception:
         logger.warning(
@@ -141,18 +161,24 @@ def get_emissions_data(identifier, idType, parser):
         data = data_filter.filtered_df
         data.to_csv(os.path.join(esg_reports.output_path, "esg_data.csv"))
         # get filtered pdf path
+
         for file in os.listdir(esg_reports.output_path):
             if file.endswith("filtered.pdf"):
                 pdf_path = os.path.join(esg_reports.output_path, file)
+            else:
+                pdf_path = None
+
         # if any column is completely null, run llama parse instead
         if any([all(data[col].isna()) for col in data.columns]) or data is None:
             logger.info("Retrieving via LlamaParse...")
+            if pdf_path is None:
+                return pd.DataFrame()
             extractor = LlamaExtractor(
                 company_name=company.name,
                 filtered_pdf_path=pdf_path,
                 output_path=esg_reports.output_path,
             )
-            extractor.process_company()
+            data = extractor.process_company()
     except Exception as e:
         logger.warning(f"Retrieveing via LlamaParse...: {e}")
 
@@ -160,19 +186,25 @@ def get_emissions_data(identifier, idType, parser):
             logger.info(file)
             if file.endswith("filtered.pdf"):
                 pdf_path = os.path.join(esg_reports.output_path, file)
-
+            else:
+                pdf_path = None
+        if pdf_path is None:
+            return pd.DataFrame()
         extractor = LlamaExtractor(
             company_name=company.name,
             filtered_pdf_path=pdf_path,
             output_path=esg_reports.output_path,
         )
-        extractor.process_company()
+        data = extractor.process_company()
+
+    top_report = list(esg_reports.urls.values())[0]
+    return data, top_report
 
 
 if __name__ == "__main__":
     start = time.time()
 
-    identifier = "US5949181045"
+    identifier = "US88160R1014"
     idType = "isin"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)

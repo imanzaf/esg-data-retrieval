@@ -1,0 +1,7 @@
+,Metric,2020,2021,2022,2023,Units
+0,Scope 1,0.8,0.7,0.7,0.7,Inferred: CO₂e per FTE
+1,Scope 2 (location-based),30.3,29.8,32.2,38.1,Inferred: MT CO₂e
+2,Scope 2 (market-based),3.2,2.6,1.5,1.9,Inferred: CO₂e per FTE
+3,Scope 1,"118,100","123,704","139,413","144,960",Inferred: MT CO₂e
+7,Subtotal emissions (Scope 1 + 2 market-based),"574,219","553,109","427,442","538,094",Inferred: MT CO₂e
+8,Scope 1 + 2 1,"574,219","553,109","427,442","538,094",Inferred: MT CO₂e
