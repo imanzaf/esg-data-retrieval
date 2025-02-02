@@ -555,7 +555,7 @@ def submit():
         industries=unique_industries,
         selected_company=selected_company,
         report_url=report_url,
-        emissions_data=emissions_data.to_html() if emissions_data is not None else None,
+        emissions_data=emissions_data.to_html(index=False) if emissions_data is not None else None,
     )
 
 
@@ -578,11 +578,7 @@ def test():
 
             if isinstance(result, tuple) and len(result) == 2:
                 data, report_url = result
-                table_html = (
-                    data.to_html()
-                    if isinstance(data, pd.DataFrame) and not data.empty
-                    else "<p>No data found.</p>"
-                )
+                table_html = data.to_html(index=False) if isinstance(data, pd.DataFrame) and not data.empty else "<p>No data found.</p>"
             else:
                 # Handle cases where no data is returned
                 data, report_url = None, None
@@ -598,6 +594,38 @@ def test():
         news_data=news_data,
     )
 
+@app.route("/test1", methods=["GET", "POST"])
+def test1():
+    table_html = ""
+    report_url = None
+    company_name = ""
+    news_data = []
+
+    if request.method == "POST":
+        company_name = request.form.get("company_name")  # Get the text input
+        parser = TableParsers.DOCLING
+        selected_id_type = request.form.get("idType", "name")
+
+        if company_name:
+            result = get_emissions_data(company_name, idType=selected_id_type, parser=parser)
+
+            if isinstance(result, tuple) and len(result) == 2:
+                data, report_url = result
+                table_html = data.to_html(index=False) if isinstance(data, pd.DataFrame) and not data.empty else "<p>No data found.</p>"
+            else:
+                # Handle cases where no data is returned
+                data, report_url = None, None
+                table_html = "<p>No data found.</p>"
+
+    news_data = get_news(company_name)
+
+    return render_template(
+        "test1.html",
+        table_html=table_html,
+        report_url=report_url,
+        company_name=company_name,
+        news_data=news_data,
+    )
 
 @app.route("/progress/<socketid>", methods=["POST"])
 def progress(socketid):
