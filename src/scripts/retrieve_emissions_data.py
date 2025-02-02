@@ -188,13 +188,16 @@ def get_emissions_data(identifier, idType, parser):
                 pdf_path = os.path.join(esg_reports.output_path, file)
             else:
                 pdf_path = None
+        logger.info(f"pdf path: {pdf_path}")
         if pdf_path is None:
             return pd.DataFrame()
         extractor = LlamaExtractor(
             company_name=company.name,
             filtered_pdf_path=pdf_path,
             output_path=esg_reports.output_path,
+
         )
+
         data = extractor.process_company()
 
     top_report = list(esg_reports.urls.values())[0]
@@ -204,7 +207,7 @@ def get_emissions_data(identifier, idType, parser):
 if __name__ == "__main__":
     start = time.time()
 
-    identifier = "US88160R1014"
+    identifier = "US02079K3059"
     idType = "isin"
     parser = TableParsers.DOCLING
     data = get_emissions_data(identifier, idType, parser)

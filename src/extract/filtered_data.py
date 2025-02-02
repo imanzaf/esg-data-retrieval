@@ -57,7 +57,25 @@ class Filter(BaseModel):
 
     def extract_filtered_df(self):
         docling_tables = self._load_dfs()
-        dfs = self._append_units_column(docling_tables)
+        #Perform Date Check
+        updated_docling_tables = []
+        for docling_table in docling_tables:
+            date_columns = [col for col in docling_table.columns if re.search(self.regex_date, str(col))]
+
+            if not date_columns:
+                # If no date columns in headers, check the first row
+                first_row = docling_table.iloc[0].astype(str)  # Convert first row to string for regex matching
+                first_row_dates = [col for col in first_row if re.search(self.regex_date, col)]
+
+                if first_row_dates:
+                    # Drop the current header and set the first row as the new header
+                    docling_table = docling_table.iloc[1:].reset_index(drop=True)
+                    docling_table.columns = first_row
+                    updated_docling_tables.append(docling_table)
+        if updated_docling_tables:
+            dfs = self._append_units_column(updated_docling_tables)
+        else:
+            dfs = self._append_units_column(docling_tables)
         filtered_dfs = self._filter_data_v2(dfs)
         # dfs_to_concat = [df for df in filtered_dfs if df is not None]
         # filtered_dfs = self._filter_for_scope(dfs)
@@ -120,6 +138,7 @@ class Filter(BaseModel):
                 date_columns = [
                     col for col in df.columns if re.search(self.regex_date, str(col))
                 ]
+
                 if not date_columns:
                     print(
                         f"Skipping file {idx} as it has no date-related columns in the header."
@@ -245,7 +264,7 @@ class Filter(BaseModel):
 if __name__ == "__main__":
     ROOT_DIR = os.getenv("ROOT_OUTPUT_PATH")
     filter_obj = Filter(
-        directory_path=os.path.join(ROOT_DIR, "META_PLATFORMS_INC-CLASS_A"),
+        directory_path=os.path.join(ROOT_DIR, "APPLE_INC"),
         parser=TableParsers.DOCLING,
     )
     filter_obj.extract_filtered_df()
