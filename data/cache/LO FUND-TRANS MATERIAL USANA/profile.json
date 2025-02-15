@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "LU0640921382",
+        "idType": "isin",
+        "isin": "LU0640921382",
+        "name": "LO FUND-TRANS MATERIAL USANA",
+        "ticker": "LOCMUIA",
+        "description": "LOCMUIA",
+        "output_path": "C:\\UCL Codes\\esg-data-retrieval\\data\\cache\\LO_FUND-TRANS_MATERIAL_USANA"
+    },
+    "esg_reports": {
+        "0": "lombardodier.com/files/live/sites/loportail/files/csr/doc/SustainabilityReport_EN2022.pdf",
+        "1": "https://www.calpers.ca.gov/sites/default/files/spf/docs/forms-publications/annual-investment-report-2015.pdf",
+        "2": "https://slcairport.com/assets/pdfDocuments/EA/Final_SLC_EA_Aug2012.pdf",
+        "3": "https://www.sec.gov/Archives/edgar/vprr/1700/17002618.pdf",
+        "4": "https://www.sec.gov/Archives/edgar/vprr/1601/16019238.pdf"
+    }
+}
