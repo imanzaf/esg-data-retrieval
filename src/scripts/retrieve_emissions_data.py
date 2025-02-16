@@ -76,7 +76,9 @@ def get_emissions_data(identifier, idType, parser):
         if esg_file_path and os.path.exists(esg_file_path):
             if is_recent_file(esg_file_path):
                 try:
-                    data = pd.read_csv(esg_file_path, index_col=0)
+                    data = pd.read_csv(esg_file_path)
+                    if data.columns[0] == "Unnamed: 0":
+                        data = data.drop(columns=["Unnamed: 0"])
                     logger.info(f"data for company: {data}")
                     logger.info(
                         f"Loaded ESG data from {esg_file_path} for company {company.name}"
