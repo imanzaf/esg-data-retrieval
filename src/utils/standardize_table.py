@@ -1,6 +1,7 @@
 import os
 import re
-
+from datetime import datetime
+import re
 import dotenv
 import numpy as np
 import pandas as pd
@@ -31,6 +32,10 @@ def standardize_emissions_table(raw_data):
     financial_years = [
         year for year in renamed_columns.values() if re.match(r"\b20\d{2}\b", year)
     ]
+
+    current_year = datetime.now().year
+    # Remove projections
+    financial_years = [year for year in financial_years if int(year) <= current_year]
 
     # Define regex patterns for Scope 1, Scope 2 Market, and Scope 2 Location
     scope_1_pattern = r"scope\s*1"
@@ -141,6 +146,8 @@ def standardize_emissions_table(raw_data):
 
     # Drop rows where all values are NaN
     filtered_rows = filtered_rows.dropna(how="any")
+    # Drop columns where all values are NaN
+    filtered_rows = filtered_rows.dropna(how="all", axis=1)
     return filtered_rows
 
 

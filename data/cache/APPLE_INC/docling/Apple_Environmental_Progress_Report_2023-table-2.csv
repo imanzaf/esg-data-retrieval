@@ -1,0 +1,24 @@
+,Location.,Scope 1.Total gas  (MMBtu),Scope 1.Renewable biogas   (MMBtu),Scope 1.Scope 1 emissions  (metric tons CO2e)
+0,Corporate,"826,063","202,978","31,030"
+1,"Cupertino, CA","672,244","202,978","22,849"
+2,"Elk Grove, CA","13,782",-,732
+3,"Austin, TX","20,948",-,"1,113"
+4,Other U.S.,"67,362",-,"3,585"
+5,"Cork, Ireland","20,151",-,"1,070"
+6,Singapore,142,-,8
+7,China,686,-,37
+8,Other international,"30,748",-,"1,636"
+9,Data centers,"19,109","17,961",62
+10,"Maiden, NC","17,961","17,961",1
+11,"Mesa, AZ",312,-,17
+12,"Newark, CA",-,-,-
+13,"Prineville, OR",836,0,44
+14,"Reno, NV",-,-,-
+15,"Viborg, Denmark",N/A,N/A,N/A
+16,Colocation facilities (U.S.),N/A,N/A,N/A
+17,Colocation facilities (international),N/A,N/A,N/A
+18,China,N/A,N/A,N/A
+19,Retail stores,"58,720",0,"3,119"
+20,Domestic (U.S.),"36,005",-,"1,912"
+21,International,"22,716",-,"1,207"
+22,Total,"903,892","220,939","34,211"

@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "US5801351017",
+        "idType": "isin",
+        "isin": "US5801351017",
+        "name": "MCDONALD'S CORP",
+        "ticker": "MCD",
+        "description": "MCD",
+        "output_path": "C:\\UCL Codes\\esg-data-retrieval\\data\\cache\\MCDONALD'S_CORP"
+    },
+    "esg_reports": {
+        "0": "https://corporate.mcdonalds.com/content/dam/sites/corp/nfl/pdf/McDonalds_PurposeImpact_ProgressReport_2023_2024.pdf",
+        "1": "https://www.rsm.nl/fileadmin/Faculty-Research/Centres/EPSVC/Case_study_sustainable_finance_McDonalds.pdf",
+        "2": "https://corporate.mcdonalds.com/content/dam/sites/corp/nfl/pdf/McDonalds_PurposeImpact_ProgressReport_2020_2021.pdf",
+        "3": "https://corporate.mcdonalds.com/content/dam/sites/corp/nfl/pdf/2024%20Notice%20of%20Meeting%20and%20Proxy%20Statement_vf.pdf",
+        "4": "https://corporateaccountability.org/wp-content/uploads/2023/11/Black-Box-report-formatted_Plastics-section_2023.pdf"
+    }
+}
