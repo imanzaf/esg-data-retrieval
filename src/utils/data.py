@@ -67,7 +67,7 @@ def download_pdf_from_urls(urls: List[str], root_path: str):
                 if not url.endswith(".pdf")
                 else os.path.basename(url)
             )
-            with urllib.request.urlopen(url, timeout=10):
+            with urllib.request.urlopen(url, timeout=30):
                 urllib.request.urlretrieve(url, os.path.join(root_path, pdf_file_name))
             return os.path.join(root_path, pdf_file_name)
         except Exception as e:

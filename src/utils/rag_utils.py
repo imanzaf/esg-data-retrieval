@@ -15,6 +15,8 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.runnables import RunnableLambda, RunnablePassthrough
 from langchain_openai import ChatOpenAI
+from docling.document_converter import DocumentConverter, PdfFormatOption
+from docling.datamodel.pipeline_options import PdfPipelineOptions, TableFormerMode
 
 logger = logging.getLogger(__name__)
 
@@ -49,15 +51,41 @@ def _rag_cache_dir(pdf_path: str) -> str:
 
 
 def chunk_with_tables(pdf_path):
-    """Convert PDF to markdown with table preservation. Skips on error or stop event."""
+    """
+    Convert PDF to markdown with table preservation, then chunk into ~5k char segments.
+    
+    This function can either use:
+      - PyMuPDF + pymupdf4llm
+      - Docling (ACCURATE mode)
+    
+    Toggle by setting USE_DOCLING = True or False.
+    
+    """
     if stop_rag_event.is_set():
-        logger.info(
-            "Stop RAG event triggered before chunking. Exiting chunk_with_tables early."
-        )
+        logger.info("Stop RAG event triggered before chunking. Exiting early.")
         return []
 
+    # Toggle or comment out which parser to use:
+    USE_DOCLING = True  # Set to False to revert to pymupdf4llm
+    # USE_DOCLING = False
+
     try:
-        md_text = pymupdf4llm.to_markdown(pdf_path, write_images=False)
+        if USE_DOCLING:
+            pipeline_options = PdfPipelineOptions(
+                do_ocr=False,
+                do_table_structure=True,
+                table_structure_options={"mode": "accurate", "do_cell_matching": True}
+            )
+
+            converter = DocumentConverter(
+                format_options={"pdf": PdfFormatOption(pipeline_options=pipeline_options)}
+            )
+            result = converter.convert(pdf_path)
+            doc = result.document
+            md_text = doc.export_to_markdown()
+        else:
+            # PyMuPDF4LLM PARSER
+            md_text = pymupdf4llm.to_markdown(pdf_path, write_images=False)
     except Exception as e:
         logger.error(f"Cannot parse PDF text: {e}")
         return []
@@ -66,7 +94,7 @@ def chunk_with_tables(pdf_path):
         logger.info("Stop RAG event triggered after PDF->markdown. Exiting.")
         return []
 
-    splitter = MarkdownTextSplitter(chunk_size=5000, chunk_overlap=400)
+    splitter = MarkdownTextSplitter(chunk_size=10000, chunk_overlap=400)
     chunks = splitter.split_text(md_text)
 
     if stop_rag_event.is_set():
@@ -128,7 +156,7 @@ def build_rag_system(pdf_path):
                 vectorstore=vectorstore,
                 docstore=docstore,
                 id_key="doc_id",
-                search_kwargs={"k": 3},
+                search_kwargs={"k": 5},
             )
             logger.info("[RAG Cache] Successfully loaded RAG cache!")
             return retriever
@@ -152,14 +180,14 @@ def build_rag_system(pdf_path):
 
     summarize_prompt = ChatPromptTemplate.from_template(
         """
-Create a concise summary of this text chunk from a sustainability report
-optimized for retrieval purposes.
-Focus on:
-- Key numerical data and metrics
-- Table and figure descriptions
-- Technical terms and definitions
-Original text: {chunk}
-Summary:"""
+Create a tidied, summarized version of the following markdown chunk from a sustainability report for semantic retrieval.
+Exclude extraneous metadata such as page numbers, disclaimers, or footers.
+Keep all relevant content and data, including any numerical data with units and years, if present.
+
+Markdown chunk: {chunk}
+
+Summary:
+"""
     )
 
     # ===================================================================
@@ -235,7 +263,7 @@ Summary:"""
         vectorstore=vectorstore,
         docstore=docstore,
         id_key="doc_id",
-        search_kwargs={"k": 3},
+        search_kwargs={"k": 5},
     )
 
     return retriever
@@ -258,15 +286,15 @@ def build_final_system(pdf_path):
 
     prompt = ChatPromptTemplate.from_template(
         """
-Analyze this parsed text and poorly formatted markdown tables from a sustainability report:
+You are an expert sustainability report assistant. Analyze the following markdown text, including any poorly formatted tables:
 {context}
 
+Based on the provided context, answer the following question with a detailed and thorough response that includes all relevant information from the chunks. Create your own tables if needed:
+{input}
 
-Respond as a sustainability report assistant providing relevant information in detail.
-Create your own tables if applicable. If data is not available, say "Data not available".
+If data is not available, respond with data not available and do not make up any information.
 
-
-Question: {input}
+Write in British English.
 """
     )
 

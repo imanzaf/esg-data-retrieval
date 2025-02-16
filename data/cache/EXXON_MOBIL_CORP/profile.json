@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "US30231G1022",
+        "idType": "isin",
+        "isin": "US30231G1022",
+        "name": "EXXON MOBIL CORP",
+        "ticker": "XOM",
+        "description": "XOM",
+        "output_path": "/Users/neilanderson/Documents/GitHub/esg-data-retrieval/data/cache/EXXON_MOBIL_CORP"
+    },
+    "esg_reports": {
+        "0": "https://corporate.exxonmobil.com/-/media/global/files/sustainability-report/publication/sustainability-report.pdf",
+        "1": "https://www.majorityaction.us/s/CITB_FULLREPORT_2024PROXYSEASON_compressed.pdf",
+        "2": "https://corporate.exxonmobil.com/-/media/global/files/advancing-climate-solutions/2024/2024-advancing-climate-solutions-report.pdf",
+        "3": "https://investor.exxonmobil.com/sec-filings/all-sec-filings/content/0001193125-24-092545/0001193125-24-092545.pdf",
+        "4": "https://judiciary.house.gov/sites/evo-subsites/republicans-judiciary.house.gov/files/2024-12/2024-12-13-Sustainability-Shakedown-Report.pdf"
+    }
+}

@@ -18,10 +18,15 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
 
 
-def filter_tables(directory_path, parser):
+def filter_tables(directory_path, parser, company=None):
     """
     Gather all CSVs in directory_path/parser.value, convert them to markdown,
     send them to the LLM, store the LLM's markdown output, and return as a DataFrame.
+    
+    Args:
+        directory_path (str): Path to the directory containing parser subdirectories
+        parser (TableParsers): The parser enum value to use
+        company (CompanyProfile, optional): Company profile object containing metadata
     """
 
     # 1) Collect all CSVs into one markdown string
@@ -52,7 +57,7 @@ def filter_tables(directory_path, parser):
         return pd.DataFrame()
 
     # 2) Send markdown content to LLM
-    llm_output = _send_to_deepseek(combined_markdown)
+    llm_output = _send_to_deepseek(combined_markdown, company)
     if not llm_output:
         print("No response from LLM or an error occurred.")
         return pd.DataFrame()
@@ -67,7 +72,7 @@ def filter_tables(directory_path, parser):
     return pd.DataFrame({"LLM_Output": [llm_output]})
 
 
-def _send_to_deepseek(markdown_content: str) -> str | None:
+def _send_to_deepseek(markdown_content: str, company=None) -> str | None:
     """Sends markdown content to the LLM (either OpenAI or DeepSeek) for processing."""
     # ---------------------------------------------------------------------
     # To use OpenAI, uncomment the following block:
@@ -99,7 +104,7 @@ def _send_to_deepseek(markdown_content: str) -> str | None:
                     "role": "system",
                     "content": "You are a sustainability data extraction specialist. Return ONLY valid markdown tables.",
                 },
-                {"role": "user", "content": _build_llm_prompt(markdown_content)},
+                {"role": "user", "content": _build_llm_prompt(markdown_content, company)},
             ],
             temperature=1,
             max_tokens=4000,
@@ -110,18 +115,16 @@ def _send_to_deepseek(markdown_content: str) -> str | None:
         return None
 
 
-def _build_llm_prompt(markdown_data: str) -> str:
+def _build_llm_prompt(markdown_data: str, company=None) -> str:
+    company_context = ""
+    if company:
+        company_context = f"Note: These tables are from {company.name}'s sustainability report. "
+
     return f"""
 You are given sustainability report tables as markdown below:
-{markdown_data}
-
-
-
+{company_context}{markdown_data}
 
 Please perform the following steps:
-
-
-
 
 1. Identify the table(s) with the most complete year-by-year data for
  Scope 1, Scope 2 (market-based), and Scope 2 (location-based)
@@ -132,10 +135,8 @@ Please perform the following steps:
  - For Scope 2, include both market-based and location-based data if
    available, and explicitly note which is which.
  - Convert all values to tCO2e and keep units consistent across years.
+   If units are not explicitly stated, infer from the company.
  - Use null for years where data is missing or unavailable.
-
-
-
 
 2. Create a **"Key Table"** in Markdown with columns for:
  | Category | Year | Emissions (tCO2e) |
@@ -145,9 +146,6 @@ Please perform the following steps:
    - Scope 2 (Location-based)
  Include data for as many years as can be found (e.g., 2020, 2021, 2022, 2023).
  Convert all values to tCO2e. Use null for years where data is missing.
-
-
-
 
 3. Create four additional Markdown tables (breakdown tables) if
  information is available; otherwise, return them with "No Data" or "N/A":
@@ -161,18 +159,12 @@ Please perform the following steps:
    | Scope 3 Category | Year | Emissions (tCO2e) |
    Always include a "Total Scope 3" row.
 
-
-
-
 4. Return exactly **these five Markdown tables** in this order with titles:
  A) Key Table
  B) Scope 1 Breakdown
  C) Scope 2 Market-based Breakdown
  D) Scope 2 Location-based Breakdown
  E) Scope 3 Breakdown (with Total)
-
-
-
 
 5. Provide **no additional commentary**, just the five tables in Markdown format.
 """
