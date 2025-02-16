@@ -255,18 +255,13 @@
    }
 
    .div1 {
-    z-index: 10; /* Ensures it appears above other elements */
-    position: relative; /* Required for z-index to work */
-       height: 160px;
-       width: 100%; /* Ensure it takes full width */
-       margin: 0;
-       background-color: #063800;
-       display: flex;
-       align-items: center; /* Centers vertically */
-       justify-content: center; /* Centers horizontally */
-       box-shadow: 0px 4px 15px rgba(20, 80, 20, 0.6);
-   }
-   .catchy-phrase {
+   display: flex;
+   flex-direction: column; /* Stack heading and phrase */
+   align-items: center;
+   justify-content: center;
+}
+
+   .catchy-phrase  {
    color: white;
    font-size: 20px;
    margin-top: 5px; /* Adjust spacing between header and phrase */
@@ -398,14 +393,25 @@
     .navigation li:hover a .text {
         visibility: visible;
     }
+
+     .logo-header-container {
+   z-index: 10;
+   position: relative;
+   height: 160px;
+   width: 100%;
+   background-color: #063800;
+   display: flex;
+   align-items: center; /* Align items vertically */
+   justify-content: center; /* Center items horizontally */
+   gap: 20px; /* Add spacing between logo and text */
+   box-shadow: 0px 4px 15px rgba(20, 80, 20, 0.6);
+   text-align: center;
+}
+
     .logo {
-     z-index: 20;
-     max-height: 100px;
-     width: auto;
-     top: 30px;
-     left: 200px;
-     margin-right: 10px;
-    }
+   max-height: 100px;
+   width: auto;
+}
 
    *{
          margin: 0;
@@ -540,12 +546,14 @@
 </style>
 </head>
 <body>
-<div class="div1">
-   <img src="{{ url_for('static', filename='images/missiTrack.png') }}" alt="Logo" class="logo">
-    <h1 style="color:white; text-align:center;"> EmissiTrack</h1>
+<div class="logo-header-container">
+       <img src="{{ url_for('static', filename='images/missiTrack.png') }}" alt="Logo" class="logo">
+       <div class="div1">
+           <h1 style="color:white; text-align:center;"> EmissiTrack</h1>
+           <p class="catchy-phrase">Your carbon insights, simplified</p>
+       </div>
    </div>
- <div class="catchy-phrase">
-     <h2>Your Carbon Insights, Simplified</h2></div>
+
  <a href="#learnMoreSection" class="btn" id="learnMoreBtn">Learn More  <i class="fa-solid fa-arrow-down"></i></a>
 <script>
  document.getElementById("learnMoreBtn").addEventListener("click", function(event) {
@@ -555,9 +563,11 @@
      });
  });
 </script>
+
 <div class="centered-link">
     <a href="emissions_map"> View the top 40 companies along with their ESG ratings.</a>
 </div>
+
 
 
 <div class="content-container">
