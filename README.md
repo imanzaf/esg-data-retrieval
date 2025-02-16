@@ -42,3 +42,6 @@ To set up a local instance of the app, follow these instructions carefully to en
   ```
 
 3. Open the application using [this link.](http://127.0.0.1:5000/firstpage)
+   
+
+4. To access the premium account, login using "test@example.com" as email address and  "password123" as password. 
