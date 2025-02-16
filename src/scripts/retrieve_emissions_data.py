@@ -163,7 +163,7 @@ def get_emissions_data(identifier, idType, parser):
         data = data_filter.filtered_df
         data.to_csv(os.path.join(esg_reports.output_path, "esg_data.csv"))
         # get filtered pdf path
-
+        pdf_path = None
         for file in os.listdir(esg_reports.output_path):
             if file.endswith("filtered.pdf"):
                 pdf_path = os.path.join(esg_reports.output_path, file)
@@ -181,7 +181,7 @@ def get_emissions_data(identifier, idType, parser):
             data = extractor.process_company()
     except Exception as e:
         logger.warning(f"Retrieveing via LlamaParse...: {e}")
-
+        pdf_path = None
         for file in os.listdir(esg_reports.output_path):
             logger.info(file)
             if file.endswith("filtered.pdf"):
