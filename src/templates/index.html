@@ -542,33 +542,24 @@
 <div class="hamburger-icon">&#9776;</div>
        <ul class="navigation">
            <li class="active">
-               <a href="{{url_for('firstpage')}}">
+               <a href="{{url_for('test')}}">
                    <span class="icon"> <ion-icon name="home-outline"></ion-icon></span>
                    <span class="text">EmissiTrack</span>
                </a>
            </li>
            <li>
-               <a href="{{url_for('advanced_search')}}">
-                   <span class="icon"> <ion-icon name="information-circle-outline"></ion-icon></span>
-                   <span class="text">Advanced Search</span>
-               </a>
-           </li>
-           <li>
-               <a href="{{url_for('home')}}">
-                   <span class="icon"> <ion-icon name="finger-print-outline"></ion-icon></span>
-                   <span class="text">Premium Page</span>
-               </a>
-           </li>
-           <li>
-               <a href="{{url_for('login')}}">
-                   <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
-                   <span class="text">Register/Login</span>
-               </a>
-           </li>
+             <a href="{{url_for('instructionspremium')}}">
+                 <span class="icon"> <ion-icon name="help-circle-outline"></ion-icon></span>
+             </a>
+         </li>
+         <li>
+           <a href="{{url_for('advanced_search')}}">
+               <span class="icon"> <ion-icon name="funnel-outline"></ion-icon></span> <!-- ✅ Corrected -->
+           </a>
+       </li>
            <li>
                <a href="{{url_for('firstpage')}}">
                    <span class="icon"><ion-icon name="log-out-outline"></ion-icon></span>
-                   <span class="text">Logout</span>
                </a>
            </li>
        </ul>
