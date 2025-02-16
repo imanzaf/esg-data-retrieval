@@ -1,0 +1,14 @@
+,Parameter,Quantity,Units,Boundary / Protocol
+0,Natural Gas Consumption,"903,892",Metric million British  thermal unit,Worldwide occupied  properties / Apple Internal  Protocol
+1,Electricity Consumption,"3,199",Million kilowatt  hours (mkWh),Worldwide occupied  properties / Apple Internal  Protocol
+2,Renewable Energy,"3,199",Million kilowatt  hours (mkWh),Worldwide / Invoiced  quantities & self-generated
+3,Scope 1 GHG Emissions,"55,202",Metric tonnes of  carbon dioxide  equivalent (tCO2e),Worldwide occupied  properties / WRI/WBCSD  GHG Protocol
+4,Scope 2 GHG Emissions  (Location-Based),"1,065,405",tCO2e,Worldwide occupied  properties / WRI/WBCSD  GHG Protocol
+5,Scope 2 GHG Emissions  (Market-Based),"3,018",tCO2e,Worldwide occupied  properties / WRI/WBCSD  GHG Protocol
+6,Scope 3 GHG Emissions -  Fuel and Energy Related  Activities  (Location-Based),"43,578",tCO2e,Worldwide occupied  properties / WRI/WBCSD  GHG Protocol Value Chain  (Scope 3)
+7,Scope 3 GHG Emissions -  Fuel and Energy Related  Activities (Market-Based),"10,648",tCO2e,Worldwide occupied  properties / WRI/WBCSD  GHG Protocol Value Chain  (Scope 3)
+8,Scope 3 GHG Emissions -  Business Travel,"113,475",tCO2e,Worldwide occupied  properties / WRI/WBCSD  GHG Protocol Value Chain
+9,Scope 3 GHG Emissions -  Employee Commute,"134,242",tCO2e,Worldwide occupied  properties / WRI/WBCSD  GHG Protocol Value Chain  (Scope 3)
+10,Scope 3 GHG Emissions -  Work From Home Emissions  (Employee Commute)  (Location-Based),"42,967",tCO2e,Worldwide occupied  properties / WRI/WBCSD  GHG Protocol Value Chain  (Scope 3)
+11,Scope 3 GHG Emissions -  Work From Home Emissions  (Employee Commute)   (Market-Based),"7,474",tCO2e,Worldwide occupied  properties / WRI/WBCSD  GHG Protocol Value Chain  (Scope 3)
+12,Scope 3 GHG Emissions -  Other Cloud Services  (Purchased Goods and  Services) (Market-Based),0,tCO2e,Worldwide occupied  properties / WRI/WBCSD  GHG Protocol Value Chain  (Scope 3)

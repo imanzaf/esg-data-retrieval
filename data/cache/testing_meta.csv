@@ -1,3 +1,4 @@
-,Metric,2019,2020,2021,2022,2023,Units
-0,Emissions from Direct Operations (Scope 1),5.76,9.62,12.11,13.32,14.27,CO 2 e
-3,Emissions from Purchased Electricity (Scope 2)*,5.5,5.27,4.07,3.14,2.79,CO 2 e
+,Metric,2014,2021,2022,Units
+0,Scope 1 emissions per Business & Sustainability Report,nan,1.61,1.65,Inferred: MT CO₂e
+4,Scope 1-Manufacturing per CDP C7.3c,nan,"325,833","304,144",Inferred: MT CO₂e
+5,Scope 2 (location-based)-Manufacturing per CDP C.,nan,"869,832","890,400",Inferred: MT CO₂e

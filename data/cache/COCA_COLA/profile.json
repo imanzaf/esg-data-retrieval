@@ -1,0 +1,18 @@
+{
+    "company": {
+        "identifier": "Coca Cola",
+        "idType": "name",
+        "isin": null,
+        "name": "Coca Cola",
+        "ticker": null,
+        "description": null,
+        "output_path": "C:\\UCL Codes\\esg-data-retrieval\\data\\cache\\COCA_COLA"
+    },
+    "esg_reports": {
+        "0": "https://poland-baltics.coca-colahellenic.com/content/dam/cch/poland-baltics/documents/Coca-Cola-HBC_Poland-and-Baltics_ESG-Report_eng.pdf.downloadasset.pdf",
+        "1": "https://www.coca-colacompany.com/content/dam/company/us/en/reports/coca-cola-business-sustainability-report-2022.pdf",
+        "2": "https://www.coca-colacompany.com/content/dam/company/us/en/reports/coca-cola-business-environmental-social-governance-report-2021.pdf",
+        "3": "https://www.swirecocacola.com/sbcorpweb/uploads/docs/SCC_SR2023_Full_EN.pdf",
+        "4": "https://www.coca-colahellenic.com/content/dam/cch/us/documents/investors-and-financial/debt-investors/CCHBC-Green-Finance-Framework_FINAL_dd-09.09.2022.pdf"
+    }
+}

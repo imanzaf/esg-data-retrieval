@@ -245,7 +245,7 @@ class Filter(BaseModel):
 if __name__ == "__main__":
     ROOT_DIR = os.getenv("ROOT_OUTPUT_PATH")
     filter_obj = Filter(
-        directory_path=os.path.join(ROOT_DIR, "BANK_OF_AMERICA_CORP"),
+        directory_path=os.path.join(ROOT_DIR, "COCA-COLA_CO_THE"),
         parser=TableParsers.DOCLING,
     )
     filter_obj.extract_filtered_df()
